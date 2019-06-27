@@ -3,8 +3,13 @@ import { promisify } from 'es6-promisify';
 import { Vue } from 'vue-property-decorator';
 
 import * as battletris from '../../battletris';
+import Loading from '../loading/loading.vue';
 
-@Component({ })
+@Component({
+  components: {
+    'loading': Loading
+  }
+})
 export default class Main extends Vue {
   /**
    * status flags

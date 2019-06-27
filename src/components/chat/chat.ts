@@ -1,20 +1,21 @@
 import Component, { mixins } from 'vue-class-component';
 import { promisify } from 'es6-promisify';
-import { Vue } from 'vue-property-decorator';
+import { Vue, Prop } from 'vue-property-decorator';
 
 import * as battletris from '../../battletris';
-import Chat from '../chat/chat.vue';
 import Loading from '../loading/loading.vue';
-import Users from '../users/users.vue';
 
 @Component({
   components: {
-    'battletris-chat': Chat,
-    'battletris-users': Users,
     'loading': Loading,
   }
 })
-export default class Tavern extends Vue {
+export default class Chat extends Vue {
+  /**
+   * room name that should be watched
+   */
+  @Prop() roomName;
+
   /**
    * status flags
    */
@@ -30,11 +31,6 @@ export default class Tavern extends Vue {
    * users joined to the tavern
    */
   users: Array<any> = [ ];
-
-  /**
-   * Class definitions
-   */
-  classes = null;
 
   /**
    * chat messages
@@ -55,26 +51,11 @@ export default class Tavern extends Vue {
       });
     }));
 
-    // load classes defintion
-    this.classes = await battletris.getClasses();
-
-    // say everyone we are in the house
-    await battletris.promiseClient.roomAdd('tavern');
-    await battletris.populateConfig('tavern', this.$store.state.userConfig);
-
     this.loading = false;
   }
 
   async beforeDestroy() {
-    await battletris.promiseClient.roomLeave('tavern');
     this.listeners.forEach(listener => listener());
-  }
-
-  /**
-   * Use current configuration and send update events.
-   */
-  async useConfiguration() {
-    await battletris.populateConfig('tavern', this.$store.state.userConfig);
   }
 
   /**

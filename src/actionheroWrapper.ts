@@ -73,12 +73,19 @@ function watch(eventName: string, callback: Function) {
 function triggerListeners(eventName, data) {
   const events = [ eventName, data.room ];
 
-  // if sub type was specified, trigger also subtype
-  if (data && data.message && data.message.type) {
-    events.push(`${ data.room }/${ data.message.type }`);
-    events.push(`${ eventName }/${ data.message.type }`);
+  if (data && data.message) {
+    try {
+      data.message = JSON.parse(data.message);
+    } catch (ex) { }
+
+    // if sub type was specified, trigger also subtype
+    if (data && data.message && data.message.type) {
+      events.push(`${ data.room }/${ data.message.type }`);
+      events.push(`${ eventName }/${ data.message.type }`);
+    }
   }
 
+  // submiot events
   events.forEach(event => {
     if (listeners[event]) {
       listeners[event].forEach(listener => listener(data));

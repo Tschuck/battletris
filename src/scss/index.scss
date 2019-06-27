@@ -3,14 +3,31 @@
 @import '~bootstrap/scss/bootstrap';
 @import '~nes.css/css/nes.css';
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   font-size: 14px;
 
+  overflow-y: auto;
+
   margin: 0;
   padding: 0;
+
+  background-color: #e6e6e6;
 
   &,
   * {
     font-family: 'press_start_2p';
   }
+
+  .nes-container {
+    background-color: #fff;
+  }
+}
+
+.content-container {
+  padding: 30px 3%;
 }
