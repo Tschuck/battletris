@@ -1,0 +1,16 @@
+@import './Press_Start_2P/press_start_2p';
+@import '~@mdi/font/css/materialdesignicons.css';
+@import '~bootstrap/scss/bootstrap';
+@import '~nes.css/css/nes.css';
+
+body {
+  font-size: 14px;
+
+  margin: 0;
+  padding: 0;
+
+  &,
+  * {
+    font-family: 'press_start_2p';
+  }
+}
