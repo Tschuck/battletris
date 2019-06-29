@@ -13,6 +13,6 @@ module.exports = class Rooms extends Action {
  }
 
  async run (data) {
-   data.response.users = api.battletris.rooms;
+   data.response.rooms = api.battletris.rooms;
  }
 }

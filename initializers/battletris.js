@@ -23,10 +23,13 @@ module.exports = class Battletris extends Initializer {
       name: 'chat middleware',
       priority: 1000,
       join: async (connection, room) => {
+        // console.log(`join ${ room }: ${ connection.id }`)
+
         // announce all connections entering a room
         // await api.chatRoom.broadcast({}, room, 'I have joined the room: ' + connection.id)
       },
       leave: async (connection, room) => {
+        // console.log(`leave ${ room }: ${ connection.id }`)
         // clear users
         await userHandler(connection, room, { type: 'room-leave', });
       },
@@ -40,7 +43,7 @@ module.exports = class Battletris extends Initializer {
        * Will be executed only once, when the message is sent to the server.
        */
       onSayReceive: async function(connection, room, payload) {
-        userHandler(connection, room, payload.message);
+        await userHandler(connection, room, payload.message);
         return payload;
       }
     };
@@ -50,18 +53,15 @@ module.exports = class Battletris extends Initializer {
       api.battletris.rooms[`tavern`] = { };
       api.chatRoom.add('tavern', () => { });
     } catch (ex) {}
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 30; i++) {
       try {
-        api.battletris.rooms[`battlefield${ i }`] = { };
-        await api.chatRoom.add(`battlefield${ i }`, () => { });
+        api.battletris.rooms[`field${ i }`] = { };
+        await api.chatRoom.add(`field${ i }`, () => { });
       } catch (ex) { }
     }
 
     api.chatRoom.addMiddleware(chatMiddleware)
   }
 
-  async stop() {
-  }
-
-
+  async stop() { }
 }

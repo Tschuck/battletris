@@ -1,58 +1,47 @@
 <template>
-  <div class="content-container d-flex">
-    <div class="col-md-4">
-      <battletris-users
-        :roomName="'tavern'">
-      </battletris-users>
+  <div class="container-fluid w-100 h-100">
+    <div class="row h-100">
+      <battletris-panel :room="'tavern'"></battletris-panel>
 
-      <battletris-chat
-        class="mt-3"
-        :roomName="'tavern'">
-      </battletris-chat>
-    </div>
+      <div class="col col-md-6 col-xl-9 mt-md-0 h-100 py-2 overflow-auto">
+        <loading v-if="loading || error" :error="error"></loading>
+        <template v-else>
+          <div class="container-fluid">
+            <div class="row h-100">
+              <div class="col-12 px-1">
+                <div class="nes-container with-title">
+                  <p class="title">
+                    {{ 'tavern' | translate }}
+                  </p>
 
-    <div class="col-md-8">
-      <loading v-if="loading || error" :error="error"></loading>
-      <template v-else>
-        <div class="nes-container with-title">
-          <p class="title">
-            {{ 'tavern' | translate }}
-          </p>
-
-          {{ 'welcome' | translate }}...
-
-          <div class="mt-4">
-            <div class="nes-field">
-              <label for="name">{{ 'your-name' | translate }}</label>
-              <input type="text" id="name" class="nes-input"
-                v-model="$store.state.userConfig.name">
+                  {{ 'welcome' | translate }}...
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div class="mt-4">
-            <div class="nes-field">
-              <label for="class">{{ 'your-class' | translate }}</label>
-              <div class="nes-select">
-                <select id="class"
-                  v-model="$store.state.userConfig.className">
-                  <option
-                    v-for="(className, index) in Object.keys(classes)"
-                    :value="className">
-                    {{ `classes.${ className }` | translate }}
-                  </option>
-                </select>
+            <div class="row mt-2">
+              <div class="col-md-6 col-lg-4 col-xl-3 mt-1 p-1"
+                v-for="(room, index) in Object.keys(rooms)"
+                v-if="room !== 'tavern'">
+                <div class="nes-container with-title"
+                  @click="$router.push({ path: `/battlefield/${ room }` })">
+                  <p class="title">
+                    {{ $t('battlefield', { index: parseInt(room.replace('field', '')) + 1 }) }}
+                  </p>
+
+                  <battletris-users
+                    class="overflow-y"
+                    style="height: 200px;"
+                    :container="false"
+                    :room="room"
+                    :users="rooms[room]">
+                  </battletris-users>
+                </div>
               </div>
             </div>
           </div>
-
-          <div class="text-right mt-4">
-            <button type="button" class="nes-btn is-primary"
-              @click="useConfiguration()">
-              {{ 'use-config' | translate }}
-            </button>
-          </div>
-        </div>
-      </template>
+        </template>
+      </div>
     </div>
   </div>
 </template>

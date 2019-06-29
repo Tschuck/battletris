@@ -4,7 +4,7 @@ import Battlefield from './components/battlefield/battlefield.vue';
 const routes = [
   { path: '/', redirect: 'tavern' },
   { path: '/tavern', component: Lobby },
-  { path: '/battlefield/:id', component: Battlefield }
+  { path: '/battlefield/:room', component: Battlefield }
 ];
 
 export default routes;

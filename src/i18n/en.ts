@@ -1,20 +1,29 @@
 /* tslint:disable */
 export default {
+  "battlefield": "Battlefield {index}",
+  "chat": "Chat",
   "classes": {
     "rouge": "Rouge",
     "warlord": "Warlord",
     "warrior": "Warrior",
     "wizard": "Wizard"
   },
+  "config": "Configuration",
+  "go-to-tavern": "Back to Tavern",
   "loading": "loading...",
-  "tavern": "Tavern",
-  "welcome": "Welcome in the tavern",
-  "your-class": "Your Class",
-  "your-name": "Your name",
-  "use-config": "Use configuration",
-  "members": "Warrios",
-  "chat": "Chat",
+  "members": "Warriors",
   "message": "Message",
-  "send-message": "Send"
+  "send-message": "Send",
+  "tavern": "Tavern",
+  "use-config": "Use configuration",
+  "welcome": "Welcome in the tavern",
+  "your-class": "Class",
+  "your-name": "Name",
+  "theme": "Theme",
+  "themes": {
+    "light": "Light",
+    "dark": "Dark",
+    "final-fantasy": "Final Fantasy"
+  }
 }
 /* tslint:enable */

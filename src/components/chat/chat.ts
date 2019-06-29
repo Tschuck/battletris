@@ -14,7 +14,7 @@ export default class Chat extends Vue {
   /**
    * room name that should be watched
    */
-  @Prop() roomName;
+  @Prop() room;
 
   /**
    * status flags
@@ -40,11 +40,11 @@ export default class Chat extends Vue {
 
   async created() {
     // watch for user updates
-    this.listeners.push(battletris.watch('tavern/users', (data) => {
+    this.listeners.push(battletris.watch(`${ this.room }/users`, (data) => {
       this.users = data.message.users;
     }));
 
-    this.listeners.push(battletris.watch('tavern/chat', (data) => {
+    this.listeners.push(battletris.watch(`${ this.room }/chat`, (data) => {
       this.messages.unshift({
         from: data.from,
         text: data.message.text
@@ -62,12 +62,14 @@ export default class Chat extends Vue {
    * Send text message to the others.
    */
   async sendMessage() {
-    await battletris.promiseClient.say('tavern', JSON.stringify({
-      type: 'chat',
-      text: this.newMessage,
-    }));
+    if (this.newMessage.length > 0) {
+      await battletris.promiseClient.say(this.room, JSON.stringify({
+        type: 'chat',
+        text: this.newMessage,
+      }));
 
-    this.newMessage = '';
+      this.newMessage = '';
+    }
   }
 }
 

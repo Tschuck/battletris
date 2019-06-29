@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="h-100">
     <loading v-if="loading || error" :error="error"></loading>
     <template v-else>
       <router-view></router-view>

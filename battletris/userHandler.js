@@ -11,7 +11,7 @@ module.exports = async function(connection, room, message) {
 
   if (payload && payload.type) {
     switch (payload.type) {
-      case 'user-update': {
+      case 'room-join': {
         // apply the users to the api
         api.battletris.rooms[room][connection.id] = {
           className: payload.className,
@@ -31,6 +31,12 @@ module.exports = async function(connection, room, message) {
     }
 
     if (userUpdate) {
+      // broadcast the users into the tavern, so everything will be up to date
+      await api.chatRoom.broadcast({}, 'tavern', {
+        type: 'rooms',
+        rooms: api.battletris.rooms,
+      });
+
       // broadcast the users everywhere
       await api.chatRoom.broadcast({}, room, {
         type: 'users',

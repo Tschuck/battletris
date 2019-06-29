@@ -2,7 +2,7 @@ exports['default'] = {
   routes: (api) => {
     return {
       all: [
-        { path: '/rooms', action: 'rooms',  }
+        { path: '/users', action: 'users', matchTrailingPathParts: true }
       ]
     }
   }

@@ -3,13 +3,13 @@ import { promisify } from 'es6-promisify';
 import { Vue } from 'vue-property-decorator';
 
 import * as battletris from '../../battletris';
-import Chat from '../chat/chat.vue';
+import Panel from '../panel/panel.vue';
 import Loading from '../loading/loading.vue';
 import Users from '../users/users.vue';
 
 @Component({
   components: {
-    'battletris-chat': Chat,
+    'battletris-panel': Panel,
     'battletris-users': Users,
     'loading': Loading,
   }
@@ -29,12 +29,7 @@ export default class Tavern extends Vue {
   /**
    * users joined to the tavern
    */
-  users: Array<any> = [ ];
-
-  /**
-   * Class definitions
-   */
-  classes = null;
+  rooms: any = null;
 
   /**
    * chat messages
@@ -43,50 +38,30 @@ export default class Tavern extends Vue {
   messages: Array<any> = [ ];
 
   async created() {
-    // watch for user updates
-    this.listeners.push(battletris.watch('tavern/users', (data) => {
-      this.users = data.message.users;
+    // watch for room status
+    this.listeners.push(battletris.watch('tavern/rooms', (data) => {
+      this.loading = true;
+      this.rooms = data.message.rooms;
+
+      this.$nextTick(() => this.loading = false);
     }));
 
-    this.listeners.push(battletris.watch('tavern/chat', (data) => {
-      this.messages.unshift({
-        from: data.from,
-        text: data.message.text
-      });
-    }));
+    this.rooms = await battletris.getRooms();
 
-    // load classes defintion
-    this.classes = await battletris.getClasses();
-
-    // say everyone we are in the house
-    await battletris.promiseClient.roomAdd('tavern');
-    await battletris.populateConfig('tavern', this.$store.state.userConfig);
+    // join tavern
+    await battletris.joinRoom('tavern', this.$store.state.userConfig);
 
     this.loading = false;
   }
 
+  /**
+   * Clear all room watchers
+   */
   async beforeDestroy() {
-    await battletris.promiseClient.roomLeave('tavern');
+    // leave rooms
+    await battletris.leaveRoom('tavern');
+    // unsubscibe listeners
     this.listeners.forEach(listener => listener());
-  }
-
-  /**
-   * Use current configuration and send update events.
-   */
-  async useConfiguration() {
-    await battletris.populateConfig('tavern', this.$store.state.userConfig);
-  }
-
-  /**
-   * Send text message to the others.
-   */
-  async sendMessage() {
-    await battletris.promiseClient.say('tavern', JSON.stringify({
-      type: 'chat',
-      text: this.newMessage,
-    }));
-
-    this.newMessage = '';
   }
 }
 

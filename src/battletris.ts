@@ -19,6 +19,13 @@ async function getClasses() {
 }
 
 /**
+ * Load all available rooms including the users from backend.
+ */
+async function getRooms() {
+  return (await promiseClient.action('rooms', {})).rooms;
+}
+
+/**
  * Return the latest user configuration.
  */
 async function getUserConfig() {
@@ -50,17 +57,58 @@ async function getUserConfig() {
  */
 async function populateConfig(room: string, userConfig: any) {
   await promiseClient.say(room, JSON.stringify({
-    type: 'user-update',
+    type: 'room-join',
     ...userConfig
   }));
+
+  // save go localStorage
+  window.localStorage['battletris-user'] = JSON.stringify(userConfig);
+}
+
+/**
+ * Join a room an populate the userConfig to this room.
+ *
+ * @param      {string}  room        room to join
+ * @param      {any}     userConfig  user configuration including name, className, ...
+ */
+async function joinRoom(room: string, userConfig: any) {
+  await promiseClient.roomAdd(room);
+  await populateConfig(room, userConfig);
+}
+
+/**
+ * Remove the current user from a room.
+ *
+ * @param      {string}  room        room to join
+ * @param      {any}     userConfig  user configuration including name, className, ...
+ */
+async function leaveRoom(room: string) {
+  await promiseClient.roomLeave(room);
+}
+
+/**
+ * Applies a theme to the current UI.
+ *
+ * @param      {string}  theme   The theme
+ */
+function setTheme(theme = window.localStorage['battletris-theme'] || 'light') {
+  // overwrite body classes
+  document.body.className = `battletris battletris-${ theme }`;
+
+  // save current theme
+  window.localStorage['battletris-theme'] = theme;
 }
 
 export {
   getClasses,
+  getRooms,
   getUserConfig,
   initialize,
+  joinRoom,
+  leaveRoom,
   populateConfig,
   promiseClient,
+  setTheme,
   triggerListeners,
   watch,
   wsClient,

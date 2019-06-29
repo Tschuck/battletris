@@ -14,7 +14,19 @@ export default class Users extends Vue {
   /**
    * room name that should be watched
    */
-  @Prop() roomName;
+  @Prop() room;
+
+  /**
+   * Pass a list of users directly and listen for updates
+   */
+  @Prop() users;
+
+  /**
+   * show nes container
+   */
+  @Prop({
+    default: true
+  }) container;
 
   /**
    * status flags
@@ -30,13 +42,17 @@ export default class Users extends Vue {
   /**
    * users joined to the tavern
    */
-  users: any = { };
+  userList: any = { };
 
   async created() {
-    // watch for user updates
-    this.listeners.push(battletris.watch(`${ this.roomName }/users`, (data) => {
-      this.users = data.message.users;
-    }));
+    if (this.users) {
+      this.userList = this.users;
+    } else {
+      // watch for user updates
+      this.listeners.push(battletris.watch(`${ this.room }/users`, (data) =>
+        this.userList = data.message.users
+      ));
+    }
 
     this.loading = false;
   }
