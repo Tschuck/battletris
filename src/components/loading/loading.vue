@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h1 class="d-flex align-items-center justify-content-center mt-5">
+    <!-- <h1 class="d-flex align-items-center justify-content-center mt-5">
       {{ error ?  error : 'loading' | translate }}
-    </h1>
+    </h1> -->
   </div>
 </template>
 

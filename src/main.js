@@ -7,8 +7,11 @@ import { Component } from 'vue-property-decorator';
 import Main from './components/main/main.vue';
 import en from './i18n/en';
 import routes from './routes';
+import * as battletris from './battletris';
 
 import './scss/index.scss';
+
+battletris.setTheme();
 
 Vue.use(Vuex);
 Vue.use(VueRouter);

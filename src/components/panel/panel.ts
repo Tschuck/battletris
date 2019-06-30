@@ -3,9 +3,9 @@ import { promisify } from 'es6-promisify';
 import { Vue } from 'vue-property-decorator';
 import { Prop } from 'vue-property-decorator';
 
-import Chat from '../chat/chat.vue';
-import Configuration from '../config/config.vue';
-import Users from '../users/users.vue';
+import Chat from './chat/chat.vue';
+import Configuration from './config/config.vue';
+import Users from './users/users.vue';
 
 @Component({
   components: {

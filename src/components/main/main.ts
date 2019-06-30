@@ -18,8 +18,6 @@ export default class Main extends Vue {
   error = '';
 
   async created() {
-    battletris.setTheme();
-
     try {
       await battletris.initialize();
       this.$store.state.userConfig = await battletris.getUserConfig();

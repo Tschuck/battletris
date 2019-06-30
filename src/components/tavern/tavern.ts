@@ -5,7 +5,7 @@ import { Vue } from 'vue-property-decorator';
 import * as battletris from '../../battletris';
 import Panel from '../panel/panel.vue';
 import Loading from '../loading/loading.vue';
-import Users from '../users/users.vue';
+import Users from '../panel/users/users.vue';
 
 @Component({
   components: {
@@ -42,6 +42,7 @@ export default class Tavern extends Vue {
     this.listeners.push(battletris.watch('tavern/rooms', (data) => {
       this.loading = true;
       this.rooms = data.message.rooms;
+      console.log(this.rooms)
 
       this.$nextTick(() => this.loading = false);
     }));

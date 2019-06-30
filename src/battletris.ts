@@ -13,7 +13,7 @@ let classes;
  * Load all available classes from backend and cache the value.
  */
 async function getClasses() {
-  classes = classes || (await promiseClient.action('classes', {})).classes;
+  classes = classes || (await promiseClient.action('battletris/config', {})).config.classes;
 
   return classes;
 }
@@ -22,7 +22,7 @@ async function getClasses() {
  * Load all available rooms including the users from backend.
  */
 async function getRooms() {
-  return (await promiseClient.action('rooms', {})).rooms;
+  return (await promiseClient.action('battletris/rooms', {})).rooms;
 }
 
 /**
@@ -38,7 +38,7 @@ async function getUserConfig() {
   }
 
   config.name = config.name ||
-    (await promiseClient.action('sampleName', {})).name ||
+    (await promiseClient.action('battletris/get-sample-name', {})).name ||
     'battletris user';
   config.className = config.className ||
     Object.keys(await getClasses())[0];
@@ -99,8 +99,30 @@ function setTheme(theme = window.localStorage['battletris-theme'] || 'light') {
   window.localStorage['battletris-theme'] = theme;
 }
 
+/**
+ * Load a cookie.
+ *
+ * @param      {string}  cname   coockie value
+ */
+function getCookie(cname) {
+  const name = cname + '=';
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return '';
+}
+
 export {
   getClasses,
+  getCookie,
   getRooms,
   getUserConfig,
   initialize,

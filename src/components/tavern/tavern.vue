@@ -1,9 +1,12 @@
 <template>
   <div class="container-fluid w-100 h-100">
     <div class="row h-100">
-      <battletris-panel :room="'tavern'"></battletris-panel>
 
-      <div class="col col-md-6 col-xl-9 mt-md-0 h-100 py-2 overflow-auto">
+      <div class="col col-md-5 col-xl-3 h-100 d-flex flex-column overflow-hidden">
+        <battletris-panel :room="'tavern'"></battletris-panel>
+      </div>
+
+      <div class="col col-md-7 col-xl-9 mt-md-0 h-100 py-2 overflow-auto">
         <loading v-if="loading || error" :error="error"></loading>
         <template v-else>
           <div class="container-fluid">
@@ -34,7 +37,7 @@
                     style="height: 200px;"
                     :container="false"
                     :room="room"
-                    :users="rooms[room]">
+                    :users="rooms[room].users">
                   </battletris-users>
                 </div>
               </div>

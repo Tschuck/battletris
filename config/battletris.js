@@ -32,6 +32,9 @@ exports['default'] = {
       }
     };
 
-    return { classes };
+    return {
+      classes,
+      rooms: 5,
+    };
   }
 }

@@ -3,7 +3,8 @@
 const { Initializer, api } = require('actionhero');
 const webpackConfig = require('../webpack.config.js');
 const webpack = require('webpack');
-const userHandler = require('../battletris/userHandler');
+const { handleMessage, generateRoom, } = require('../battletris/roomHandler');
+const Battle = require('../battletris/battle');
 
 module.exports = class Battletris extends Initializer {
   constructor () {
@@ -16,10 +17,12 @@ module.exports = class Battletris extends Initializer {
 
   async initialize () {
     api.battletris = {
+      battleInstances: { },
+      battles: { },
       rooms: { },
     };
 
-    var chatMiddleware = {
+    const chatMiddleware = {
       name: 'chat middleware',
       priority: 1000,
       join: async (connection, room) => {
@@ -31,7 +34,7 @@ module.exports = class Battletris extends Initializer {
       leave: async (connection, room) => {
         // console.log(`leave ${ room }: ${ connection.id }`)
         // clear users
-        await userHandler(connection, room, { type: 'room-leave', });
+        await handleMessage(connection, room, { type: 'room-leave', });
       },
       /**
        * Will be executed once per client connection before delivering the message.
@@ -43,19 +46,20 @@ module.exports = class Battletris extends Initializer {
        * Will be executed only once, when the message is sent to the server.
        */
       onSayReceive: async function(connection, room, payload) {
-        await userHandler(connection, room, payload.message);
+        await handleMessage(connection, room, payload.message);
         return payload;
       }
     };
 
     // open all the chat rooms and 10 battlefields
     try {
-      api.battletris.rooms[`tavern`] = { };
-      api.chatRoom.add('tavern', () => { });
+      api.battletris.rooms[`tavern`] = generateRoom();
+      await api.chatRoom.add('tavern', () => { });
     } catch (ex) {}
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < api.config.battletris.rooms; i++) {
       try {
-        api.battletris.rooms[`field${ i }`] = { };
+        api.battletris.rooms[`field${ i }`] = generateRoom();
+        api.battletris.battles[`field${ i }`] = Battle.generateBattle();
         await api.chatRoom.add(`field${ i }`, () => { });
       } catch (ex) { }
     }
