@@ -2,6 +2,7 @@ import axios from 'axios';
 import {
   initialize,
   promiseClient,
+  roomAction,
   triggerListeners,
   watch,
   wsClient,
@@ -56,10 +57,7 @@ async function getUserConfig() {
  * @param      {any}     userConfig  user configuration including name, className, ...
  */
 async function populateConfig(room: string, userConfig: any) {
-  await promiseClient.say(room, JSON.stringify({
-    type: 'room-join',
-    ...userConfig
-  }));
+  await roomAction(room, 'room-join', userConfig);
 
   // save go localStorage
   window.localStorage['battletris-user'] = JSON.stringify(userConfig);
@@ -130,6 +128,7 @@ export {
   leaveRoom,
   populateConfig,
   promiseClient,
+  roomAction,
   setTheme,
   triggerListeners,
   watch,

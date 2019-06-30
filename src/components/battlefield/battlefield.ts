@@ -47,7 +47,9 @@ export default class BattleField extends Vue {
     this.connectionId = battletris.wsClient.id;
 
     // watch for room join / leave updates
-    this.watch('room', (data) => this.roomDetails = data.message.room);
+    this.watch('room', (data) => {
+      this.roomDetails = data.message.room
+    });
 
     // watch for battle join / leave
     this.watch('battle', (data) => this.handleBattleUpdate(data.message.battle));
@@ -57,6 +59,11 @@ export default class BattleField extends Vue {
 
     // say everyone we are in the house
     await battletris.joinRoom(this.room, this.$store.state.userConfig);
+
+    // load initial room data
+    this.roomDetails = (await battletris.promiseClient.action('battletris/rooms', {
+      room: this.room
+    })).room;
 
     // request initial battle data
     await this.handleBattleUpdate((await battletris.promiseClient.action('battletris/battles', {
@@ -88,9 +95,7 @@ export default class BattleField extends Vue {
    * Join / leave the battle
    */
   async setBattleStatus(status: string) {
-    await battletris.promiseClient.say(this.room, JSON.stringify({
-      type: `battle-${ status }`,
-    }));
+    await battletris.roomAction(this.room, `battle-${ status }`);
   }
 
   /**

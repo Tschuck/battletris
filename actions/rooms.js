@@ -1,5 +1,3 @@
-// A simple Action
-
 'use strict'
 const {Action, api} = require('actionhero')
 const axios = require('axios')

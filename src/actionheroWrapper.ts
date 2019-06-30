@@ -40,14 +40,14 @@ async function initialize() {
   await promiseClient.connect();
 
   // watch for all events
-  wsClient.on('connected',    triggerListeners.bind(null, 'connected'));
-  wsClient.on('disconnected', triggerListeners.bind(null, 'disconnected'));
-  wsClient.on('error',        triggerListeners.bind(null, 'error'));
-  wsClient.on('reconnect',    triggerListeners.bind(null, 'reconnect'));
-  wsClient.on('reconnecting', triggerListeners.bind(null, 'reconnecting'));
-  wsClient.on('alert',        triggerListeners.bind(null, 'alert'));
-  wsClient.on('api',          triggerListeners.bind(null, 'api'));
-  wsClient.on('welcome',      triggerListeners.bind(null, 'welcome'));
+  // wsClient.on('connected',    triggerListeners.bind(null, 'connected'));
+  // wsClient.on('disconnected', triggerListeners.bind(null, 'disconnected'));
+  // wsClient.on('error',        triggerListeners.bind(null, 'error'));
+  // wsClient.on('reconnect',    triggerListeners.bind(null, 'reconnect'));
+  // wsClient.on('reconnecting', triggerListeners.bind(null, 'reconnecting'));
+  // wsClient.on('alert',        triggerListeners.bind(null, 'alert'));
+  // wsClient.on('api',          triggerListeners.bind(null, 'api'));
+  // wsClient.on('welcome',      triggerListeners.bind(null, 'welcome'));
   wsClient.on('say',          triggerListeners.bind(null, 'say'));
 }
 
@@ -93,9 +93,27 @@ function triggerListeners(eventName, data) {
   });
 }
 
+/**
+ * Interact with rooms (join, leve) and battles (join, leave, accept)
+ *
+ * @param      {string}  room     room to send the data to
+ * @param      {string}  type     even type (room-join, room-leave, battle-join, battle-accept,
+ *                                battle-leave, battle-stop)
+ * @param      {any}     payload  payload to send
+ */
+function roomAction(room: string, type: string, payload?: any) {
+  promiseClient.action('battletris/room-actions', {
+    connectionId: wsClient.id,
+    payload,
+    room,
+    type,
+  });
+}
+
 export {
   initialize,
   promiseClient,
+  roomAction,
   triggerListeners,
   watch,
   wsClient,

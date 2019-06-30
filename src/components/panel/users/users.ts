@@ -49,8 +49,8 @@ export default class Users extends Vue {
       this.userList = this.users;
     } else {
       // watch for user updates
-      this.listeners.push(battletris.watch(`${ this.room }/users`, (data) =>
-        this.userList = data.message.users
+      this.listeners.push(battletris.watch(`${ this.room }/room`, (data) =>
+        this.userList = data.message.room.users
       ));
     }
 

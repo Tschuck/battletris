@@ -7,6 +7,7 @@ module.exports = class Battle {
   static generateBattle() {
     return {
       accepted: { },
+      blocks: [ ],
       duration: 0,
       speed: 1,
       startCounter: 10,
@@ -31,10 +32,18 @@ module.exports = class Battle {
     }
 
     return {
+      blockIndex: 0,
       connectionId: connectionId,
       effects: [ ],
       map: map,
       speed: 1,
+    };
+  }
+
+  static getRandomBlock() {
+    return {
+      map: [ ],
+      color: '',
     };
   }
 

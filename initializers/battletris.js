@@ -3,7 +3,7 @@
 const { Initializer, api } = require('actionhero');
 const webpackConfig = require('../webpack.config.js');
 const webpack = require('webpack');
-const { handleMessage, generateRoom, } = require('../battletris/roomHandler');
+const { roomHandler, generateRoom, } = require('../battletris/roomHandler');
 const Battle = require('../battletris/battle');
 
 module.exports = class Battletris extends Initializer {
@@ -32,9 +32,8 @@ module.exports = class Battletris extends Initializer {
         // await api.chatRoom.broadcast({}, room, 'I have joined the room: ' + connection.id)
       },
       leave: async (connection, room) => {
-        // console.log(`leave ${ room }: ${ connection.id }`)
         // clear users
-        await handleMessage(connection, room, { type: 'room-leave', });
+        await roomHandler(connection.id, room, 'room-leave');
       },
       /**
        * Will be executed once per client connection before delivering the message.
@@ -46,7 +45,6 @@ module.exports = class Battletris extends Initializer {
        * Will be executed only once, when the message is sent to the server.
        */
       onSayReceive: async function(connection, room, payload) {
-        await handleMessage(connection, room, payload.message);
         return payload;
       }
     };
