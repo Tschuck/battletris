@@ -1,4 +1,5 @@
 const { api, } = require('actionhero');
+const blocks = require('./blocks');
 
 module.exports = class Battle {
   /**
@@ -14,6 +15,7 @@ module.exports = class Battle {
       startTime: 0,
       status: 'open',
       time: 0,
+      userKeys: [ ],
       users: { },
     };
   }
@@ -32,7 +34,7 @@ module.exports = class Battle {
     }
 
     return {
-      blockIndex: 0,
+      blockIndex: -1,
       connectionId: connectionId,
       effects: [ ],
       map: map,
@@ -40,10 +42,19 @@ module.exports = class Battle {
     };
   }
 
-  static getRandomBlock() {
+  /**
+   * Returns a new random block
+   *
+   * @return     {any}  block definition
+   */
+  static generateRandomBlock() {
+    const type = Math.round(Math.random() + 6);
+
     return {
-      map: [ ],
-      color: '',
+      map: blocks[type](),
+      type,
+      x: 3,
+      y: 0,
     };
   }
 
@@ -59,12 +70,12 @@ module.exports = class Battle {
     this.battle.status = 'starting';
 
     // wait for 10 seconds until starting the game
-    this.startingLoop = setInterval(async () => {
+    this.startingLoopInterval = setInterval(async () => {
       this.battle.startCounter = this.battle.startCounter - 1;
 
       // clear the starting interval and start the game loop
       if (this.battle.startCounter === 0) {
-        clearInterval(this.startingLoop);
+        clearInterval(this.startingLoopInterval);
         this.startGameLoop();
       } else {
         // update the counter within the UI
@@ -83,8 +94,8 @@ module.exports = class Battle {
    * Stop the runtime interval
    */
   stop() {
-    clearInterval(this.startingLoop);
-    clearInterval(this.gameLoop);
+    clearInterval(this.startingLoopInterval);
+    clearInterval(this.gameLoopInterval);
 
     api.battletris.battles[this.roomName] = Battle.generateBattle();
     delete api.battletris.battleInstances[this.roomName];
@@ -96,6 +107,7 @@ module.exports = class Battle {
   async startGameLoop() {
     this.battle.status = 'started';
     this.battle.startTime = Date.now();
+    this.battle.userKeys = Object.keys(this.battle.users);
 
     // update the counter within the UI
     await api.chatRoom.broadcast({}, this.roomName, {
@@ -106,15 +118,55 @@ module.exports = class Battle {
       }
     });
 
-    this.gameLoop = setInterval(async () => {
-      this.battle.duration = Date.now() - this.battle.startTime;
+    // start the game!
+    await this.gameLoop();
+    this.gameLoopInterval = setInterval(async () => this.gameLoop(), 1000);
+  }
 
-      await api.chatRoom.broadcast({}, this.roomName, {
-        type: 'battle-increment',
-        battle: {
-          ...this.battle,
-        },
-      });
-    }, 1000);
+  /**
+   * Handle overhaul interactions.
+   */
+  async gameLoop() {
+    // fast access
+    const blocks = this.battle.blocks;
+
+    // set general data
+    this.battle.duration = Date.now() - this.battle.startTime;
+
+    // set user data
+    this.battle.userKeys.forEach((userKey) => {
+      const user = this.battle.users[userKey];
+
+      // TODO: implement next stone generation
+      if (user.blockIndex === -1 || false) {
+        user.blockIndex++;
+
+        // generate new blocks
+        if (!blocks[user.blockIndex]) {
+          blocks.push(Battle.generateRandomBlock());
+        }
+
+        // set active block
+        user.activeBlock = blocks[user.blockIndex];
+      }
+    });
+
+    await api.chatRoom.broadcast({}, this.roomName, {
+      type: 'battle-increment',
+      battle: {
+        ...this.battle,
+      },
+    });
+  }
+
+  /**
+   * Handles a user action
+   *
+   * @param      {<type>}   connectionId  The connection identifier
+   * @param      {<type>}   key           The key
+   * @return     {Promise}  { description_of_the_return_value }
+   */
+  async userAction(connectionId, key) {
+
   }
 }
