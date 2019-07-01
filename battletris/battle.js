@@ -11,7 +11,7 @@ module.exports = class Battle {
       blocks: [ ],
       duration: 0,
       speed: 1,
-      startCounter: 10,
+      startCounter: 1,
       startTime: 0,
       status: 'open',
       time: 0,
@@ -48,7 +48,7 @@ module.exports = class Battle {
    * @return     {any}  block definition
    */
   static generateRandomBlock() {
-    const type = Math.round(Math.random() + 6);
+    const type = Math.round(Math.random() * 6);
 
     return {
       map: blocks[type](),
@@ -135,19 +135,25 @@ module.exports = class Battle {
 
     // set user data
     this.battle.userKeys.forEach((userKey) => {
-      const user = this.battle.users[userKey];
+      // user has not left the game during game loop
+      if (this.battle.users[userKey]) {
+        const user = this.battle.users[userKey];
 
-      // TODO: implement next stone generation
-      if (user.blockIndex === -1 || false) {
-        user.blockIndex++;
+        // TODO: implement next stone generation
+        if (user.blockIndex === -1 || false) {
+          user.blockIndex++;
 
-        // generate new blocks
-        if (!blocks[user.blockIndex]) {
-          blocks.push(Battle.generateRandomBlock());
+          // generate new blocks
+          if (!blocks[user.blockIndex]) {
+            blocks.push(Battle.generateRandomBlock());
+          }
+
+          // set active block
+          user.activeBlock = blocks[user.blockIndex];
+        } else {
+          // move block down
+          user.activeBlock.y = user.activeBlock.y + 1;
         }
-
-        // set active block
-        user.activeBlock = blocks[user.blockIndex];
       }
     });
 
@@ -167,6 +173,44 @@ module.exports = class Battle {
    * @return     {Promise}  { description_of_the_return_value }
    */
   async userAction(connectionId, key) {
+    const battleUser = this.battle.users[connectionId];
+    const activeBlock = battleUser.activeBlock;
 
+    // setup update increment 
+    const users = {};
+    const increment = { };
+    users[connectionId] = increment;
+
+    switch (key) {
+      // left
+      case 37: {
+        activeBlock.x--;
+        increment.activeBlock = activeBlock;
+        break;
+      }
+      // up
+      case 38: {
+        break;
+      }
+      // right
+      case 39: {
+        activeBlock.x++;
+        increment.activeBlock = activeBlock;
+        break;
+      }
+      // down
+      case 40: {
+        activeBlock.y++;
+        increment.activeBlock = activeBlock;
+        break;
+      }
+    }
+
+    await api.chatRoom.broadcast({}, this.roomName, {
+      type: 'battle-increment',
+      battle: {
+        users
+      },
+    });
   }
 }

@@ -24,6 +24,7 @@ export default class BattleField extends Vue {
    * listeners for ws updates
    */
   listeners: Array<any> = [ ];
+  keyHandler;
 
   /**
    * Opened room, save it to the variable, else, we cannot handle correct roomLeave
@@ -41,6 +42,19 @@ export default class BattleField extends Vue {
    * Connection id
    */
   connectionId = '';
+
+  /**
+   * Rendered battle maps mapped to connection id's
+   */
+  battleMaps: any = { };
+
+  /**
+   * dynamically update when increment has changed the value
+   */
+  optionalIncrementKeys = [
+    'startCounter',
+    'status',
+  ];
 
   async created() {
     this.room = this.$route.params.room;
@@ -70,6 +84,10 @@ export default class BattleField extends Vue {
       room: this.room
     })).battle);
 
+    // bind key handler
+    this.keyHandler = ((e) => this.handleUserKey(e.keyCode)).bind(this);
+    window.addEventListener('keydown', this.keyHandler);
+
     this.loading = false;
   }
 
@@ -79,6 +97,7 @@ export default class BattleField extends Vue {
   async beforeDestroy() {
     await battletris.leaveRoom(this.room);
     this.listeners.forEach(listener => listener());
+    window.removeEventListener('keydown', this.keyHandler);
   }
 
   /**
@@ -118,10 +137,50 @@ export default class BattleField extends Vue {
    * @param      {any}  battle  battle obj
    */
   handleBattleIncrement(battle) {
+    // update general data
+    this.optionalIncrementKeys.forEach(key => {
+      if (battle[key]) {
+        this.battle[key] = battle[key];
+      }
+    });
+
+    // parse duration to seconds
     if (battle.duration) {
       this.$set(this.battle, 'duration', Math.round(battle.duration / 1000));
     }
-    this.battle.startCounter = battle.startCounter;
-    this.battle.status = battle.status;
+
+    // update user maps
+    if (battle.users) {
+      Object.keys(battle.users).forEach(connectionId =>
+        Object.keys(battle.users[connectionId]).forEach(key => {
+          // if map or activeBlock was changed, trigger battle map update
+          if (key === 'map' || key === 'activeBlock') {
+            if (battle.users[connectionId][key].length === 4) {
+              console.dir(battle.users[connectionId][key])
+            }
+            this.battleMaps[connectionId].drawBlockMap(
+              battle.users[connectionId][key],
+              this.battle.users[connectionId][key]
+            );
+          }
+
+          // update user content for next round
+          this.battle.users[connectionId][key] = battle.users[connectionId][key];
+        })
+      );
+    }
+  }
+
+  /**
+   * Send user key to backend.
+   */
+  handleUserKey(keyCode: any) {
+    if (this.battle.status === 'started') {
+      battletris.promiseClient.action('battletris/battles-actions', {
+        room: this.room,
+        connectionId: this.connectionId,
+        key: keyCode,
+      });
+    }
   }
 }

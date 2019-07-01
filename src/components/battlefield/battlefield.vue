@@ -80,7 +80,7 @@
                     <div class="row">
                       <div class="col-6 mt-3">
                         <battletris-map
-                          :user="battle.users[connectionId]">
+                          @init="battleMaps[connectionId] = $event">
                         </battletris-map>
                       </div>
                       <div class="col-6 mt-3">
@@ -120,7 +120,7 @@
                             <div class="col-6">
                               <battletris-map
                                 class="w-100"
-                                :user="battle.users[userId]">
+                                @init="battleMaps[connectionId] = $event">
                               </battletris-map>
                             </div>
                             <div class="col-6"

@@ -1,5 +1,5 @@
 import Component, { mixins } from 'vue-class-component';
-import { Vue, Prop } from 'vue-property-decorator';
+import { Vue, Prop, Watch } from 'vue-property-decorator';
 
 import * as battletris from '../../../battletris';
 import Loading from '../../loading/loading.vue';
@@ -10,11 +10,6 @@ import Loading from '../../loading/loading.vue';
   }
 })
 export default class Map extends Vue {
-  /**
-   * Battle user object
-   */
-  @Prop() user;
-
   /**
    * Status flags
    */
@@ -36,19 +31,94 @@ export default class Map extends Vue {
    */
   emptyField: Array<any> = [ ];
 
-  async created() {
+  /**
+   * field size specifications
+   */
+  fieldSize = { width: 0, height: 0, };
+
+  /**
+   * send instance to parent component
+   */
+  created() {
+    this.$emit('init', this);
+  }
+
+  async mounted() {
+    // map room for fast access
     this.room = this.$route.params.room;
 
-    if (!this.user) {
-      for (let y = 0; y < 20; y++) {
-        this.emptyField.push([...Array(10)]);
-      }
-    }
+    // set the correct map size
+    this.handleMapSize();
 
     this.loading = false;
   }
 
   async beforeDestroy() {
     this.listeners.forEach(listener => listener());
+  }
+
+  /**
+   * Gets the correct canvas width / height.
+   */
+  handleMapSize() {
+    this.fieldSize.width = Math.ceil((<any>this.$el).offsetWidth / 10) * 10;
+    this.fieldSize.height = this.fieldSize.width * 2;
+
+    (<any>this.$refs.canvas).width = this.fieldSize.width;
+    (<any>this.$refs.canvas).height = this.fieldSize.height;
+
+    // draw initial field structure
+    const bodyStyle = getComputedStyle(document.body);
+    const colSize = Math.ceil(this.fieldSize.width / 10);
+    const ctx = (<any>this.$refs.canvas).getContext('2d');
+    ctx.strokeStyle = bodyStyle.getPropertyValue('--battletris-block-border');
+    for (let y = 0; y < 20; y++) {
+      for (let x = 0; x < 10; x++) {
+        ctx.strokeRect(x * colSize, y * colSize, colSize, colSize);
+      }
+    }
+  }
+
+  /**
+   * Draw a a map of blocks
+   *
+   * @param      {any}     newMap  new map to draw
+   * @param      {any}     oldMap  old map, that should be resetted
+   * @param      {string}  type    optional type, that should be applied to all the blocks
+   */
+  drawBlockMap(newMap: any, oldMap?: any, reset?: boolean) {
+    // reset the old map by applying type = -1
+    if (oldMap) {
+      this.drawBlockMap(oldMap, null, true);
+    }
+
+    // draw the new map
+    if (newMap) {
+      const bodyStyle = getComputedStyle(document.body);
+      const colSize = Math.ceil(this.fieldSize.width / 10);
+      const ctx = (<any>this.$refs.canvas).getContext('2d');
+      ctx.strokeStyle = bodyStyle.getPropertyValue('--battletris-block-border');
+      // the basic map is the plain array definition, active block will include map and active
+      // position
+      const map = Array.isArray(newMap.map) ? newMap.map : newMap;
+      // use default values for base map
+      const xStart = newMap.x || 0;
+      const yStart = newMap.y || 0;
+
+      // iterate through the map
+      map.forEach((row, rowIndex) => row.forEach((col, colIndex) => {
+        if (col) {
+          // specify draw position
+          const x = xStart + colIndex;
+          const y = yStart + rowIndex;
+
+          ctx.fillStyle = bodyStyle.getPropertyValue(
+            reset ? '--nes-container-bg' : `--battletris-block-bg-${ col.type }`
+          );
+          ctx.fillRect(x * colSize, y * colSize, colSize, colSize);
+          ctx.strokeRect(x * colSize, y * colSize, colSize, colSize);
+        }
+      }));
+    }
   }
 }
