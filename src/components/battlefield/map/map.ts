@@ -66,17 +66,6 @@ export default class Map extends Vue {
 
     (<any>this.$refs.canvas).width = this.fieldSize.width;
     (<any>this.$refs.canvas).height = this.fieldSize.height;
-
-    // draw initial field structure
-    const bodyStyle = getComputedStyle(document.body);
-    const colSize = Math.ceil(this.fieldSize.width / 10);
-    const ctx = (<any>this.$refs.canvas).getContext('2d');
-    ctx.strokeStyle = bodyStyle.getPropertyValue('--battletris-block-border');
-    for (let y = 0; y < 20; y++) {
-      for (let x = 0; x < 10; x++) {
-        ctx.strokeRect(x * colSize, y * colSize, colSize, colSize);
-      }
-    }
   }
 
   /**
@@ -84,12 +73,12 @@ export default class Map extends Vue {
    *
    * @param      {any}     newMap  new map to draw
    * @param      {any}     oldMap  old map, that should be resetted
-   * @param      {string}  type    optional type, that should be applied to all the blocks
+   * @param      {number}  type    optional type, that should be applied to all the blocks
    */
-  drawBlockMap(newMap: any, oldMap?: any, reset?: boolean) {
+  drawBlockMap(newMap: any, oldMap?: any, type?: number) {
     // reset the old map by applying type = -1
     if (oldMap) {
-      this.drawBlockMap(oldMap, null, true);
+      this.drawBlockMap(oldMap, null, -1);
     }
 
     // draw the new map
@@ -113,7 +102,7 @@ export default class Map extends Vue {
           const y = yStart + rowIndex;
 
           ctx.fillStyle = bodyStyle.getPropertyValue(
-            reset ? '--nes-container-bg' : `--battletris-block-bg-${ col.type }`
+            `--battletris-block-bg-${ typeof type !== 'undefined' ? type : col.type }`
           );
           ctx.fillRect(x * colSize, y * colSize, colSize, colSize);
           ctx.strokeRect(x * colSize, y * colSize, colSize, colSize);

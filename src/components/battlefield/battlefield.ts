@@ -155,12 +155,12 @@ export default class BattleField extends Vue {
         Object.keys(battle.users[connectionId]).forEach(key => {
           // if map or activeBlock was changed, trigger battle map update
           if (key === 'map' || key === 'activeBlock') {
-            if (battle.users[connectionId][key].length === 4) {
-              console.dir(battle.users[connectionId][key])
-            }
             this.battleMaps[connectionId].drawBlockMap(
               battle.users[connectionId][key],
-              this.battle.users[connectionId][key]
+              this.battle.users[connectionId][key],
+              // important: the moving active block consists only of a map of 0 and zero, apply the
+              // activeBlock type
+              key === 'activeBlock' ? battle.users[connectionId][key].type : null,
             );
           }
 

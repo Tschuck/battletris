@@ -51,7 +51,8 @@ module.exports = class Battle {
     const type = Math.round(Math.random() * 6);
 
     return {
-      map: blocks[type](),
+      map: blocks[type][0],
+      rotation: 0,
       type,
       x: 3,
       y: 0,
@@ -190,6 +191,11 @@ module.exports = class Battle {
       }
       // up
       case 38: {
+        // if it's not a block, turn it
+        if (activeBlock.type !== 3) {
+          activeBlock.rotation = activeBlock.rotation === 3 ? 0 : activeBlock.rotation + 1;
+          activeBlock.map = blocks[activeBlock.type][activeBlock.rotation];
+        }
         break;
       }
       // right
@@ -209,7 +215,7 @@ module.exports = class Battle {
     await api.chatRoom.broadcast({}, this.roomName, {
       type: 'battle-increment',
       battle: {
-        users
+        users,
       },
     });
   }
