@@ -102,7 +102,7 @@ export default class Map extends Vue {
           const y = yStart + rowIndex;
 
           ctx.fillStyle = bodyStyle.getPropertyValue(
-            `--battletris-block-bg-${ typeof type !== 'undefined' ? type : col.type }`
+            `--battletris-block-bg-${ type || type === 0 ? type : col.type }`
           );
           ctx.fillRect(x * colSize, y * colSize, colSize, colSize);
           ctx.strokeRect(x * colSize, y * colSize, colSize, colSize);

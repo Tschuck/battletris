@@ -10,7 +10,7 @@
 
       <div class="col col-md-9 col-xl-9 mt-md-0 h-100 py-2 overflow-auto">
         <loading v-if="loading || error" :error="error"></loading>
-        <template v-else>
+        <template v-else-if="!reloading">
           <div class="nes-container with-title w-100">
             <p class="title">
               {{ $t('battlefield', { index: parseInt(room.replace('field', '')) + 1 }) }}
@@ -51,7 +51,7 @@
                       </button>
                       <button type="button" class="nes-btn is-success"
                         @click="setBattleStatus('accept')"
-                        v-if="!battle.accepted[connectionId]">
+                        v-if="battle.users[connectionId].status !== 'accepted'">
                         {{ 'battle.start' | translate }}
                       </button>
                     </template>
@@ -84,6 +84,10 @@
                         </battletris-map>
                       </div>
                       <div class="col-6 mt-3">
+                        <battletris-user-status
+                          :battle="battle"
+                          :user="battle.users[connectionId]">
+                        </battletris-user-status>
                       </div>
                     </div>
                   </div>
@@ -102,11 +106,8 @@
                         'col-6': battle.users[connectionId],
                         'col-4': !battle.users[connectionId],
                       }"
-                      v-for="(userId, index) in [ ].concat(
-                        Object.keys(battle.users),
-                        fillUserCounter
-                      )"
-                      v-if="!userId || userId !== connectionId">
+                      v-for="(userId, index) in Object.keys(battle.users)"
+                      v-if="userId !== connectionId && roomDetails.users[userId]">
                       <div class="nes-container">
                         <p class="title" v-if="userId && roomDetails.users">
                           {{ roomDetails.users[userId].name }}
@@ -120,15 +121,15 @@
                             <div class="col-6">
                               <battletris-map
                                 class="w-100"
-                                @init="battleMaps[connectionId] = $event">
+                                @init="battleMaps[userId] = $event">
                               </battletris-map>
                             </div>
                             <div class="col-6"
                               v-if="userId">
-                              <div>
-                                {{ 'battle.status' | translate }}:
-                                {{ (battle.accepted[userId] ? 'battle.accepted' : 'battle.accepting') | translate }}
-                              </div>
+                              <battletris-user-status
+                                :battle="battle"
+                                :user="battle.users[userId]">
+                              </battletris-user-status>
                             </div>
                           </div>
                         </div>

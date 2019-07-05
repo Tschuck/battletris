@@ -17,9 +17,15 @@ module.exports = class Rooms extends Action {
 
   async run (data) {
     if (data.params.room) {
-      data.response.battle = api.battletris.battles[data.params.room];  
+      data.response.battle = api.battletris.battles[data.params.room].getJSON();
     } else {
-      data.response.battles = api.battletris.battles;  
+      const battles = {};
+
+      Object
+        .keys(api.battletris.battles)
+        .forEach(battleKey => battles[battleKey] = api.battletris.battles[battleKey].getJSON());
+
+      data.response.battles = battles;  
     }
   }
 }

@@ -17,7 +17,6 @@ module.exports = class Battletris extends Initializer {
 
   async initialize () {
     api.battletris = {
-      battleInstances: { },
       battles: { },
       rooms: { },
     };
@@ -54,11 +53,13 @@ module.exports = class Battletris extends Initializer {
       api.battletris.rooms[`tavern`] = generateRoom();
       await api.chatRoom.add('tavern', () => { });
     } catch (ex) {}
-    for (let i = 0; i < api.config.battletris.rooms; i++) {
+    for (let i = 0; i < api.config.battletris.battlefields; i++) {
+      const roomName = `field${ i }`;
+
       try {
-        api.battletris.rooms[`field${ i }`] = generateRoom();
-        api.battletris.battles[`field${ i }`] = Battle.generateBattle();
-        await api.chatRoom.add(`field${ i }`, () => { });
+        api.battletris.rooms[roomName] = generateRoom();
+        api.battletris.battles[roomName] = new Battle(roomName);
+        await api.chatRoom.add(roomName, () => { });
       } catch (ex) { }
     }
 

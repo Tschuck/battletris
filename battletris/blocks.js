@@ -1,3 +1,8 @@
+/**
+ * Array of block definitions
+ *   - first level: block turns, seperated into 4 turns
+ *   - seconds level: map of the block 
+ */
 module.exports = [
   // 4 in a row
   [

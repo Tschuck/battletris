@@ -5,11 +5,13 @@ import * as battletris from '../../battletris';
 import Loading from '../loading/loading.vue';
 import Panel from '../panel/panel.vue';
 import Map from './map/map.vue';
+import BattleUserStatus from './status/status.vue';
 
 @Component({
   components: {
     'battletris-map': Map,
     'battletris-panel': Panel,
+    'battletris-user-status': BattleUserStatus,
     'loading': Loading,
   }
 })
@@ -18,6 +20,7 @@ export default class BattleField extends Vue {
    * Status flags
    */
   loading = true;
+  reloading = false;
   error = '';
 
   /**
@@ -32,11 +35,6 @@ export default class BattleField extends Vue {
   room = '';
   roomDetails = null;
   battle = null;
-
-  /**
-   * Used for iterate to maxUsers
-   */
-  fillUserCounter = [ ];
 
   /**
    * Connection id
@@ -85,7 +83,7 @@ export default class BattleField extends Vue {
     })).battle);
 
     // bind key handler
-    this.keyHandler = ((e) => this.handleUserKey(e.keyCode)).bind(this);
+    this.keyHandler = ((e) => this.handleUserKey(e)).bind(this);
     window.addEventListener('keydown', this.keyHandler);
 
     this.loading = false;
@@ -115,6 +113,12 @@ export default class BattleField extends Vue {
    */
   async setBattleStatus(status: string) {
     await battletris.roomAction(this.room, `battle-${ status }`);
+
+    // just refresh the ui using the latest value
+    // if (status === 'accept') {
+    //   this.reloading = true;
+    //   setTimeout(() => this.reloading = false);
+    // }
   }
 
   /**
@@ -123,12 +127,12 @@ export default class BattleField extends Vue {
    * @param      {any}  battle  The battle
    */
   handleBattleUpdate(battle: any) {
+    if (this.battle) {
+      this.handleBattleIncrement(battle);
+    }
+
+    // just update the battle after the old field was cleared
     this.battle = battle;
-    this.fillUserCounter = [...Array(
-      this.roomDetails.config.maxUsers -
-      Object.keys(this.battle.users).length
-    )];
-    this.handleBattleIncrement(battle);
   }
 
   /**
@@ -151,36 +155,45 @@ export default class BattleField extends Vue {
 
     // update user maps
     if (battle.users) {
-      Object.keys(battle.users).forEach(connectionId =>
-        Object.keys(battle.users[connectionId]).forEach(key => {
-          // if map or activeBlock was changed, trigger battle map update
-          if (key === 'map' || key === 'activeBlock') {
-            this.battleMaps[connectionId].drawBlockMap(
-              battle.users[connectionId][key],
-              this.battle.users[connectionId][key],
-              // important: the moving active block consists only of a map of 0 and zero, apply the
-              // activeBlock type
-              key === 'activeBlock' ? battle.users[connectionId][key].type : null,
-            );
-          }
+      Object.keys(battle.users).forEach(connectionId => {
+        if (this.battleMaps[connectionId] &&
+            this.battleMaps[connectionId].$refs &&
+            this.battle.users[connectionId]) {
+          Object.keys(battle.users[connectionId]).forEach(key => {
+            // if map or activeBlock was changed, trigger battle map update
+            if (key === 'map' || key === 'activeBlock') {
+              this.battleMaps[connectionId].drawBlockMap(
+                battle.users[connectionId][key],
+                this.battle.users[connectionId][key],
+                // important: the moving active block consists only of a map of 0 and zero, apply the
+                // activeBlock type
+                key === 'activeBlock' ? battle.users[connectionId][key].type : null,
+              );
+            }
 
-          // update user content for next round
-          this.battle.users[connectionId][key] = battle.users[connectionId][key];
-        })
-      );
+            // update user content for next round, could be undefined by joining a room
+            this.battle.users[connectionId][key] = battle.users[connectionId][key];
+          });
+        }
+      });
     }
   }
 
   /**
    * Send user key to backend.
    */
-  handleUserKey(keyCode: any) {
+  handleUserKey($event: any) {
     if (this.battle.status === 'started') {
       battletris.promiseClient.action('battletris/battles-actions', {
         room: this.room,
         connectionId: this.connectionId,
-        key: keyCode,
+        key: $event.keyCode,
       });
+
+      // stop event handling
+      $event.stopPropagation();
+      $event.preventDefault();
+      return false;
     }
   }
 }

@@ -1,15 +1,21 @@
 /* tslint:disable */
 export default {
   "battle": {
-    "accepted": "Accepted",
-    "accepting": "Accepting...",
     "duration": "Duration",
     "join": "Join Battle",
     "leave": "Leave Battle",
+    "mana": "Mana",
+    "rows": "Rows",
     "start": "Start Battle",
     "starting": "Battle starts...",
     "status": "Status",
     "stop": "Stop Battle",
+    "user-status": {
+      "accepted": "Accepted",
+      "lost": "You lost!",
+      "open": "Joined",
+      "won": "You won!"
+    },
     "waiting": "Waiting for opponents..."
   },
   "battlefield": "Battlefield {index}",
@@ -23,8 +29,10 @@ export default {
   "config": "Configuration",
   "go-to-tavern": "Back to Tavern",
   "loading": "loading...",
+  "mana": "Mana",
   "members": "Warriors",
   "message": "Message",
+  "rows": "Rows",
   "send-message": "Send",
   "tavern": "Tavern",
   "theme": "Theme",

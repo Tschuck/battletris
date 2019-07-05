@@ -48,12 +48,6 @@ async function roomHandler(connectionId, room, type, payload) {
       }
       case 'room-leave': {
         delete roomDetail.users[connectionId];
-
-        if (battle) {
-          delete battle.users[connectionId];
-          delete battle.accepted[connectionId];
-        }
-
         updates.users = true;
 
         break
@@ -63,47 +57,45 @@ async function roomHandler(connectionId, room, type, payload) {
     // only check, if battle is available (e.g. disabled for tavern)
     if (battle) {
       switch (type) {
+        case 'room-leave': {
+          battle.leave(connectionId);
+          break;
+        }
         case 'battle-join': {
-          battle.users[connectionId] = Battle.generateBattleUser(connectionId);
-          updates.battle = true;
-
+          battle.join(connectionId);
           break
         }
         case 'battle-accept': {
-          battle.users[connectionId] = battle.users[connectionId] ||
-            Battle.generateBattleUser(connectionId);
-          battle.accepted[connectionId] = true;
-          updates.battle = true;
-
-          break
+          battle.users[connectionId].status = 'accepted';
+          // force a map reset
+          battle.join(connectionId, battle.users[connectionId]);
+          break;
         }
         case 'battle-leave': {
-          delete battle.users[connectionId];
-          delete battle.accepted[connectionId];
-          updates.battle = true;
-
-          break
+          battle.leave(connectionId);
+          break;
         }
         case 'battle-stop': {
-          if (api.battletris.battleInstances[room]) {
-            api.battletris.battleInstances[room].stop();
-          }
-          updates.battle = true;
-
-          break
+          battle.stop();
+          break;
         }
+      }
+
+      // if it's a battle action, just set battle update
+      if (type.startsWith('battle-') || type === 'room-leave') {
+        updates.battle = true;
       }
 
       // check if everyone has accepted the battle, then start it!
-      if (battle.status === 'open') {
+      if (battle.status === 'open' && type !== 'battle-stop') {
         const battleUserCount = Object.keys(battle.users).length;
-        if (battleUserCount > 0 && Object.keys(battle.accepted).length === battleUserCount) {
-          api.battletris.battleInstances[room] = new Battle(room);
-          api.battletris.battleInstances[room].start();
+        const accepted = Object.keys(battle.users)
+          .filter(userKey => battle.users[userKey].status === 'accepted');
+        if (battleUserCount > 0 &&  accepted.length === battleUserCount) {
+          battle.start();
         }
       }
     }
-
 
     // if users were updated, send the data into the network
     if (updates.users) {
@@ -134,7 +126,7 @@ async function roomHandler(connectionId, room, type, payload) {
       // broadcast the users everywhere
       await api.chatRoom.broadcast({}, room, {
         type: 'battle',
-        battle: api.battletris.battles[room],
+        battle: api.battletris.battles[room].getJSON(),
       });
     }
   } catch (ex) {
