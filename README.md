@@ -3,7 +3,9 @@
 RPG based multiplayer tetris using actionhero, vue.js and nes.css.
 
 ![battletris](https://github.com/tschuck/battletris/raw/develop/img/battletris.png)
-![battletris](https://github.com/tschuck/battletris/raw/develop/img/battletris.mp4)
+
+
+Have a look at the [gamplay video](https://github.com/tschuck/battletris/raw/develop/img/battletris.mp4)
 
 ## To install:
 (assuming you have [node](http://nodejs.org/) and NPM installed)
