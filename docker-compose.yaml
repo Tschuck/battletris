@@ -1,0 +1,22 @@
+version: '2'
+services:
+  redis:
+    image: redis
+    container_name: redis
+  battletris:
+    image: sebdechant/battletris
+    command: "npm start"
+    container_name: battletris
+    ports:
+     - "8080:666"
+    depends_on:
+      - redis
+    links:
+      - redis
+    environment:
+      TCP_PORTS: 8080
+      ENABLE_TCP_SERVER: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+
