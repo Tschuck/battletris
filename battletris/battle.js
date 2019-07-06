@@ -334,6 +334,23 @@ module.exports = class Battle {
         if (clearedRows) {
           battleUser.rows = increment.rows = battleUser.rows + clearedRows;
           battleUser.mana = increment.mana = battleUser.mana + (clearedRows * 5);
+
+          // add rows to the bottom of all oponents, when more than one line was removed
+          const userKeys = Object.keys(this.users).filter(userKey => userKey !== connectionId);
+          for (let i = 0; i < (clearedRows - 1); i++) {
+            // create a filled row that should be added to the others
+            const emptyRow = [ ];
+            for (let i = 0; i < 10; i++) {
+              emptyRow.push({ type: 7 });
+            }
+            // clear one column
+            emptyRow[Math.ceil(Math.random() * 10)] = null;
+            userKeys.forEach(userKey => {
+              // add the new row and remove the first row
+              this.users[userKey].map.push(emptyRow);
+              this.users[userKey].map.splice(0, 1);
+            });
+          }
         }
 
         // update the map[]

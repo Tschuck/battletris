@@ -6,6 +6,7 @@ export default {
     "leave": "Leave Battle",
     "mana": "Mana",
     "rows": "Rows",
+    "speed": "Speed",
     "start": "Start Battle",
     "starting": "Battle starts...",
     "status": "Status",

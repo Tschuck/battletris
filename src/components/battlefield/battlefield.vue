@@ -16,7 +16,7 @@
               {{ $t('battlefield', { index: parseInt(room.replace('field', '')) + 1 }) }}
             </p>
 
-            <div class="container-fluid p-0 mt-3">
+            <div class="container-fluid p-0 mt-3" v-if="battle">
               <div class="row">
                 <div class="col-6">
                   <p>
@@ -30,6 +30,10 @@
                   <template v-if="battle.status === 'started'">
                     <p>{{ 'battle.duration' | translate }}: {{ battle.duration }}s</p>
                   </template>
+                  <p>
+                    {{ `battle.speed` | translate }}:
+                    {{ battle.config.gameLoopTimeout }}
+                  </p>
                 </div>
 
                 <div class="col-6 text-right">

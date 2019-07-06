@@ -50,6 +50,7 @@ export default class BattleField extends Vue {
    * dynamically update when increment has changed the value
    */
   optionalIncrementKeys = [
+    'config',
     'startCounter',
     'status',
   ];
