@@ -1,6 +1,12 @@
 .battletris-dark {
   --battletris-bg: #5e6264;
+   // reset color
   --battletris-block-bg--1: var(--nes-container-bg);
+  // opponent stacked blocks
+  --battletris-block-bg--2: #808080;
+  // next dock block preview
+  --battletris-block-bg--3: rgba(58, 232, 255, 0.3);
+  // block colors
   --battletris-block-bg-0: #00f0f2;
   --battletris-block-bg-1: #1002ea;
   --battletris-block-bg-2: #eea102;
@@ -8,7 +14,6 @@
   --battletris-block-bg-4: #03f000;
   --battletris-block-bg-5: #9f00e8;
   --battletris-block-bg-6: #f10000;
-  --battletris-block-bg-7: #808080;
   --battletris-block-border: #212529;
   --nes-container-bg: #212529;
   --nes-container-border: #fff;

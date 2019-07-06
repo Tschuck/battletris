@@ -1,5 +1,6 @@
 import Component, { mixins } from 'vue-class-component';
 import { Vue } from 'vue-property-decorator';
+import * as mapHandler from '../../../battletris/mapHandler';
 
 import * as battletris from '../../battletris';
 import Loading from '../loading/loading.vue';
@@ -47,6 +48,11 @@ export default class BattleField extends Vue {
   battleMaps: any = { };
 
   /**
+   * Block for previewing the user the next dock position
+   */
+  previewBlock: Array<Array<any>> = [[]];
+
+  /**
    * dynamically update when increment has changed the value
    */
   optionalIncrementKeys = [
@@ -56,6 +62,7 @@ export default class BattleField extends Vue {
   ];
 
   async created() {
+    console.dir(mapHandler)
     this.room = this.$route.params.room;
     this.connectionId = battletris.wsClient.id;
 
@@ -110,16 +117,28 @@ export default class BattleField extends Vue {
   }
 
   /**
+   * Send user key to backend.
+   */
+  handleUserKey($event: any) {
+    if (this.battle.status === 'started') {
+      battletris.promiseClient.action('battletris/battles-actions', {
+        room: this.room,
+        connectionId: this.connectionId,
+        key: $event.keyCode,
+      });
+
+      // stop event handling
+      $event.stopPropagation();
+      $event.preventDefault();
+      return false;
+    }
+  }
+
+  /**
    * Join / leave the battle
    */
   async setBattleStatus(status: string) {
     await battletris.roomAction(this.room, `battle-${ status }`);
-
-    // just refresh the ui using the latest value
-    // if (status === 'accept') {
-    //   this.reloading = true;
-    //   setTimeout(() => this.reloading = false);
-    // }
   }
 
   /**
@@ -160,6 +179,29 @@ export default class BattleField extends Vue {
         if (this.battleMaps[connectionId] &&
             this.battleMaps[connectionId].$refs &&
             this.battle.users[connectionId]) {
+          // generate preview block for next dock position; IMPORTANT: run this function before
+          // rendering the new map / activeBlock, instead the block will be overwritten
+          if (connectionId === this.connectionId) {
+            // current battle user will not be updated at this point, just redraw the preview with
+            // the latest value, from the current new battle update or from the previous battle
+            // instance
+            const newPreviewBlock = mapHandler.getDockPreview(
+              battle.users[this.connectionId].map || this.battle.users[this.connectionId].map,
+              battle.users[this.connectionId].activeBlock || this.battle.users[this.connectionId].activeBlock,
+            );
+
+            // draw the block preview
+            this.battleMaps[this.connectionId].drawBlockMap(
+              newPreviewBlock,
+              this.previewBlock,
+              -3,
+            );
+
+            // update the current preview block, after the old one was cleared and the new one drawed
+            this.previewBlock = newPreviewBlock;
+          }
+
+          // apply all changed keys to the users status
           Object.keys(battle.users[connectionId]).forEach(key => {
             // if map or activeBlock was changed, trigger battle map update
             if (key === 'map' || key === 'activeBlock') {
@@ -177,24 +219,6 @@ export default class BattleField extends Vue {
           });
         }
       });
-    }
-  }
-
-  /**
-   * Send user key to backend.
-   */
-  handleUserKey($event: any) {
-    if (this.battle.status === 'started') {
-      battletris.promiseClient.action('battletris/battles-actions', {
-        room: this.room,
-        connectionId: this.connectionId,
-        key: $event.keyCode,
-      });
-
-      // stop event handling
-      $event.stopPropagation();
-      $event.preventDefault();
-      return false;
     }
   }
 }

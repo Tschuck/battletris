@@ -243,8 +243,8 @@ module.exports = class Battle {
    */
   async userAction(connectionId, key) {
     const battleUser = this.users[connectionId];
-    const originBlock = battleUser.activeBlock;
-    const activeBlock = JSON.parse(JSON.stringify(originBlock));
+    let originBlock = battleUser.activeBlock;
+    let activeBlock = JSON.parse(JSON.stringify(originBlock));
 
     // setup update increment 
     const users = {};
@@ -280,10 +280,21 @@ module.exports = class Battle {
         increment.activeBlock = activeBlock;
         break;
       }
+      // press space
+      case 32: {
+        // move the original block to the next dock position
+        originBlock = mapHandler.getDockPreview(battleUser.map, activeBlock);
+        // assign the new original block to the current battleUser active block position, so the
+        // collision logic will render this block as docked
+        activeBlock = JSON.parse(JSON.stringify(originBlock));
+        // after this, increase the y position by one, so a collision will be generated
+        activeBlock.y++;
+        break;
+      }
     }
 
     // check if the action can be performed
-    const collision = mapHandler.collision(battleUser.map, activeBlock, battleUser.activeBlock);
+    const collision = mapHandler.checkForCollision(battleUser.map, activeBlock, battleUser.activeBlock);
     switch (collision) {
       // if the stone movement was invalid, stop it!
       case 'invalid': {
@@ -341,7 +352,7 @@ module.exports = class Battle {
             // create a filled row that should be added to the others
             const emptyRow = [ ];
             for (let i = 0; i < 10; i++) {
-              emptyRow.push({ type: 7 });
+              emptyRow.push({ type: -2 });
             }
             // clear one column
             emptyRow[Math.ceil(Math.random() * 10)] = null;

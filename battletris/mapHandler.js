@@ -10,11 +10,13 @@ const _ = require('lodash');
  * @return     {(boolean|string)}   false for no collision, invalid for collision, docked for docked
  *                                  to another stone
  */
-function collision(map, activeBlock, originalBlock) {
+function checkForCollision(map, activeBlock, originalBlock) {
   // disabled docking when x hash changed, it would dock stones on horizontal blocks
-  const detectDocking = 
-    activeBlock.x === originalBlock.x &&
-    _.isEqual(activeBlock.map, originalBlock.map);
+  const detectDocking = !originalBlock ||
+    (
+      activeBlock.x === originalBlock.x &&
+      _.isEqual(activeBlock.map, originalBlock.map)
+    );
 
   // iterate through the activeBlock map
   for (let y = 0; y < activeBlock.map.length; y++) {
@@ -80,7 +82,30 @@ function clearFullRows(map) {
   return counter;
 }
 
+/**
+ * Try to detect the next dock position, where the active block can be docked to.
+ *
+ * @param      {Array<Array<any>>}  map          map definition (20x10)
+ * @param      {Array<Array<any>>}  activeBlock  active block map
+ * @return     {activeBlock}             the block moved to the next docked position
+ */
+function getDockPreview(map, activeBlock) {
+  const blockCopy = JSON.parse(JSON.stringify(activeBlock));
+  let docked;
+
+  // move block down until it reached a dock point
+  while (!docked) {
+    blockCopy.y++;
+    docked = checkForCollision(map, blockCopy) === 'docked';
+  }
+
+  // reduce blockCopy y value by one, so the last previous position without any collision
+  blockCopy.y--;
+  return blockCopy;
+}
+
 module.exports = {
+  checkForCollision,
   clearFullRows,
-  collision,
+  getDockPreview,
 };

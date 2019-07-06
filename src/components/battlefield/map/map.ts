@@ -73,9 +73,10 @@ export default class Map extends Vue {
    *
    * @param      {any}     newMap  new map to draw
    * @param      {any}     oldMap  old map, that should be resetted
-   * @param      {number}  type    optional type, that should be applied to all the blocks
+   * @param      {number}  type    optional type (especially the color), that should be applied to
+   *                               all the blocks
    */
-  drawBlockMap(newMap: any, oldMap?: any, type?: number) {
+  drawBlockMap(newMap: any, oldMap?: any, type?: any) {
     // reset the old map by applying type = -1
     if (oldMap) {
       this.drawBlockMap(oldMap, null, -1);
