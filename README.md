@@ -1,6 +1,8 @@
-# My actionhero Project
+# Battletris
 
-*visit www.actionherojs.com for more information*
+RPG based multiplayer tetris using actionhero, vue.js and nes.css.
+
+![battletirs](https://github.com/tschuck/battletris/raw/master/img/sample.png)
 
 ## To install:
 (assuming you have [node](http://nodejs.org/) and NPM installed)
@@ -14,12 +16,7 @@
 `npm test`
 
 
-## Concept
-- tavern => name, change class
-- battlefields
-- drinks
-  - beer => fill up mana (wiggle field)
-  - 
+## Ideas for the fucture
 - classes
   - ideas
     - 4 spells (qwer)
