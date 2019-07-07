@@ -36,23 +36,10 @@ body.battletris {
     flex-direction: column;
 
     border: 1px solid gray;
+  }
 
-    .map-row {
-      display: flex;
-      flex-direction: row;
-
-      .map-column {
-        width: 10%;
-
-        // http://www.mademyday.de/css-height-equals-width-with-pure-css.html
-        &:before {
-          display: block;
-
-          padding-top: 100%;  /* initial ratio of 1:1*/
-
-          content: '';
-        }
-      }
-    }
+  .container-fluid {
+    width: 100%;
+    padding-right: 10px;
   }
 }

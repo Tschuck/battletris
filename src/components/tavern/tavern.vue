@@ -1,8 +1,7 @@
 <template>
   <div class="container-fluid w-100 h-100">
-    <div class="row h-100">
-
-      <div class="col col-md-5 col-xl-3 h-100 d-flex flex-column overflow-hidden">
+    <div class="row h-100 d-flex">
+      <div class="col col-md-5 col-xl-3 h-100 overflow-hidden">
         <battletris-panel :room="'tavern'"></battletris-panel>
       </div>
 

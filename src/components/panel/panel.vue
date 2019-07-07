@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-100 d-flex flex-column">
     <div class="d-flex p-2" v-if="tavernLink">
       <div class="nes-container w-100 with-title">
         <p class="title">
