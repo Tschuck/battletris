@@ -61,8 +61,16 @@ export default class Map extends Vue {
    * Gets the correct canvas width / height.
    */
   handleMapSize() {
-    this.fieldSize.width = Math.ceil((<any>this.$el).offsetWidth / 10) * 10;
+    const $el = (<any>this.$el)
+
+    this.fieldSize.width = $el.offsetWidth - 5;
     this.fieldSize.height = this.fieldSize.width * 2;
+
+    // never size the height greater than the container
+    if (this.fieldSize.height > $el.offsetHeight) {
+      this.fieldSize.height = $el.offsetHeight - 3;
+      this.fieldSize.width = this.fieldSize.height / 2;
+    }
 
     (<any>this.$refs.canvas).width = this.fieldSize.width;
     (<any>this.$refs.canvas).height = this.fieldSize.height;
@@ -85,7 +93,7 @@ export default class Map extends Vue {
     // draw the new map
     if (newMap) {
       const bodyStyle = getComputedStyle(document.body);
-      const colSize = Math.ceil(this.fieldSize.width / 10);
+      const colSize = this.fieldSize.width / 10;
       const ctx = (<any>this.$refs.canvas).getContext('2d');
       ctx.strokeStyle = bodyStyle.getPropertyValue('--battletris-block-border');
       // the basic map is the plain array definition, active block will include map and active

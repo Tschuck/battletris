@@ -1,21 +1,12 @@
 <template>
-  <div class="container-fluid w-100 h-100">
-    <div class="row h-100">
-      <div class="col col-md-3 col-xl-3 h-100 d-flex flex-column overflow-hidden">
-        <battletris-panel
-          :room="room"
-          :tavernLink="true">
-        </battletris-panel>
-      </div>
-
-      <div class="col col-md-9 col-xl-9 mt-md-0 h-100 py-2 overflow-auto">
-        <loading v-if="loading || error" :error="error"></loading>
-        <template v-else-if="!reloading">
-          <div class="nes-container with-title w-100">
+  <div class="w-100 h-100 d-flex">
+    <battletris-panel :room="room">
+      <template v-slot:panel-start>
+        <div class="d-flex pb-2">
+          <div class="nes-container w-100 with-title">
             <p class="title">
               {{ $t('battlefield', { index: parseInt(room.replace('field', '')) + 1 }) }}
             </p>
-
             <div class="container-fluid p-0 mt-3" v-if="battle">
               <div class="row">
                 <div class="col-6">
@@ -61,91 +52,76 @@
                     </template>
                   </template>
 
-                  <template v-else>
+                  <!-- <template v-else>
                     <button type="button" class="nes-btn is-error"
                       @click="setBattleStatus('stop')">
                       {{ 'battle.stop' | translate }}
                     </button>
-                  </template>
+                  </template> -->
                 </div>
               </div>
             </div>
-          </div>
-          <div class="container-fluid p-0 mt-3">
-            <div class="row">
-              <div class="col-6"
-                v-if="battle.users[connectionId]">
-                <div class="nes-container with-title w-100">
-                  <p class="title">
-                    {{ roomDetails.users[connectionId].name }}
-                  </p>
-                  
-                  <div class="container-fluid px-0">
-                    <div class="row">
-                      <div class="col-6 mt-3">
-                        <battletris-map
-                          @init="battleMaps[connectionId] = $event">
-                        </battletris-map>
-                      </div>
-                      <div class="col-6 mt-3">
-                        <battletris-user-status
-                          :battle="battle"
-                          :user="battle.users[connectionId]">
-                        </battletris-user-status>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-              <div :class="{
-                  'col-12': !battle.users[connectionId],
-                  'col-6': battle.users[connectionId],
-                }">
-                <div class="container-fluid px-0">
-                  <div class="row">
-                    <div
-                      class="mb-3"
-                      :class="{
-                        'col-6': battle.users[connectionId],
-                        'col-4': !battle.users[connectionId],
-                      }"
-                      v-for="(userId, index) in Object.keys(battle.users)"
-                      v-if="userId !== connectionId && roomDetails.users[userId]">
-                      <div class="nes-container">
-                        <p class="title" v-if="userId && roomDetails.users">
-                          {{ roomDetails.users[userId].name }}
-                        </p>
-                        <p class="title" v-else>
-                          {{ $t('user', { index: index + 1 }) }}
-                        </p>
-
-                        <div class="container-fluid p-0">
-                          <div class="row">
-                            <div class="col-6">
-                              <battletris-map
-                                class="w-100"
-                                @init="battleMaps[userId] = $event">
-                              </battletris-map>
-                            </div>
-                            <div class="col-6"
-                              v-if="userId">
-                              <battletris-user-status
-                                :battle="battle"
-                                :user="battle.users[userId]">
-                              </battletris-user-status>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div class="w-100 text-right mt-3 pt-3 border-top">
+              <button type="button" class="nes-btn"
+                @click="$router.push({ path: '/tavern' })">
+                {{ 'go-to-tavern' | translate }}
+              </button>
             </div>
           </div>
-        </template>
-      </div>
+        </div>
+      </template>
+    </battletris-panel>
+
+    <div class="w-100 mt-md-0 h-100 d-flex overflow-auto">
+      <loading v-if="loading || error" :error="error"></loading>
+      <template v-else-if="!reloading">
+        <div class="nes-container with-title w-100 h-100"
+          v-if="battle.users[connectionId]">
+          <p class="title">
+            {{ roomDetails.users[connectionId].name }}
+          </p>
+            
+          <div class="h-100 d-flex flex-column">
+            <battletris-user-status
+              :battle="battle"
+              :user="battle.users[connectionId]">
+            </battletris-user-status>
+            <battletris-map
+              class="w-100 mt-3"
+              style="height: calc(100% - 200px); min-width: 500px"
+              @init="battleMaps[connectionId] = $event">
+            </battletris-map>
+          </div>
+        </div>
+        <div class="h-100 d-flex flex-wrap"
+          :style="{
+            'min-width': `${ getUserContainerSize() }px`,
+            'max-width': `${ getUserContainerSize() }px`,
+          }">
+          <div class="nes-container"
+            style="min-width: 300px; height: 50%;"
+            v-for="(userId, index) in Object.keys(battle.users)"
+            v-if="userId !== connectionId && roomDetails.users[userId]">
+            <p class="title" v-if="userId && roomDetails.users">
+              {{ roomDetails.users[userId].name }}
+            </p>
+            <p class="title" v-else>
+              {{ $t('user', { index: index + 1 }) }}
+            </p>
+            <div class="h-100 d-flex flex-column">
+              <battletris-user-status
+                :battle="battle"
+                :user="battle.users[userId]">
+              </battletris-user-status>
+              <battletris-map
+                class="w-100 h-100 mt-3"
+                @init="battleMaps[userId] = $event">
+              </battletris-map>
+            </div>
+          </div>
+        </div>
+      </template>
     </div>
   </div>
 </template>

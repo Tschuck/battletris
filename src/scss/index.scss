@@ -32,10 +32,11 @@ body.battletris {
   }
 
   .battletris-map {
-    display: flex;
-    flex-direction: column;
+    text-align: center;
 
-    border: 1px solid gray;
+    canvas {
+      border: 1px solid gray;
+    }
   }
 
   .container-fluid {

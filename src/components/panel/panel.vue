@@ -1,25 +1,15 @@
 <template>
-  <div class="h-100 d-flex flex-column">
-    <div class="d-flex p-2" v-if="tavernLink">
-      <div class="nes-container w-100 with-title">
-        <p class="title">
-          {{ 'tavern' | translate }}
-        </p>
-
-        <button type="button" class="nes-btn is-primary"
-          @click="$router.push({ path: '/tavern' })">
-          {{ 'go-to-tavern' | translate }}
-        </button>
-      </div>
-    </div>
-    <div class="d-flex p-2">
+  <div class="h-100 d-flex flex-column"
+    style="min-width: 350px; width: 350px;">
+    <slot name="panel-start"></slot>
+    <div class="d-flex pb-2">
       <battletris-config
         class="w-100"
         :room="room">
       </battletris-config>
     </div>
 
-    <div class="d-flex p-2">
+    <div class="d-flex pb-2">
       <battletris-users
         class="w-100"
         style="max-height: 250px;"
@@ -27,7 +17,7 @@
       </battletris-users>
     </div>
 
-    <div class="d-flex p-2" style="flex: 1">
+    <div class="d-flex" style="flex: 1">
       <battletris-chat
         class="w-100"
         :room="room">

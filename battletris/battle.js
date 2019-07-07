@@ -87,7 +87,7 @@ module.exports = class Battle {
 
     // clear previous active block, so a old one does not will be displayed during start a new game
     // set it to an empty array to force reloading
-    user.activeBlock = [ ];
+    user.activeBlock = [[]];
 
     // apply the user to the battle
     this.users[connectionId] = user;
@@ -100,6 +100,11 @@ module.exports = class Battle {
    */
   leave(connectionId) {
     delete this.users[connectionId];
+
+    // if all users have left the game, stop it
+    if (Object.keys(this.users).length === 0) {
+      this.stop();
+    }
   }
 
   /**
@@ -200,21 +205,9 @@ module.exports = class Battle {
     Object.keys(this.users).forEach((connectionId) => {
       // user has not left the game during game loop
       if (this.users[connectionId]) {
-        // TODO: implement next stone generation
-        if (this.users[connectionId].blockIndex === -1) {
-           this.setNextBlock(connectionId);
-        } else {
-          // move block down
-          this.userAction(connectionId, 40);
-        }
+        // move block down
+        this.userAction(connectionId, 40);
       }
-    });
-
-    await api.chatRoom.broadcast({}, this.roomName, {
-      type: 'battle-increment',
-      battle: {
-        ...this.getJSON(),
-      },
     });
   }
 
@@ -242,6 +235,10 @@ module.exports = class Battle {
    * @return     {Promise}  { description_of_the_return_value }
    */
   async userAction(connectionId, key) {
+    if (this.users[connectionId].blockIndex === -1) {
+      this.setNextBlock(connectionId);
+    }
+
     const battleUser = this.users[connectionId];
     let originBlock = battleUser.activeBlock;
     let activeBlock = JSON.parse(JSON.stringify(originBlock));

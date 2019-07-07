@@ -19,11 +19,4 @@ export default class BattletrisPanel extends Vue {
    * room name that should be watched
    */
   @Prop() room;
-
-  /**
-   * Show tavern back button
-   */
-  @Prop({
-    default: false
-  }) tavernLink;
 }

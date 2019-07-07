@@ -62,7 +62,6 @@ export default class BattleField extends Vue {
   ];
 
   async created() {
-    console.dir(mapHandler)
     this.room = this.$route.params.room;
     this.connectionId = battletris.wsClient.id;
 
@@ -179,46 +178,76 @@ export default class BattleField extends Vue {
         if (this.battleMaps[connectionId] &&
             this.battleMaps[connectionId].$refs &&
             this.battle.users[connectionId]) {
+          const renderPreview = () => {
+            if (connectionId === this.connectionId &&
+                battle.status === 'started') {
+              // current battle user will not be updated at this point, just redraw the preview with
+              // the latest value, from the current new battle update or from the previous battle
+              // instance
+              const newPreviewBlock = mapHandler.getDockPreview(
+                battle.users[this.connectionId].map || this.battle.users[this.connectionId].map,
+                battle.users[this.connectionId].activeBlock || this.battle.users[this.connectionId].activeBlock,
+              );
+
+              // draw the block preview
+              this.battleMaps[this.connectionId].drawBlockMap(
+                newPreviewBlock,
+                this.previewBlock,
+                -3,
+              );
+
+              // update the current preview block, after the old one was cleared and the new one drawed
+              this.previewBlock = newPreviewBlock;
+            }
+          };
+
           // generate preview block for next dock position; IMPORTANT: run this function before
-          // rendering the new map / activeBlock, instead the block will be overwritten
-          if (connectionId === this.connectionId) {
-            // current battle user will not be updated at this point, just redraw the preview with
-            // the latest value, from the current new battle update or from the previous battle
-            // instance
-            const newPreviewBlock = mapHandler.getDockPreview(
-              battle.users[this.connectionId].map || this.battle.users[this.connectionId].map,
-              battle.users[this.connectionId].activeBlock || this.battle.users[this.connectionId].activeBlock,
+          // rendering the map / activeBlock, instead the block will be overwritten
+          renderPreview();
+
+          // // if activeBlock was changed, redraw it
+          if (battle.users[connectionId].activeBlock) {
+            this.battleMaps[connectionId].drawBlockMap(
+              battle.users[connectionId].activeBlock,
+              this.battle.users[connectionId].activeBlock,
+              // important: the moving active block consists only of a map of 0 and zero, apply the
+              // activeBlock type
+              battle.users[connectionId].activeBlock.type,
+            );
+          }
+
+          // at first, check for a new map and redraw it
+          if (battle.users[connectionId].map) {
+            this.battleMaps[connectionId].drawBlockMap(
+              battle.users[connectionId].map,
+              this.battle.users[connectionId].map,
             );
 
-            // draw the block preview
-            this.battleMaps[this.connectionId].drawBlockMap(
-              newPreviewBlock,
-              this.previewBlock,
-              -3,
-            );
-
-            // update the current preview block, after the old one was cleared and the new one drawed
-            this.previewBlock = newPreviewBlock;
+            // just rerender preview, it would be broken, after the old map was cleared
+            renderPreview();
           }
 
           // apply all changed keys to the users status
-          Object.keys(battle.users[connectionId]).forEach(key => {
-            // if map or activeBlock was changed, trigger battle map update
-            if (key === 'map' || key === 'activeBlock') {
-              this.battleMaps[connectionId].drawBlockMap(
-                battle.users[connectionId][key],
-                this.battle.users[connectionId][key],
-                // important: the moving active block consists only of a map of 0 and zero, apply the
-                // activeBlock type
-                key === 'activeBlock' ? battle.users[connectionId][key].type : null,
-              );
-            }
-
+          Object.keys(battle.users[connectionId]).forEach(key =>
             // update user content for next round, could be undefined by joining a room
-            this.battle.users[connectionId][key] = battle.users[connectionId][key];
-          });
+            this.battle.users[connectionId][key] = battle.users[connectionId][key]
+          );
         }
       });
     }
+  }
+
+  /**
+   * Calculate the size of the opponent div container.
+   */
+  getUserContainerSize() {
+    let usersInARow = Math.round(Object.keys(this.battle.users)
+      .filter(userId => userId !== this.connectionId)
+      .length / 2);
+
+    // allow at least 3 users in a row, then break
+    usersInARow = usersInARow > 3 ? 3 : usersInARow;
+
+    return usersInARow * 300;
   }
 }

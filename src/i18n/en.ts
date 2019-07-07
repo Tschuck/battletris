@@ -2,15 +2,15 @@
 export default {
   "battle": {
     "duration": "Duration",
-    "join": "Join Battle",
-    "leave": "Leave Battle",
+    "join": "Join",
+    "leave": "Leave",
     "mana": "Mana",
     "rows": "Rows",
     "speed": "Speed",
-    "start": "Start Battle",
+    "start": "Start",
     "starting": "Battle starts...",
     "status": "Status",
-    "stop": "Stop Battle",
+    "stop": "Stop",
     "user-status": {
       "accepted": "Accepted",
       "lost": "You lost!",
