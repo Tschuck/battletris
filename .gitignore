@@ -24,3 +24,7 @@ cache.dump
 /.idea/*
 yarn.lock
 public/dist
+
+# Travis specific
+deploy_key
+deploy_key.pub
