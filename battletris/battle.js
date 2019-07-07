@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const { api, } = require('actionhero');
 const blocks = require('./blocks');
 const mapHandler = require('./mapHandler');
@@ -40,6 +41,7 @@ module.exports = class Battle {
     this.startTime = 0;
     this.status = 'open';
     this.time = 0;
+    this.battleUpdate = { };
   }
 
   /**
@@ -209,6 +211,15 @@ module.exports = class Battle {
         this.userAction(connectionId, 40);
       }
     });
+
+    // send the battle updates
+    api.chatRoom.broadcast({}, this.roomName, {
+      type: 'battle-increment',
+      battle: this.battleUpdate,
+    });
+
+    // clear the last changes
+    this.battleUpdate = { };
   }
 
   /**
@@ -234,7 +245,7 @@ module.exports = class Battle {
    * @param      {<type>}   key           The key
    * @return     {Promise}  { description_of_the_return_value }
    */
-  async userAction(connectionId, key) {
+  userAction(connectionId, key) {
     if (this.users[connectionId].blockIndex === -1) {
       this.setNextBlock(connectionId);
     }
@@ -378,13 +389,16 @@ module.exports = class Battle {
       battleUser.activeBlock = increment.activeBlock;
     }
 
-    // send update
-    await api.chatRoom.broadcast({}, this.roomName, {
-      type: 'battle-increment',
-      battle: {
-        status: this.status,
-        users: users,
-      },
+    // apply the lates changes to the battle update so the game loop can send all updates to the
+    // other users later
+    this.battleUpdate = _.merge(this.battleUpdate, {
+      status: this.status,
+      users: users,
     });
+
+    return {
+      status: this.status,
+      users: users,
+    };
   }
 }

@@ -23,10 +23,18 @@ module.exports = class Rooms extends Action {
 
   async run (data) {
     if (api.battletris.battles[data.params.room]) {
-      api.battletris.battles[data.params.room].userAction(
-        data.params.connectionId,
-        data.params.key,
-      );
+      try {
+        const update = api.battletris.battles[data.params.room].userAction(
+          data.params.connectionId,
+          data.params.key,
+        );
+
+        data.response.battle = update;
+      } catch (ex) {
+        console.error(ex);
+        console.stack();        
+        data.response.error = ex.message;
+      }
     } else {
       data.response.error = 'Please insert a valid room!';
     }

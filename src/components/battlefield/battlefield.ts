@@ -120,11 +120,16 @@ export default class BattleField extends Vue {
    */
   handleUserKey($event: any) {
     if (this.battle.status === 'started') {
-      battletris.promiseClient.action('battletris/battles-actions', {
-        room: this.room,
-        connectionId: this.connectionId,
-        key: $event.keyCode,
-      });
+      // execute the battle action and directly use the result for the update
+      (async () => {
+        const update = await battletris.promiseClient.action('battletris/battles-actions', {
+          room: this.room,
+          connectionId: this.connectionId,
+          key: $event.keyCode,
+        });
+
+        this.handleBattleIncrement(update.battle);
+      })();
 
       // stop event handling
       $event.stopPropagation();
@@ -160,6 +165,10 @@ export default class BattleField extends Vue {
    * @param      {any}  battle  battle obj
    */
   handleBattleIncrement(battle) {
+    if (!battle) {
+      return;
+    }
+
     // update general data
     this.optionalIncrementKeys.forEach(key => {
       if (battle[key]) {
