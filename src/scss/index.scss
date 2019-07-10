@@ -43,4 +43,11 @@ body.battletris {
     width: 100%;
     padding-right: 10px;
   }
+
+  .force-oneline {
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 }

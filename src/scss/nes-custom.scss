@@ -19,6 +19,10 @@ body.battletris {
 
       background-color: var(--nes-container-bg) !important;
     }
+
+    & > .title {
+      display: block !important;
+    }
   }
 
   .nes-input,
@@ -32,5 +36,9 @@ body.battletris {
     padding: .5rem 2.5rem .5rem 1rem;
 
     border-image-outset: 1;
+  }
+
+  .nes-checkbox + span::before {
+    color: var(--nes-container-color) !important;
   }
 }

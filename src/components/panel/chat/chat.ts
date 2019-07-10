@@ -40,8 +40,8 @@ export default class Chat extends Vue {
 
   async created() {
     // watch for user updates
-    this.listeners.push(battletris.watch(`${ this.room }/users`, (data) => {
-      this.users = data.message.users;
+    this.listeners.push(battletris.watch(`${ this.room }/room`, (data) => {
+      this.users = data.message.room.users;
     }));
 
     this.listeners.push(battletris.watch(`${ this.room }/chat`, (data) => {

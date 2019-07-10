@@ -32,7 +32,7 @@ module.exports = class Rooms extends Action {
         data.response.battle = update;
       } catch (ex) {
         console.error(ex);
-        console.stack();        
+        console.trace();        
         data.response.error = ex.message;
       }
     } else {

@@ -46,6 +46,7 @@ export default {
   "user": "User {index}",
   "welcome": "Welcome in the tavern",
   "your-class": "Class",
-  "your-name": "Name"
+  "your-name": "Name",
+  "block-preview": "Block-Preview"
 }
 /* tslint:enable */

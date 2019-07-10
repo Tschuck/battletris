@@ -9,7 +9,7 @@
 
       <div class="h-100 overflow overflow-auto">
         <div
-          class="mb-3"
+          class="mb-3 force-oneline"
           v-for="(connectionId, index) in Object.keys(userList)">
           {{ userList[connectionId].name }}
           ({{ `classes.${ userList[connectionId].className }`  | translate }})
@@ -18,7 +18,7 @@
     </template>
     <template v-else>
       <div
-        class="mb-3"
+        class="mb-3 force-oneline"
         v-for="(connectionId, index) in Object.keys(userList)">
         {{ userList[connectionId].name }}
         ({{ `classes.${ userList[connectionId].className }`  | translate }})

@@ -188,7 +188,8 @@ export default class BattleField extends Vue {
             this.battleMaps[connectionId].$refs &&
             this.battle.users[connectionId]) {
           const renderPreview = () => {
-            if (connectionId === this.connectionId &&
+            if (this.$store.state.userConfig.blockPreview &&
+                connectionId === this.connectionId &&
                 battle.status === 'started') {
               // current battle user will not be updated at this point, just redraw the preview with
               // the latest value, from the current new battle update or from the previous battle

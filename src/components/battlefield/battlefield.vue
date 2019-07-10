@@ -51,13 +51,6 @@
                       </button>
                     </template>
                   </template>
-
-                  <!-- <template v-else>
-                    <button type="button" class="nes-btn is-error"
-                      @click="setBattleStatus('stop')">
-                      {{ 'battle.stop' | translate }}
-                    </button>
-                  </template> -->
                 </div>
               </div>
             </div>
@@ -78,7 +71,7 @@
       <template v-else-if="!reloading">
         <div class="nes-container with-title w-100 h-100"
           v-if="battle.users[connectionId]">
-          <p class="title">
+          <p class="title force-oneline">
             {{ roomDetails.users[connectionId].name }}
           </p>
             

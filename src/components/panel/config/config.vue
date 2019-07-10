@@ -39,6 +39,18 @@
         </select>
       </div>
     </div>
+
+    <div class="nes-field d-flex align-items-center mt-3">
+      <label for="theme" class="col-3 p-0 m-0">{{ 'block-preview' | translate }}</label>
+      <div class="item w-100 text-right">
+        <label>
+          <input type="checkbox" class="nes-checkbox"
+            v-model="$store.state.userConfig.blockPreview"
+            @change="useConfiguration(0)">
+          <span></span>
+        </label>
+      </div>
+    </div>
   </div>
 </template>
 

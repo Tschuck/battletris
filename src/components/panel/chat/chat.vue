@@ -1,14 +1,16 @@
 <template>
-  <div class="nes-container with-title">
+  <div class="nes-container with-title h-100">
     <p class="title">
       {{ 'chat' | translate }}
     </p>
 
     <div class="d-flex flex-column h-100">
       <div class="h-100 overflow overflow-auto align-self-stretch">
-        <p v-for="(message, index) in messages">
-          {{ users[message.from].name }}: {{ message.text }}
-        </p>
+        <div class="mb-3 p-2 border"
+          v-for="(message, index) in messages">
+          <p class="force-oneline mb-2 small font-italic">{{ users[message.from].name }}:</p>
+          <p class="pl-4">{{ message.text }}</p>
+        </div>
       </div>
       <div>
         <div class="mt-4">

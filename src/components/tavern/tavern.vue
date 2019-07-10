@@ -2,7 +2,8 @@
   <div class="w-100 h-100 d-flex">
     <battletris-panel :room="'tavern'"></battletris-panel>
 
-    <div class="w-100 mt-md-0 h-100 overflow-auto">
+    <div class="w-100 mt-md-0 h-100"
+      style="overflow-x: hidden; overflow-y: auto;">
       <loading v-if="loading || error" :error="error"></loading>
       <template v-else>
         <div class="container-fluid">

@@ -43,6 +43,7 @@ async function getUserConfig() {
     'battletris user';
   config.className = config.className ||
     Object.keys(await getClasses())[0];
+  config.blockPreview = typeof config.blockPreview === 'undefined' ? true : config.blockPreview;
 
   // backup name, when prefilled
   window.localStorage['battletris-user'] = JSON.stringify(config);
