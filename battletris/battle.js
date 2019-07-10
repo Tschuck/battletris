@@ -90,6 +90,7 @@ module.exports = class Battle {
     // clear previous active block, so a old one does not will be displayed during start a new game
     // set it to an empty array to force reloading
     user.activeBlock = [[]];
+    user.nextBlock = [[]];
 
     // apply the user to the battle
     this.users[connectionId] = user;
@@ -206,7 +207,7 @@ module.exports = class Battle {
     // set user data
     Object.keys(this.users).forEach((connectionId) => {
       // user has not left the game during game loop
-      if (this.users[connectionId]) {
+      if (this.users[connectionId] && this.users[connectionId].status !== 'lost') {
         // move block down
         this.userAction(connectionId, 40);
       }
@@ -234,8 +235,14 @@ module.exports = class Battle {
       this.blocks.push(Battle.generateRandomBlock());
     }
 
+    // generate next block
+    if (!this.blocks[this.users[connectionId].blockIndex + 1]) {
+      this.blocks.push(Battle.generateRandomBlock());
+    }
+
     // set active block
     this.users[connectionId].activeBlock = this.blocks[this.users[connectionId].blockIndex];
+    this.users[connectionId].nextBlock = this.blocks[this.users[connectionId].blockIndex + 1];
   }
 
   /**
@@ -378,6 +385,7 @@ module.exports = class Battle {
         // set the next block to display for the current user
         this.setNextBlock(connectionId);
         increment.activeBlock = battleUser.activeBlock;
+        increment.nextBlock = battleUser.nextBlock;
 
         break;
       }
