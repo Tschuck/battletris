@@ -1,5 +1,5 @@
 import Component, { mixins } from 'vue-class-component';
-import { Vue, Prop } from 'vue-property-decorator';
+import { Vue, Prop, Watch } from 'vue-property-decorator';
 
 import * as battletris from '../../../battletris';
 
@@ -18,6 +18,11 @@ export default class BattleUserStatus extends Vue {
    */
   @Prop() battle;
 
-  async created() {
-  }
+  // /**
+  //  * Watch if mode has changed
+  //  */
+  // @Watch('user', { immediate: true, deep: true })
+  // onUserChanged(val: string, oldVal: string) {
+  //   this.$set(this, 'user', val);
+  // }
 }

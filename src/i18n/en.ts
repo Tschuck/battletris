@@ -5,6 +5,7 @@ export default {
     "join": "Join",
     "leave": "Leave",
     "mana": "Mana",
+    "next-block": "Next Block",
     "rows": "Rows",
     "speed": "Speed",
     "start": "Start",
@@ -20,6 +21,7 @@ export default {
     "waiting": "Waiting for opponents..."
   },
   "battlefield": "Battlefield {index}",
+  "block-preview": "Block-Preview",
   "chat": "Chat",
   "classes": {
     "rouge": "Rouge",
@@ -46,7 +48,6 @@ export default {
   "user": "User {index}",
   "welcome": "Welcome in the tavern",
   "your-class": "Class",
-  "your-name": "Name",
-  "block-preview": "Block-Preview"
+  "your-name": "Name"
 }
 /* tslint:enable */

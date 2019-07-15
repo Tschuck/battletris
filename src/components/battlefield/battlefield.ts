@@ -199,15 +199,26 @@ export default class BattleField extends Vue {
                 battle.users[this.connectionId].activeBlock || this.battle.users[this.connectionId].activeBlock,
               );
 
-              // draw the block preview
-              this.battleMaps[this.connectionId].drawBlockMap(
-                newPreviewBlock,
-                this.previewBlock,
-                -3,
-              );
+              // only render preview block after the 4th level
+              if (newPreviewBlock.y > 4) {
+                // draw the block preview
+                this.battleMaps[this.connectionId].drawBlockMap(
+                  newPreviewBlock,
+                  this.previewBlock,
+                  -3,
+                );
 
-              // update the current preview block, after the old one was cleared and the new one drawed
-              this.previewBlock = newPreviewBlock;
+                // update the current preview block, after the old one was cleared and the new one drawed
+                this.previewBlock = newPreviewBlock;
+              } else {
+                // clear the block
+                this.battleMaps[this.connectionId].drawBlockMap(
+                  this.previewBlock,
+                  null,
+                  -1,
+                );
+                this.previewBlock = null;
+              }
             }
           };
 
@@ -240,7 +251,7 @@ export default class BattleField extends Vue {
           // apply all changed keys to the users status
           Object.keys(battle.users[connectionId]).forEach(key =>
             // update user content for next round, could be undefined by joining a room
-            this.battle.users[connectionId][key] = battle.users[connectionId][key]
+            this.$set(this.battle.users[connectionId], key, battle.users[connectionId][key])
           );
         }
       });

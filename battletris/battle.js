@@ -33,15 +33,14 @@ module.exports = class Battle {
    * Set initial values for the battle, without resetting the users
    */
   initialize() {
+    this.battleUpdate = { };
     this.blocks = [ ];
     this.config = JSON.parse(JSON.stringify(api.config.battletris));
     this.duration = 0;
-    this.gameLoopTimeout = 1;
-    this.startCounter = 1;
+    this.startCounter = this.config.startCounter;
     this.startTime = 0;
     this.status = 'open';
     this.time = 0;
-    this.battleUpdate = { };
   }
 
   /**
@@ -85,7 +84,9 @@ module.exports = class Battle {
     // cleared rows
     user.rows = 0;
     // users speed
-    user.speed = 1;
+    user.userSpeed = this.config.userSpeed;
+    // used to handle recursive setTimeout for handling seperated game loops
+    user.loopTimeout = null;
 
     // clear previous active block, so a old one does not will be displayed during start a new game
     // set it to an empty array to force reloading
@@ -102,6 +103,9 @@ module.exports = class Battle {
    * @param      {string}  connectionId  the connection id that should be removed
    */
   leave(connectionId) {
+    // clear user loop timeout
+    clearTimeout(this.users[connectionId].loopTimeout);
+    // remove user from runtime
     delete this.users[connectionId];
 
     // if all users have left the game, stop it
@@ -125,18 +129,39 @@ module.exports = class Battle {
 
       // clear the starting interval and start the game loop
       if (this.startCounter === 0) {
+        this.status = 'started';
+        this.startTime = Date.now();
+
+        // clear all previous loops (also clear game loop, to prent bugs in runtime)
         clearInterval(this.startingLoopInterval);
-        this.startGameLoop();
-      } else {
-        // update the counter within the UI
-        await api.chatRoom.broadcast({}, this.roomName, {
-          type: 'battle-increment',
-          battle: {
-            startCounter: this.startCounter,
-            status: this.status,
-          }
+        clearInterval(this.gameLoopInterval);
+
+        // start auomated user actions
+        Object.keys(this.users).forEach(connectionId => {
+          // generate next blocks
+          this.setNextBlock(connectionId);
+          this.userLoop(connectionId);
         });
+
+        // send everything initially
+        this.battleUpdate = this.getJSON();
+
+        // start the game, count time and send latest updates every X seconds
+        this.gameLoop();
+        this.gameLoopInterval = setInterval(
+          async () => this.gameLoop(),
+          this.config.gameLoopSpeed
+        );
       }
+
+      // update the counter within the UI
+      await api.chatRoom.broadcast({}, this.roomName, {
+        type: 'battle-increment',
+        battle: {
+          startCounter: this.startCounter,
+          status: this.status,
+        }
+      });
     }, 1000);
   }
 
@@ -144,9 +169,12 @@ module.exports = class Battle {
    * Stop the runtime interval
    */
   stop() {
-    // clear listeners 
+    // clear gamme loop intervals 
     clearInterval(this.startingLoopInterval);
     clearInterval(this.gameLoopInterval);
+    // clear user loop intervals
+    Object.keys(this.users).forEach(connectionId =>
+      clearTimeout(this.users[connectionId].loopTimeout));
 
     // reset to initial battle values
     this.initialize();
@@ -159,59 +187,38 @@ module.exports = class Battle {
   }
 
   /**
-   * Starts the game loop.
+   * Automated user loop, moves user down, handles next interactions, ...
+   *
+   * @param      {string}  connectionId  users connection id
    */
-  async startGameLoop() {
-    this.status = 'started';
-    this.startTime = Date.now();
+  userLoop(connectionId) {
+    const user = this.users[connectionId];
 
-    // update the counter within the UI
-    await api.chatRoom.broadcast({}, this.roomName, {
-      type: 'battle-increment',
-      battle: {
-        startCounter: this.startCounter,
-        status: this.status,
-      }
-    });
+    // increase speed every X seconds
+    if ((this.duration % this.config.increaseInterval) === 0) {
+      // reduce the user speed
+      user.userSpeed = user.userSpeed - this.config.increaseSteps;
+    }
 
-    // start the game!
-    await this.gameLoop();
-    clearInterval(this.gameLoopInterval);
-    this.gameLoopInterval = setInterval(
-      async () => this.gameLoop(),
-      this.config.gameLoopTimeout
-    );
+    // if user has not the status lost, run the next 
+    if (this.status === 'started' &&
+        user.status !== 'lost' &&
+        user.status !== 'won') {
+      // move block down, if the user does not used the down key
+      this.userAction(connectionId, 40);
+      // trigger next automated user action 
+      user.loopTimeout = setTimeout(() => this.userLoop(connectionId), user.userSpeed);
+    }
+
+    delete user.skipAutoMove;
   }
 
   /**
    * Handle overhaul interactions.
    */
-  async gameLoop() {
+  gameLoop() {
     // set general data
     this.duration = Date.now() - this.startTime;
-
-    // increase speed every X seconds
-    if ((this.duration % this.config.increaseInterval) === 0) {
-      // reduce the gameLoopTimeout
-      this.config.gameLoopTimeout = this.config.gameLoopTimeout -
-        this.config.increaseSteps;
-
-      // restart game interval
-      clearInterval(this.gameLoopInterval);
-      this.gameLoopInterval = setInterval(
-        () => this.gameLoop(),
-        this.config.gameLoopTimeout
-      );
-    }
-
-    // set user data
-    Object.keys(this.users).forEach((connectionId) => {
-      // user has not left the game during game loop
-      if (this.users[connectionId] && this.users[connectionId].status !== 'lost') {
-        // move block down
-        this.userAction(connectionId, 40);
-      }
-    });
 
     // send the battle updates
     api.chatRoom.broadcast({}, this.roomName, {
@@ -253,8 +260,9 @@ module.exports = class Battle {
    * @return     {Promise}  { description_of_the_return_value }
    */
   userAction(connectionId, key) {
-    if (this.users[connectionId].blockIndex === -1) {
-      this.setNextBlock(connectionId);
+    // cancel action when a wrong connection id was passed
+    if (!this.users[connectionId]) {
+      return;
     }
 
     const battleUser = this.users[connectionId];
@@ -293,6 +301,8 @@ module.exports = class Battle {
       case 40: {
         activeBlock.y++;
         increment.activeBlock = activeBlock;
+        // just skip next gameloop auto move down
+        battleUser.skipAutoMove = true;
         break;
       }
       // press space
