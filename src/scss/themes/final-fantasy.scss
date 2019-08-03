@@ -1,7 +1,17 @@
 .battletris-final-fantasy {
-  --battletris-bg: #000;
-   // reset color
-  --battletris-block-bg--1: var(--nes-container-bg);
+  // general styles
+  --battletris-bg: #5e6264;
+  --battletris-nav-bg: #343a40;
+  --battletris-nav-color: #ffffff;
+  --battletris-card-header-bg: #212529;
+  --battletris-card-header-color: #212529;
+  --battletris-card-bg: #212529;
+  --battletris-card-border: #fff;
+  --battletris-card-color: #fff;
+
+  // game colors
+  // reset color
+  --battletris-block-bg--1: var(--battletris-card-bg);
   // opponent stacked blocks
   --battletris-block-bg--2: #808080;
   // next dock block preview
@@ -14,8 +24,5 @@
   --battletris-block-bg-4: #03f000;
   --battletris-block-bg-5: #9f00e8;
   --battletris-block-bg-6: #f10000;
-  --battletris-block-border: #1a0dab;
-  --nes-container-bg: #1a0dab;
-  --nes-container-border: #fff;
-  --nes-container-color: #fff;
+  --battletris-block-border: #212529;
 }

@@ -21,6 +21,7 @@ export default {
     "waiting": "Waiting for opponents..."
   },
   "battlefield": "Battlefield {index}",
+  "battletris": "Battletris",
   "block-preview": "Block-Preview",
   "chat": "Chat",
   "classes": {
@@ -46,7 +47,7 @@ export default {
   },
   "use-config": "Use configuration",
   "user": "User {index}",
-  "welcome": "Welcome in the tavern",
+  "welcome": "Welcome to Battletris, a multiplayer block stacking game. You are currently in the tavern, a place where everyone can hang around to search for opponents. Checkup the battlefields and join a match.",
   "your-class": "Class",
   "your-name": "Name"
 }

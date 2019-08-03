@@ -1,0 +1,29 @@
+.navbar {
+  border-bottom: 1px solid var(--battletris-content-border);
+  background-color: var(--battletris-nav-bg);
+
+  &,
+  * {
+    color: var(--battletris-nav-color);
+  }
+}
+
+.card {
+  .card-header {
+    display: flex;
+
+    background-color: var(--battletris-card-header-bg);
+
+    align-items: center;
+    justify-content: space-between;
+
+    &,
+    * {
+      color: var(--battletris-card-header-color);
+    }
+
+    & > * {
+      margin-bottom: 0;
+    }
+  }
+}

@@ -2,6 +2,7 @@ const _ = require('lodash');
 const { api, } = require('actionhero');
 const blocks = require('./blocks');
 const mapHandler = require('./mapHandler');
+const Mutex = require('async-mutex').Mutex;
 
 module.exports = class Battle {
   /**
@@ -103,10 +104,12 @@ module.exports = class Battle {
    * @param      {string}  connectionId  the connection id that should be removed
    */
   leave(connectionId) {
-    // clear user loop timeout
-    clearTimeout(this.users[connectionId].loopTimeout);
-    // remove user from runtime
-    delete this.users[connectionId];
+    if (this.users[connectionId]) {
+      // clear user loop timeout
+      clearTimeout(this.users[connectionId].loopTimeout);
+      // remove user from runtime
+      delete this.users[connectionId];
+    }
 
     // if all users have left the game, stop it
     if (Object.keys(this.users).length === 0) {

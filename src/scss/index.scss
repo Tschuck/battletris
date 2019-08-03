@@ -1,15 +1,14 @@
-@import './Press_Start_2P/press_start_2p';
 @import '~@mdi/font/css/materialdesignicons.css';
 @import '~bootstrap/scss/bootstrap';
-@import '~nes.css/css/nes.css';
+@import '~bootstrap-vue/src/index.scss';
 
 // register themes
 @import './themes/dark';
 @import './themes/final-fantasy';
 @import './themes/light';
 
-// import custom battletris nes adjustments
-@import './nes-custom';
+// own styles
+@import './general';
 
 html,
 body {
@@ -17,8 +16,6 @@ body {
 }
 
 body.battletris {
-  font-size: 10px;
-
   overflow-y: auto;
 
   margin: 0;
@@ -26,22 +23,12 @@ body.battletris {
 
   background-color: var(--battletris-bg);
 
-  &,
-  * {
-    font-family: 'press_start_2p';
-  }
-
   .battletris-map {
     text-align: center;
 
     canvas {
       border: 1px solid gray;
     }
-  }
-
-  .container-fluid {
-    width: 100%;
-    padding-right: 10px;
   }
 
   .force-oneline {

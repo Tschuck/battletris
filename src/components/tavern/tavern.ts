@@ -6,11 +6,13 @@ import * as battletris from '../../battletris';
 import Panel from '../panel/panel.vue';
 import Loading from '../loading/loading.vue';
 import Users from '../panel/users/users.vue';
+import Header from '../header/header.vue';
 
 @Component({
   components: {
     'battletris-panel': Panel,
     'battletris-users': Users,
+    'battletris-header': Header,
     'loading': Loading,
   }
 })
@@ -42,8 +44,6 @@ export default class Tavern extends Vue {
     this.listeners.push(battletris.watch('tavern/rooms', (data) => {
       this.loading = true;
       this.rooms = data.message.rooms;
-      console.log(this.rooms)
-
       this.$nextTick(() => this.loading = false);
     }));
 

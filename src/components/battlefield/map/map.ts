@@ -63,7 +63,7 @@ export default class Map extends Vue {
   handleMapSize() {
     const $el = (<any>this.$el)
 
-    this.fieldSize.width = $el.offsetWidth - 5;
+    this.fieldSize.width = $el.offsetWidth - 5 > 400 ? 400 : $el.offsetWidth - 5;
     this.fieldSize.height = this.fieldSize.width * 2;
 
     // never size the height greater than the container

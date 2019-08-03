@@ -1,7 +1,8 @@
+import BootstrapVue from 'bootstrap-vue'
 import Vue from 'vue';
-import vuexI18n from 'vuex-i18n';
 import VueRouter from 'vue-router';
 import Vuex from 'vuex';
+import vuexI18n from 'vuex-i18n';
 import { Component } from 'vue-property-decorator';
 
 import Main from './components/main/main.vue';
@@ -13,8 +14,9 @@ import './scss/index.scss';
 
 battletris.setTheme();
 
-Vue.use(Vuex);
+Vue.use(BootstrapVue)
 Vue.use(VueRouter);
+Vue.use(Vuex);
 
 const store = new Vuex.Store({ });
 

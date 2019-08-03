@@ -61,6 +61,11 @@ export default class BattleField extends Vue {
     'status',
   ];
 
+  /**
+   * Allow key pressing only each 50 milliseconds
+   */
+  keyTimeout = { };
+
   async created() {
     this.room = this.$route.params.room;
     this.connectionId = battletris.wsClient.id;
@@ -69,12 +74,6 @@ export default class BattleField extends Vue {
     this.watch('room', (data) => {
       this.roomDetails = data.message.room
     });
-
-    // watch for battle join / leave
-    this.watch('battle', (data) => this.handleBattleUpdate(data.message.battle));
-
-    // watch for incremental battle updates
-    this.watch('battle-increment', (data) => this.handleBattleIncrement(data.message.battle));
 
     // say everyone we are in the house
     await battletris.joinRoom(this.room, this.$store.state.userConfig);
@@ -88,6 +87,12 @@ export default class BattleField extends Vue {
     await this.handleBattleUpdate((await battletris.promiseClient.action('battletris/battles', {
       room: this.room
     })).battle);
+
+    // watch for battle join / leave
+    this.watch('battle', (data) => this.handleBattleUpdate(data.message.battle));
+
+    // watch for incremental battle updates
+    this.watch('battle-increment', (data) => this.handleBattleIncrement(data.message.battle));
 
     // bind key handler
     this.keyHandler = ((e) => this.handleUserKey(e)).bind(this);
@@ -120,16 +125,26 @@ export default class BattleField extends Vue {
    */
   handleUserKey($event: any) {
     if (this.battle.status === 'started') {
-      // execute the battle action and directly use the result for the update
-      (async () => {
-        const update = await battletris.promiseClient.action('battletris/battles-actions', {
-          room: this.room,
-          connectionId: this.connectionId,
-          key: $event.keyCode,
-        });
+      // only send key press event, when no key press timeout is running
+      if (!this.keyTimeout[$event.keyCode]) {
+        // execute the battle action and directly use the result for the update
+        (async () => {
+          const update = await battletris.promiseClient.action('battletris/battles-actions', {
+            room: this.room,
+            connectionId: this.connectionId,
+            key: $event.keyCode,
+          });
 
-        this.handleBattleIncrement(update.battle);
-      })();
+          this.handleBattleIncrement(update.battle);
+        })();
+
+        // wait 50 milliseconds until sending next key code
+        this.keyTimeout[$event.keyCode] = setTimeout(() => {
+          delete this.keyTimeout[$event.keyCode];
+        }, 30);
+      } else {
+        console.log('key timeout')
+      }
 
       // stop event handling
       $event.stopPropagation();
