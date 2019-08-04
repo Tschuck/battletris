@@ -3,15 +3,13 @@ import { promisify } from 'es6-promisify';
 import { Vue } from 'vue-property-decorator';
 
 import * as battletris from '../../battletris';
-import Panel from '../panel/panel.vue';
-import Loading from '../loading/loading.vue';
-import Users from '../panel/users/users.vue';
+import Chat from '../chat/chat.vue';
 import Header from '../header/header.vue';
+import Loading from '../loading/loading.vue';
 
 @Component({
   components: {
-    'battletris-panel': Panel,
-    'battletris-users': Users,
+    'battletris-chat': Chat,
     'battletris-header': Header,
     'loading': Loading,
   }

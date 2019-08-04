@@ -3,15 +3,17 @@ import { Vue } from 'vue-property-decorator';
 import * as mapHandler from '../../../battletris/mapHandler';
 
 import * as battletris from '../../battletris';
-import Loading from '../loading/loading.vue';
-import Panel from '../panel/panel.vue';
-import Map from './map/map.vue';
 import BattleUserStatus from './status/status.vue';
+import Chat from '../chat/chat.vue';
+import Header from '../header/header.vue';
+import Loading from '../loading/loading.vue';
+import Map from './map/map.vue';
 
 @Component({
   components: {
+    'battletris-chat': Chat,
+    'battletris-header': Header,
     'battletris-map': Map,
-    'battletris-panel': Panel,
     'battletris-user-status': BattleUserStatus,
     'loading': Loading,
   }
@@ -21,8 +23,12 @@ export default class BattleField extends Vue {
    * Status flags
    */
   loading = true;
-  reloading = false;
   error = '';
+
+  /**
+   * left panel displayed stuff
+   */
+  leftPanelIndex = 0;
 
   /**
    * listeners for ws updates
@@ -50,7 +56,7 @@ export default class BattleField extends Vue {
   /**
    * Block for previewing the user the next dock position
    */
-  previewBlock: Array<Array<any>> = [[]];
+  previewBlock: any = [[]];
 
   /**
    * dynamically update when increment has changed the value
@@ -202,66 +208,42 @@ export default class BattleField extends Vue {
         if (this.battleMaps[connectionId] &&
             this.battleMaps[connectionId].$refs &&
             this.battle.users[connectionId]) {
-          const renderPreview = () => {
-            if (this.$store.state.userConfig.blockPreview &&
-                connectionId === this.connectionId &&
-                battle.status === 'started') {
-              // current battle user will not be updated at this point, just redraw the preview with
-              // the latest value, from the current new battle update or from the previous battle
-              // instance
-              const newPreviewBlock = mapHandler.getDockPreview(
-                battle.users[this.connectionId].map || this.battle.users[this.connectionId].map,
-                battle.users[this.connectionId].activeBlock || this.battle.users[this.connectionId].activeBlock,
+          // clear previous map
+          this.battleMaps[connectionId].clearBlockMap();
+
+          if (this.$store.state.userConfig.blockPreview &&
+              connectionId === this.connectionId &&
+              battle.status === 'started') {
+            // current battle user will not be updated at this point, just redraw the preview with
+            // the latest value, from the current new battle update or from the previous battle
+            // instance
+            this.previewBlock = mapHandler.getDockPreview(
+              battle.users[this.connectionId].map || this.battle.users[this.connectionId].map,
+              battle.users[this.connectionId].activeBlock || this.battle.users[this.connectionId].activeBlock,
+            );
+
+            // only render preview block after the 4th level
+            if (this.previewBlock.y > 4) {
+              // draw the block preview
+              this.battleMaps[this.connectionId].drawBlockMap(
+                this.previewBlock,
+                -3,
               );
-
-              // only render preview block after the 4th level
-              if (newPreviewBlock.y > 4) {
-                // draw the block preview
-                this.battleMaps[this.connectionId].drawBlockMap(
-                  newPreviewBlock,
-                  this.previewBlock,
-                  -3,
-                );
-
-                // update the current preview block, after the old one was cleared and the new one drawed
-                this.previewBlock = newPreviewBlock;
-              } else {
-                // clear the block
-                this.battleMaps[this.connectionId].drawBlockMap(
-                  this.previewBlock,
-                  null,
-                  -1,
-                );
-                this.previewBlock = null;
-              }
             }
-          };
-
-          // generate preview block for next dock position; IMPORTANT: run this function before
-          // rendering the map / activeBlock, instead the block will be overwritten
-          renderPreview();
-
-          // // if activeBlock was changed, redraw it
-          if (battle.users[connectionId].activeBlock) {
-            this.battleMaps[connectionId].drawBlockMap(
-              battle.users[connectionId].activeBlock,
-              this.battle.users[connectionId].activeBlock,
-              // important: the moving active block consists only of a map of 0 and zero, apply the
-              // activeBlock type
-              battle.users[connectionId].activeBlock.type,
-            );
           }
 
-          // at first, check for a new map and redraw it
-          if (battle.users[connectionId].map) {
-            this.battleMaps[connectionId].drawBlockMap(
-              battle.users[connectionId].map,
-              this.battle.users[connectionId].map,
-            );
+          // draw the current block
+          this.battleMaps[connectionId].drawBlockMap(
+            battle.users[connectionId].activeBlock || this.battle.users[connectionId].activeBlock,
+            // important: the moving active block consists only of a map of 0 and zero, apply the
+            // activeBlock type
+            battle.users[connectionId].activeBlock.type,
+          );
 
-            // just rerender preview, it would be broken, after the old map was cleared
-            renderPreview();
-          }
+          // redraw the map
+          this.battleMaps[connectionId].drawBlockMap(
+            battle.users[connectionId].map || this.battle.users[connectionId].map,
+          );
 
           // apply all changed keys to the users status
           Object.keys(battle.users[connectionId]).forEach(key =>

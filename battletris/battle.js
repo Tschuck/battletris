@@ -290,8 +290,9 @@ module.exports = class Battle {
         if (activeBlock.type !== 3) {
           activeBlock.rotation = activeBlock.rotation === 3 ? 0 : activeBlock.rotation + 1;
           activeBlock.map = blocks[activeBlock.type][activeBlock.rotation];
-          increment.activeBlock = activeBlock;
         }
+        
+        increment.activeBlock = activeBlock;
         break;
       }
       // right

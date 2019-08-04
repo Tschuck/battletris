@@ -1,12 +1,17 @@
 <template>
-  <div>
-    <battletris-header :room="'tavern'"></battletris-header>
-    <div class="w-100 mt-md-0 h-100"
-      style="overflow-x: hidden; overflow-y: auto;">
-      <loading v-if="loading || error" :error="error"></loading>
-      <template v-else>
-        <div class="container-fluid">
-          <div class="card my-3">
+  <div class="h-100 d-flex flex-column">
+    <loading v-if="loading || error" :error="error"></loading>
+    <template v-else>
+      <battletris-header
+        :room="'tavern'"
+        :users="rooms.tavern.users">
+      </battletris-header>
+      <div class="d-flex w-100 h-100">
+        <div class="p-3 w-100 h-100" style="min-width: 350px; width: 350px;">
+          <battletris-chat :room="'tavern'"></battletris-chat>
+        </div>
+        <div class="h-100 overflow-auto p-3">
+          <div class="card mb-3">
             <div class="card-header">
               <h5>{{ 'tavern' | translate }}</h5>
             </div>
@@ -14,36 +19,38 @@
               {{ 'welcome' | translate }}
             </div>
           </div>
-          <div class="row">
+          <div class="row overflow-auto">
             <div class="col-md-6 col-lg-4 col-xl-3 mb-3"
               v-for="(room, index) in Object.keys(rooms)"
               v-if="room !== 'tavern'">
               <div class="card">
                 <div class="card-header">
                   <h5>{{ $t('battlefield', { index: parseInt(room.replace('field', '')) + 1 }) }}</h5>
-                  <button class="btn"
-                    v-b-tooltip.hover
-                    :title="$t('battle.join')"
-                    @click="$router.push({ path: `/battlefield/${ room }` })">
-                    <i class="mdi mdi-login-variant h4"></i>
-                  </button>
+                  <div>
+                    <small>({{ Object.keys(rooms[room].users).length }} {{ 'members' | translate }})</small>
+                    <button class="btn"
+                      v-b-tooltip.hover
+                      :title="$t('battle.join')"
+                      @click="$router.push({ path: `/battlefield/${ room }` })">
+                      <i class="mdi mdi-login-variant h4"></i>
+                    </button>
+                  </div>
                 </div>
-
-                <div class="card-body">
-                  <battletris-users
-                    class="overflow-y"
-                    style="height: 200px;"
-                    :container="false"
-                    :room="room"
-                    :users="rooms[room].users">
-                  </battletris-users>
+                <div class="card-body p-0" style="height: 200px">
+                  <ul class="list-group overflow-auto">
+                    <li class="list-group-item"
+                      v-for="(connectionId, index) in Object.keys(rooms[room].users)">
+                      {{ rooms[room].users[connectionId].name }}
+                      ({{ `classes.${ rooms[room].users[connectionId].className }`  | translate }})
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </template>
-    </div>
+      </div>
+    </template>
   </div>
 </template>
 

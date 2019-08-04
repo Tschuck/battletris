@@ -1,108 +1,127 @@
 <template>
-  <div class="w-100 h-100 d-flex">
-    <battletris-panel :room="room">
-      <template v-slot:panel-start>
-        <div class="d-flex pb-2">
-          <div class="nes-container w-100 with-title">
-            <p class="title">
-              {{ $t('battlefield', { index: parseInt(room.replace('field', '')) + 1 }) }}
-            </p>
-            <div class="container-fluid p-0 mt-3" v-if="battle">
-              <div class="row">
-                <div class="col-6">
-                  <p>
-                    {{ `battle.status` | translate }}:
+  <div class="h-100 d-flex flex-column">
+    <loading v-if="loading || error" :error="error"></loading>
+    <template v-else>
+      <battletris-header
+        :room="room"
+        :users="roomDetails.users">
+      </battletris-header>
+      <div class="d-flex w-100 h-100">
+        <div class="p-3 d-flex flex-column" style="min-width: 350px; width: 350px;">
+          <b-nav tabs>
+            <b-nav-item :active="leftPanelIndex === 0" @click="leftPanelIndex = 0">
+              {{ 'battle.battle' | translate }}
+            </b-nav-item>
+            <b-nav-item :active="leftPanelIndex === 1" @click="leftPanelIndex = 1">
+              {{ 'chat' | translate }}
+            </b-nav-item>
+          </b-nav>
+
+          <div class="card" style="flex: 1" v-if="leftPanelIndex === 0">
+            <div class="card-header">
+              <h5>{{ $t('battlefield', { index: parseInt(room.replace('field', '')) + 1 }) }}</h5>
+            </div>
+            <template v-if="battle">
+              <div class="card-body">
+                <div class="d-flex mb-3">
+                  <b>{{ `battle.status` | translate }}:</b>
+                  <span class="mx-auto"></span>
+                  <div>
                     {{ battle.status }}
 
                     <template v-if="battle.status === 'starting'">
                       ({{ battle.startCounter }}s)
                     </template>
-                  </p>
-                  <template v-if="battle.status === 'started'">
-                    <p>{{ 'battle.duration' | translate }}: {{ battle.duration }}s</p>
-                  </template>
-                  <p>
-                    {{ `battle.speed` | translate }}:
-                    {{ battle.config.gameLoopTimeout }}
-                  </p>
+                  </div>
                 </div>
+                <template v-if="battle.status === 'started'">
+                  <p>{{ 'battle.duration' | translate }}: {{ battle.duration }}s</p>
+                </template>
 
-                <div class="col-6 text-right">
-                  <template v-if="battle.status !== 'started'">
-                    <template v-if="!battle.users[connectionId]">
-                      <button type="button" class="nes-btn is-primary"
-                        @click="battle.status === 'starting' ?
-                          setBattleStatus('accept') :
-                          setBattleStatus('join')
-                        ">
-                        {{ 'battle.join' | translate }}
-                      </button>
-                    </template>
-
-                    <template v-else>
-                      <button type="button" class="nes-btn is-warning"
-                        @click="setBattleStatus('leave')">
-                        {{ 'battle.leave' | translate }}
-                      </button>
-                      <button type="button" class="nes-btn is-success"
-                        @click="setBattleStatus('accept')"
-                        v-if="battle.users[connectionId].status !== 'accepted'">
-                        {{ 'battle.start' | translate }}
-                      </button>
-                    </template>
-                  </template>
+                <div class="border-top pt-3"
+                  v-if="battle.users[connectionId]">
+                  <battletris-user-status
+                    :battle="battle"
+                    :user="battle.users[connectionId]">
+                  </battletris-user-status>
+                    
+                  <div class="d-flex">
+                    <b>{{ 'battle.next-block' | translate }}:</b>
+                    <span class="mx-auto"></span>
+                    <div>
+                      <div class="d-flex"
+                        v-for="(row, rowIndex) in battle.users[connectionId].nextBlock.map"
+                        v-if="battle.users[connectionId].nextBlock.map[rowIndex].filter((col) => col).length !== 0">
+                        <div v-for="(col, colIndex) in battle.users[connectionId].nextBlock.map[rowIndex]"
+                          style="width: 20px; height: 20px; border: 1px solid var(--battletris-block-border)"
+                          :style="{
+                            'background-color': col ? `var(--battletris-block-bg-${ battle.users[connectionId].nextBlock.type })` : 'transparent',
+                          }">
+                        </div>
+                      </div>
+                    </div>
+                  </div> 
                 </div>
               </div>
-            </div>
+              <div class="p-3 text-right border-top">
+                <template v-if="battle.status !== 'started'">
+                  <template v-if="!battle.users[connectionId]">
+                    <button type="button" class="btn btn-primary"
+                      @click="battle.status === 'starting' ?
+                        setBattleStatus('accept') :
+                        setBattleStatus('join')
+                      ">
+                      {{ 'battle.join' | translate }}
+                    </button>
+                  </template>
 
-            <div class="w-100 text-right mt-3 pt-3 border-top">
-              <button type="button" class="nes-btn"
-                @click="$router.push({ path: '/tavern' })">
-                {{ 'go-to-tavern' | translate }}
-              </button>
-            </div>
+                  <template v-else>
+                    <button type="button" class="btn btn-warning"
+                      @click="setBattleStatus('leave')">
+                      {{ 'battle.leave' | translate }}
+                    </button>
+                    <button type="button" class="btn btn-success"
+                      @click="setBattleStatus('accept')"
+                      v-if="battle.users[connectionId].status !== 'accepted'">
+                      {{ 'battle.start' | translate }}
+                    </button>
+                  </template>
+                </template>
+                <template v-else>
+                  <button type="button" class="btn btn-warning"
+                    @click="setBattleStatus('leave')">
+                    {{ 'battle.leave' | translate }}
+                  </button>
+                </template>
+              </div>
+            </template>
           </div>
-        </div>
-      </template>
-    </battletris-panel>
 
-    <div class="w-100 mt-md-0 h-100 d-flex overflow-auto">
-      <loading v-if="loading || error" :error="error"></loading>
-      <template v-else-if="!reloading">
-        <div class="nes-container with-title w-100 h-100"
-          v-if="battle.users[connectionId]">
-          <p class="title force-oneline">
-            {{ roomDetails.users[connectionId].name }}
-          </p>
-            
-          <div class="h-100 d-flex flex-column">
-            <battletris-user-status
-              :battle="battle"
-              :user="battle.users[connectionId]">
-            </battletris-user-status>
-            <battletris-map
-              class="w-100 mt-3"
-              style="height: calc(100% - 200px); min-width: 500px"
-              @init="battleMaps[connectionId] = $event">
-            </battletris-map>
-          </div>
+          <battletris-chat :room="room" v-if="leftPanelIndex === 1"></battletris-chat>
         </div>
-        <div class="h-100 d-flex flex-wrap"
-          :style="{
-            'min-width': `${ getUserContainerSize() }px`,
-            'max-width': `${ getUserContainerSize() }px`,
-          }">
-          <div class="nes-container"
-            style="min-width: 300px; height: 50%;"
+
+        <div v-if="battle.users[connectionId]">
+          <battletris-map
+            class="w-100 mt-3"
+            style="height: calc(100% - 200px); min-width: 400px"
+            @init="battleMaps[connectionId] = $event">
+          </battletris-map>
+        </div>
+
+        <div class="d-flex flex-wrap">
+          <div class="card"
+            :style="{
+              'min-width': `${ getUserContainerSize() }px`,
+              'max-width': `${ getUserContainerSize() }px`,
+            }"
             v-for="(userId, index) in Object.keys(battle.users)"
             v-if="userId !== connectionId && roomDetails.users[userId]">
-            <p class="title" v-if="userId && roomDetails.users">
-              {{ roomDetails.users[userId].name }}
-            </p>
-            <p class="title" v-else>
-              {{ $t('user', { index: index + 1 }) }}
-            </p>
-            <div class="h-100 d-flex flex-column">
+            <div class="card-header" v-if="userId && roomDetails.users">
+              <h5>
+                {{ $t('user', { index: index + 1 }) }}
+              </h5>
+            </div>
+            <div class="card-body">
               <battletris-user-status
                 :battle="battle"
                 :user="battle.users[userId]">
@@ -114,8 +133,8 @@
             </div>
           </div>
         </div>
-      </template>
-    </div>
+      </div>
+    </template>
   </div>
 </template>
 

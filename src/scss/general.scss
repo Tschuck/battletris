@@ -3,15 +3,24 @@
   background-color: var(--battletris-nav-bg);
 
   &,
-  * {
+  i,
+  .dropdown-toggle,
+  a h5 {
     color: var(--battletris-nav-color);
   }
 }
 
 .card {
+  display: flex;
+
+  color: var(--battletris-card-color);
+  border: 1px solid var(--battletris-card-border);
+  background-color: var(--battletris-card-bg);
+
   .card-header {
     display: flex;
 
+    border-bottom: 1px solid var(--battletris-card-border);
     background-color: var(--battletris-card-header-bg);
 
     align-items: center;
@@ -24,6 +33,34 @@
 
     & > * {
       margin-bottom: 0;
+    }
+  }
+}
+
+.list-group-item {
+  color: var(--battletris-card-color);
+  background-color: var(--battletris-card-bg);
+}
+
+.nav-tabs {
+  z-index: 1;
+
+  margin-bottom: 1px;
+
+  border-bottom: 0;
+
+  .nav-item {
+    .nav-link {
+      color: var(--battletris-card-header-color);
+      border: 1px solid var(--battletris-card-border);
+      border-bottom: 0;
+      background-color: var(--battletris-card-header-bg);
+    }
+
+    .nav-link.active {
+      height: calc(100% + 1px);
+
+      color: var(--battletris-card-header-color);
     }
   }
 }

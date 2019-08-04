@@ -1,14 +1,45 @@
 <template>
-  <nav class="navbar navbar-expand-lg d-flex">
+  <nav class="navbar navbar-expand-lg d-flex"
+    v-if="!loading">
     <div class="d-flex align-items-center">
-      <a class="navbar-brand" href="#/tavern">
+      <a class="navbar-brand d-flex align-items-center mr-0"
+        v-b-tooltip.hover
+        :title="$t('go-to-tavern')"
+        href="#/tavern">
         <img src="/img/battletris.svg" style="height: 50px;">
+
+        <h5 class="mb-0 ml-3">
+          {{ 'battletris' | translate }}
+        </h5>
+
       </a>
 
-      <h5 class="mb-0">{{ 'battletris' | translate }}</h5>
+      <i class="mdi mdi-chevron-right h4 mb-0 mx-3"></i>
+      <h5 class="mb-0">
+        <template v-if="room === 'tavern'">
+          {{ 'tavern' | translate }}
+        </template>
+        <template v-else>
+          {{ $t('battlefield', { index: parseInt(room.replace('field', '')) + 1 }) }}
+        </template>
+      </h5>
     </div>
     <span class="mx-auto"></span>
     <div>
+      <b-dropdown size="lg" variant="link" dropleft
+        toggle-class="text-decoration-none"
+        no-caret
+        v-b-tooltip.hover
+        :title="$t('members')">
+        <template slot="button-content">
+          <i class="mdi mdi-account-group h4"></i>
+          ({{ Object.keys(users).length }})
+        </template>
+        <b-dropdown-item v-for="(connectionId, index) in Object.keys(users)">
+          {{ users[connectionId].name }}
+          ({{ `classes.${ users[connectionId].className }`  | translate }})
+        </b-dropdown-item>
+      </b-dropdown>
       <button class="btn"
         v-b-modal.modal-config
         v-b-tooltip.hover
@@ -49,7 +80,6 @@
             @change="setTheme(theme)">
             <option value="light">{{ 'themes.light' | translate }}</option>
             <option value="dark">{{ 'themes.dark' | translate }}</option>
-            <option value="final-fantasy">{{ 'themes.final-fantasy' | translate }}</option>
           </select>
         </div>
 

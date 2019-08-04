@@ -2,8 +2,8 @@ import Component, { mixins } from 'vue-class-component';
 import { promisify } from 'es6-promisify';
 import { Vue, Prop } from 'vue-property-decorator';
 
-import * as battletris from '../../../battletris';
-import Loading from '../../loading/loading.vue';
+import * as battletris from '../../battletris';
+import Loading from '../loading/loading.vue';
 
 @Component({
   components: {

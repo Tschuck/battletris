@@ -17,9 +17,9 @@ export default class Header extends Vue {
   @Prop() room;
 
   /**
-   * Disable formular and hide button
+   * Pass a list of users directly and listen for updates
    */
-  @Prop() disabled;
+  @Prop() users;
 
   /**
    * Class definitions

@@ -36,7 +36,7 @@ exports['default'] = {
       // class definitions
       classes,
       // amount of battlefields
-      battlefields: 5,
+      battlefields: 20,
       // seconds until the game starts, after all users has accepted
       startCounter: 1,
       // run game loop every Xms

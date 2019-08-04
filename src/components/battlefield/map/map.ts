@@ -77,6 +77,17 @@ export default class Map extends Vue {
   }
 
   /**
+   * Overdraw the full block map
+   */
+  clearBlockMap() {
+    const bodyStyle = getComputedStyle(document.body);
+    const ctx = (<any>this.$refs.canvas).getContext('2d');
+
+    ctx.fillStyle = bodyStyle.getPropertyValue(`--battletris-block-bg--1`);
+    ctx.fillRect(0, 0, this.fieldSize.width, this.fieldSize.height);
+  }
+
+  /**
    * Draw a a map of blocks
    *
    * @param      {any}     newMap  new map to draw
@@ -84,39 +95,31 @@ export default class Map extends Vue {
    * @param      {number}  type    optional type (especially the color), that should be applied to
    *                               all the blocks
    */
-  drawBlockMap(newMap: any, oldMap?: any, type?: any) {
-    // reset the old map by applying type = -1
-    if (oldMap) {
-      this.drawBlockMap(oldMap, null, -1);
-    }
+  drawBlockMap(newMap: any, type?: any) {
+    const bodyStyle = getComputedStyle(document.body);
+    const colSize = this.fieldSize.width / 10;
+    const ctx = (<any>this.$refs.canvas).getContext('2d');
+    ctx.strokeStyle = bodyStyle.getPropertyValue('--battletris-block-border');
+    // the basic map is the plain array definition, active block will include map and active
+    // position
+    const map = Array.isArray(newMap.map) ? newMap.map : newMap;
+    // use default values for base map
+    const xStart = newMap.x || 0;
+    const yStart = newMap.y || 0;
 
-    // draw the new map
-    if (newMap) {
-      const bodyStyle = getComputedStyle(document.body);
-      const colSize = this.fieldSize.width / 10;
-      const ctx = (<any>this.$refs.canvas).getContext('2d');
-      ctx.strokeStyle = bodyStyle.getPropertyValue('--battletris-block-border');
-      // the basic map is the plain array definition, active block will include map and active
-      // position
-      const map = Array.isArray(newMap.map) ? newMap.map : newMap;
-      // use default values for base map
-      const xStart = newMap.x || 0;
-      const yStart = newMap.y || 0;
+    // iterate through the map
+    map.forEach((row, rowIndex) => row.forEach((col, colIndex) => {
+      if (col) {
+        // specify draw position
+        const x = xStart + colIndex;
+        const y = yStart + rowIndex;
 
-      // iterate through the map
-      map.forEach((row, rowIndex) => row.forEach((col, colIndex) => {
-        if (col) {
-          // specify draw position
-          const x = xStart + colIndex;
-          const y = yStart + rowIndex;
-
-          ctx.fillStyle = bodyStyle.getPropertyValue(
-            `--battletris-block-bg-${ type || type === 0 ? type : col.type }`
-          );
-          ctx.fillRect(x * colSize, y * colSize, colSize, colSize);
-          ctx.strokeRect(x * colSize, y * colSize, colSize, colSize);
-        }
-      }));
-    }
+        ctx.fillStyle = bodyStyle.getPropertyValue(
+          `--battletris-block-bg-${ type || type === 0 ? type : col.type }`
+        );
+        ctx.fillRect(x * colSize, y * colSize, colSize, colSize);
+        ctx.strokeRect(x * colSize, y * colSize, colSize, colSize);
+      }
+    }));
   }
 }

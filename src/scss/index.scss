@@ -4,7 +4,6 @@
 
 // register themes
 @import './themes/dark';
-@import './themes/final-fantasy';
 @import './themes/light';
 
 // own styles
@@ -27,7 +26,8 @@ body.battletris {
     text-align: center;
 
     canvas {
-      border: 1px solid gray;
+      border: 1px solid var(--battletris-card-border);
+      background-color: var(--battletris-card-bg);
     }
   }
 

@@ -12,11 +12,13 @@ export default {
     "starting": "Battle starts...",
     "status": "Status",
     "stop": "Stop",
+    "battle": "Battle",
     "user-status": {
       "accepted": "Accepted",
       "lost": "You lost!",
       "open": "Joined",
-      "won": "You won!"
+      "won": "You won!",
+      "title": "User Status"
     },
     "waiting": "Waiting for opponents..."
   },
