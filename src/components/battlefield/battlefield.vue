@@ -23,7 +23,7 @@
             </div>
             <template v-if="battle">
               <div class="card-body">
-                <div class="d-flex mb-3">
+                <div class="d-flex">
                   <b>{{ `battle.status` | translate }}:</b>
                   <span class="mx-auto"></span>
                   <div>
@@ -34,12 +34,14 @@
                     </template>
                   </div>
                 </div>
-                <template v-if="battle.status === 'started'">
-                  <p>{{ 'battle.duration' | translate }}: {{ battle.duration }}s</p>
-                </template>
+                <div class="d-flex" v-if="battle.status === 'started'">
+                  <b>{{ 'battle.duration' | translate }}:</b>
+                  <span class="mx-auto"></span>
+                  <span>{{ battle.duration }}s</span>
+                </div>
 
                 <template v-if="battle.users[connectionId]">
-                  <div class="border-top py-3">
+                  <div class="border-top mt-3 py-3">
                     <battletris-user-status
                       :battle="battle"
                       :user="battle.users[connectionId]">
@@ -117,15 +119,20 @@
               class="mx-1 mt-2"
               :mana="battle.users[connectionId].mana">
             </battletris-mana-bar>
+
+            <div class="mt-5 text-center">
+              {{ 'battle.abilities-coming' | translate }}
+            </div>
           </div>
         </div>
 
-        <div class="row w-100 m-0">
+        <div class="row w-100 m-0 pr-5">
           <template v-for="(userIndex, index) in userArray">
             <battletris-opponent
               :battle="battle"
               :roomDetails="roomDetails"
-              :userId="Object.keys(battle.users)[index]">
+              :userId="Object.keys(battle.users)[index]"
+              @init="battleMaps[Object.keys(battle.users)[index]] = $event.map">
             </battletris-opponent>
           </template>
         </div>

@@ -54,6 +54,20 @@ module.exports = class Battle {
       'blocks', 'config', 'duration', 'roomName', 'startCounter', 'startTime',
       'status', 'time', 'users',
     ].forEach(key => jsonResult[key] = this[key]);
+
+    // remove circular references
+    Object.keys(jsonResult.users).forEach(userKey => {
+      delete jsonResult.users[userKey].loopTimeout;
+
+      Object.keys(jsonResult.users[userKey]).forEach(propKey => {
+        try {
+          JSON.stringify(jsonResult.users[userKey][propKey]);
+        } catch (ex) {
+          console.log(propKey)
+        }
+      })
+    });
+
     return jsonResult;
   }
 
@@ -89,13 +103,12 @@ module.exports = class Battle {
     // used to handle recursive setTimeout for handling seperated game loops
     user.loopTimeout = null;
 
-    // clear previous active block, so a old one does not will be displayed during start a new game
-    // set it to an empty array to force reloading
-    user.activeBlock = [[]];
-    user.nextBlock = [[]];
-
     // apply the user to the battle
     this.users[connectionId] = user;
+
+    // clear previous active block, so a old one does not will be displayed during start a new game
+    // set it to an empty array to force reloading
+    this.setNextBlock(connectionId);
   }
 
   /**
@@ -141,30 +154,30 @@ module.exports = class Battle {
 
         // start auomated user actions
         Object.keys(this.users).forEach(connectionId => {
-          // generate next blocks
-          this.setNextBlock(connectionId);
-          this.userLoop(connectionId);
+          this.userLoop(connectionId, true);
         });
 
-        // send everything initially
-        this.battleUpdate = this.getJSON();
-
         // start the game, count time and send latest updates every X seconds
-        this.gameLoop();
         this.gameLoopInterval = setInterval(
           async () => this.gameLoop(),
           this.config.gameLoopSpeed
         );
-      }
 
-      // update the counter within the UI
-      await api.chatRoom.broadcast({}, this.roomName, {
-        type: 'battle-increment',
-        battle: {
-          startCounter: this.startCounter,
-          status: this.status,
-        }
-      });
+        // update the counter within the UI
+        await api.chatRoom.broadcast({}, this.roomName, {
+          type: 'battle-increment',
+          battle: this.getJSON(),
+        });
+      } else {
+        // update the counter within the UI
+        await api.chatRoom.broadcast({}, this.roomName, {
+          type: 'battle-increment',
+          battle: {
+            startCounter: this.startCounter,
+            status: this.status,
+          }
+        });
+      }
     }, 1000);
   }
 
@@ -194,7 +207,7 @@ module.exports = class Battle {
    *
    * @param      {string}  connectionId  users connection id
    */
-  userLoop(connectionId) {
+  userLoop(connectionId, initial = false) {
     const user = this.users[connectionId];
 
     // increase speed every X seconds
@@ -208,7 +221,11 @@ module.exports = class Battle {
         user.status !== 'lost' &&
         user.status !== 'won') {
       // move block down, if the user does not used the down key
-      this.userAction(connectionId, 40);
+      // if (!initial && !user.skipAutoMove) {
+      if (!initial) {
+        this.userAction(connectionId, 40);
+      }
+
       // trigger next automated user action 
       user.loopTimeout = setTimeout(() => this.userLoop(connectionId), user.userSpeed);
     }
@@ -221,7 +238,7 @@ module.exports = class Battle {
    */
   gameLoop() {
     // set general data
-    this.duration = Date.now() - this.startTime;
+    this.duration = this.battleUpdate.duration = Date.now() - this.startTime;
 
     // send the battle updates
     api.chatRoom.broadcast({}, this.roomName, {
@@ -258,9 +275,9 @@ module.exports = class Battle {
   /**
    * Handles a user action
    *
-   * @param      {<type>}   connectionId  The connection identifier
-   * @param      {<type>}   key           The key
-   * @return     {Promise}  { description_of_the_return_value }
+   * @param      {string}   connectionId  users connection id
+   * @param      {number}   key           number key
+   * @return     {Promise}  void
    */
   userAction(connectionId, key) {
     // cancel action when a wrong connection id was passed
@@ -319,6 +336,9 @@ module.exports = class Battle {
         // after this, increase the y position by one, so a collision will be generated
         activeBlock.y++;
         break;
+      }
+      default: {
+        return;
       }
     }
 

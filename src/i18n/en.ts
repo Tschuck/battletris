@@ -1,6 +1,7 @@
 /* tslint:disable */
 export default {
   "battle": {
+    "abilities-coming": "Abilities coming soon...",
     "battle": "Battle",
     "controls": {
       "down": "Move down",
