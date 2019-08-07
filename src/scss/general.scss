@@ -1,4 +1,6 @@
 .navbar {
+  min-height: 76px;
+
   border-bottom: 1px solid var(--battletris-content-border);
   background-color: var(--battletris-nav-bg);
 
@@ -50,9 +52,11 @@
   border-bottom: 0;
 
   .nav-item {
+    margin-bottom: 0;
+
     .nav-link {
       color: var(--battletris-card-header-color);
-      border: 1px solid var(--battletris-card-border);
+      border: 1px solid var(--battletris-bg);
       border-bottom: 0;
       background-color: var(--battletris-card-header-bg);
     }

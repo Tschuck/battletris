@@ -2,13 +2,8 @@ import Component, { mixins } from 'vue-class-component';
 import { Vue, Prop, Watch } from 'vue-property-decorator';
 
 import * as battletris from '../../../battletris';
-import Loading from '../../loading/loading.vue';
 
-@Component({
-  components: {
-    'loading': Loading,
-  }
-})
+@Component({ })
 export default class Map extends Vue {
   /**
    * Status flags
@@ -61,7 +56,7 @@ export default class Map extends Vue {
    * Gets the correct canvas width / height.
    */
   handleMapSize() {
-    const $el = (<any>this.$el)
+    const $el = (<any>this.$el);
 
     this.fieldSize.width = $el.offsetWidth - 5 > 400 ? 400 : $el.offsetWidth - 5;
     this.fieldSize.height = this.fieldSize.width * 2;

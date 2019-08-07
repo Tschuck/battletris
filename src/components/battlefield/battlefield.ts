@@ -3,21 +3,8 @@ import { Vue } from 'vue-property-decorator';
 import * as mapHandler from '../../../battletris/mapHandler';
 
 import * as battletris from '../../battletris';
-import BattleUserStatus from './status/status.vue';
-import Chat from '../chat/chat.vue';
-import Header from '../header/header.vue';
-import Loading from '../loading/loading.vue';
-import Map from './map/map.vue';
 
-@Component({
-  components: {
-    'battletris-chat': Chat,
-    'battletris-header': Header,
-    'battletris-map': Map,
-    'battletris-user-status': BattleUserStatus,
-    'loading': Loading,
-  }
-})
+@Component({ })
 export default class BattleField extends Vue {
   /**
    * Status flags
@@ -44,7 +31,12 @@ export default class BattleField extends Vue {
   battle = null;
 
   /**
-   * Connection id
+   * Array of empty elements to render all game fields everytime
+   */
+  userArray = [ null, null, null, null, null, null, ];
+
+  /**
+   * Currents user connection id
    */
   connectionId = '';
 
@@ -253,19 +245,5 @@ export default class BattleField extends Vue {
         }
       });
     }
-  }
-
-  /**
-   * Calculate the size of the opponent div container.
-   */
-  getUserContainerSize() {
-    let usersInARow = Math.round(Object.keys(this.battle.users)
-      .filter(userId => userId !== this.connectionId)
-      .length / 2);
-
-    // allow at least 3 users in a row, then break
-    usersInARow = usersInARow > 3 ? 3 : usersInARow;
-
-    return usersInARow * 300;
   }
 }

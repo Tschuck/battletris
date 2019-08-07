@@ -7,13 +7,7 @@ import Chat from '../chat/chat.vue';
 import Header from '../header/header.vue';
 import Loading from '../loading/loading.vue';
 
-@Component({
-  components: {
-    'battletris-chat': Chat,
-    'battletris-header': Header,
-    'loading': Loading,
-  }
-})
+@Component({ })
 export default class Tavern extends Vue {
   /**
    * status flags

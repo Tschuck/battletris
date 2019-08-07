@@ -1,12 +1,11 @@
 const { resolve } = require('path');
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const webpack = require('webpack');
 
-module.exports = {
+webpackConfig = {
   entry: './src/main.js',
   devtool: '#eval-source-map',
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
@@ -83,3 +82,21 @@ module.exports = {
     hints: false
   }
 }
+
+if (process.env.NODE_ENV === 'production') {
+  webpackConfig.devtool = '#source-map';
+  // http://vue-loader.vuejs.org/en/workflow/production.html
+  webpackConfig.plugins = (webpackConfig.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"production"'
+      }
+    }),
+    new OptimizeCSSAssetsPlugin({}),
+  ]);
+
+  webpackConfig.optimization = webpackConfig.optimization || { };
+  webpackConfig.optimization.minimizer = [new TerserPlugin()];
+}
+
+module.exports = webpackConfig;

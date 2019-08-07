@@ -373,7 +373,10 @@ module.exports = class Battle {
         const clearedRows = mapHandler.clearFullRows(battleUser.map);
         if (clearedRows) {
           battleUser.rows = increment.rows = battleUser.rows + clearedRows;
-          battleUser.mana = increment.mana = battleUser.mana + (clearedRows * 5);
+          
+          // increase mana
+          const mana = battleUser.mana + (clearedRows * 5);
+          battleUser.mana = increment.mana = mana > 100 ? 100 : mana;
 
           // add rows to the bottom of all oponents, when more than one line was removed
           const userKeys = Object.keys(this.users).filter(userKey => userKey !== connectionId);

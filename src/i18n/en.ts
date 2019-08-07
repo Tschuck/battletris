@@ -1,6 +1,15 @@
 /* tslint:disable */
 export default {
   "battle": {
+    "battle": "Battle",
+    "controls": {
+      "down": "Move down",
+      "left": "Move left",
+      "right": "Move right",
+      "space": "Space",
+      "space-desc": "Drop down",
+      "turn": "Turn"
+    },
     "duration": "Duration",
     "join": "Join",
     "leave": "Leave",
@@ -12,13 +21,12 @@ export default {
     "starting": "Battle starts...",
     "status": "Status",
     "stop": "Stop",
-    "battle": "Battle",
     "user-status": {
       "accepted": "Accepted",
       "lost": "You lost!",
       "open": "Joined",
-      "won": "You won!",
-      "title": "User Status"
+      "title": "User Status",
+      "won": "You won!"
     },
     "waiting": "Waiting for opponents..."
   },
@@ -48,7 +56,7 @@ export default {
     "light": "Light"
   },
   "use-config": "Use configuration",
-  "user": "User {index}",
+  "user": "User {name}",
   "welcome": "Welcome to Battletris, a multiplayer block stacking game. You are currently in the tavern, a place where everyone can hang around to search for opponents. Checkup the battlefields and join a match.",
   "your-class": "Class",
   "your-name": "Name"

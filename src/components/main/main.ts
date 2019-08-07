@@ -5,11 +5,7 @@ import { Vue } from 'vue-property-decorator';
 import * as battletris from '../../battletris';
 import Loading from '../loading/loading.vue';
 
-@Component({
-  components: {
-    'loading': Loading
-  }
-})
+@Component({ })
 export default class Main extends Vue {
   /**
    * status flags

@@ -1,0 +1,30 @@
+.mana-bar {
+  position: relative;
+
+  width: calc(100% - 10px);
+  height: 10px;
+
+  text-align: center;
+
+  background-color: var(--battletris-bg);
+
+  small {
+    font-size: 8px;
+
+    z-index: 1;
+
+    display: block;
+
+    color: var(--battletris-mana-color);
+  }
+
+  & > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    transition: 300ms ease-out width;
+
+    background-color: var(--battletris-mana-bg);
+  }
+}

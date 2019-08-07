@@ -4,14 +4,9 @@ import { Vue, Prop, Watch } from 'vue-property-decorator';
 import * as battletris from '../../../battletris';
 
 @Component({ })
-export default class BattleUserStatus extends Vue {
+export default class BattletrisManaBar extends Vue {
   /**
-   * user object to show the status for
+   * amount of mana that should be rendered (0 - 100)
    */
-  @Prop() user;
-
-  /**
-   * active running battle
-   */
-  @Prop() battle;
+  @Prop() mana;
 }

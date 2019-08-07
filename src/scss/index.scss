@@ -22,15 +22,6 @@ body.battletris {
 
   background-color: var(--battletris-bg);
 
-  .battletris-map {
-    text-align: center;
-
-    canvas {
-      border: 1px solid var(--battletris-card-border);
-      background-color: var(--battletris-card-bg);
-    }
-  }
-
   .force-oneline {
     overflow: hidden;
 

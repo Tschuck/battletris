@@ -1,0 +1,10 @@
+.battletris-map {
+  height: 100%;
+
+  text-align: center;
+
+  canvas {
+    border: 1px solid var(--battletris-card-border);
+    background-color: var(--battletris-card-bg);
+  }
+}

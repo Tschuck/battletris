@@ -1,6 +1,6 @@
 <template>
   <div class="h-100 d-flex flex-column">
-    <loading v-if="loading || error" :error="error"></loading>
+    <battletris-loading v-if="loading || error" :error="error"></battletris-loading>
     <template v-else>
       <battletris-header
         :room="room"
@@ -38,30 +38,34 @@
                   <p>{{ 'battle.duration' | translate }}: {{ battle.duration }}s</p>
                 </template>
 
-                <div class="border-top pt-3"
-                  v-if="battle.users[connectionId]">
-                  <battletris-user-status
-                    :battle="battle"
-                    :user="battle.users[connectionId]">
-                  </battletris-user-status>
-                    
-                  <div class="d-flex">
-                    <b>{{ 'battle.next-block' | translate }}:</b>
-                    <span class="mx-auto"></span>
-                    <div>
-                      <div class="d-flex"
-                        v-for="(row, rowIndex) in battle.users[connectionId].nextBlock.map"
-                        v-if="battle.users[connectionId].nextBlock.map[rowIndex].filter((col) => col).length !== 0">
-                        <div v-for="(col, colIndex) in battle.users[connectionId].nextBlock.map[rowIndex]"
-                          style="width: 20px; height: 20px; border: 1px solid var(--battletris-block-border)"
-                          :style="{
-                            'background-color': col ? `var(--battletris-block-bg-${ battle.users[connectionId].nextBlock.type })` : 'transparent',
-                          }">
+                <template v-if="battle.users[connectionId]">
+                  <div class="border-top py-3">
+                    <battletris-user-status
+                      :battle="battle"
+                      :user="battle.users[connectionId]">
+                    </battletris-user-status>
+                      
+                    <div class="d-flex">
+                      <b>{{ 'battle.next-block' | translate }}:</b>
+                      <span class="mx-auto"></span>
+                      <div>
+                        <div class="d-flex"
+                          v-for="(row, rowIndex) in battle.users[connectionId].nextBlock.map"
+                          v-if="battle.users[connectionId].nextBlock.map[rowIndex].filter((col) => col).length !== 0">
+                          <div v-for="(col, colIndex) in battle.users[connectionId].nextBlock.map[rowIndex]"
+                            style="width: 20px; height: 20px; border: 1px solid var(--battletris-block-border)"
+                            :style="{
+                              'background-color': col ? `var(--battletris-block-bg-${ battle.users[connectionId].nextBlock.type })` : 'transparent',
+                            }">
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div> 
-                </div>
+                    </div> 
+                  </div>
+                  <div class="border-top pt-3">
+                    <battletris-controls></battletris-controls>
+                  </div>
+                </template>
               </div>
               <div class="p-3 text-right border-top">
                 <template v-if="battle.status !== 'started'">
@@ -100,38 +104,30 @@
           <battletris-chat :room="room" v-if="leftPanelIndex === 1"></battletris-chat>
         </div>
 
-        <div v-if="battle.users[connectionId]">
-          <battletris-map
-            class="w-100 mt-3"
-            style="height: calc(100% - 200px); min-width: 400px"
-            @init="battleMaps[connectionId] = $event">
-          </battletris-map>
+        <div class="p-3">
+          <div class="card h-100"
+            style="min-width: auto;"
+            v-if="battle.users[connectionId]">
+            <battletris-map
+              class="w-100 mt-3"
+              style="height: calc(100% - 200px); min-width: 400px"
+              @init="battleMaps[connectionId] = $event">
+            </battletris-map>
+            <battletris-mana-bar
+              class="mx-1 mt-2"
+              :mana="battle.users[connectionId].mana">
+            </battletris-mana-bar>
+          </div>
         </div>
 
-        <div class="d-flex flex-wrap">
-          <div class="card"
-            :style="{
-              'min-width': `${ getUserContainerSize() }px`,
-              'max-width': `${ getUserContainerSize() }px`,
-            }"
-            v-for="(userId, index) in Object.keys(battle.users)"
-            v-if="userId !== connectionId && roomDetails.users[userId]">
-            <div class="card-header" v-if="userId && roomDetails.users">
-              <h5>
-                {{ $t('user', { index: index + 1 }) }}
-              </h5>
-            </div>
-            <div class="card-body">
-              <battletris-user-status
-                :battle="battle"
-                :user="battle.users[userId]">
-              </battletris-user-status>
-              <battletris-map
-                class="w-100 h-100 mt-3"
-                @init="battleMaps[userId] = $event">
-              </battletris-map>
-            </div>
-          </div>
+        <div class="row w-100 m-0">
+          <template v-for="(userIndex, index) in userArray">
+            <battletris-opponent
+              :battle="battle"
+              :roomDetails="roomDetails"
+              :userId="Object.keys(battle.users)[index]">
+            </battletris-opponent>
+          </template>
         </div>
       </div>
     </template>

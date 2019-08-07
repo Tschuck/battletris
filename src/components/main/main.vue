@@ -1,6 +1,6 @@
-<template>
+s<template>
 	<div class="h-100">
-    <loading v-if="loading || error" :error="error"></loading>
+    <battletris-loading v-if="loading || error" :error="error"></battletris-loading>
     <template v-else>
       <router-view></router-view>
     </template>

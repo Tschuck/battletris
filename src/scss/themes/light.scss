@@ -6,10 +6,13 @@
   --battletris-card-header-bg: #343a40;
   --battletris-card-header-color: #ffffff;
   --battletris-card-bg: #ffffff;
-  --battletris-card-border: #e2e2e2;
+  --battletris-card-border: #343a40;
   --battletris-card-color: #000000;
 
   // game colors
+  // mana color
+  --battletris-mana-bg: #1874cd;
+  --battletris-mana-color: #000000;
   // reset color
   --battletris-block-bg--1: var(--battletris-card-bg);
   // opponent stacked blocks
@@ -24,5 +27,5 @@
   --battletris-block-bg-4: #03f000;
   --battletris-block-bg-5: #9f00e8;
   --battletris-block-bg-6: #f10000;
-  --battletris-block-border: #212529;
+  --battletris-block-border: var(--battletris-card-bg);
 }

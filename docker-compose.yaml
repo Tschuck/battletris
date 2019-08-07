@@ -5,7 +5,7 @@ services:
     container_name: redis
   battletris:
     image: sebdechant/battletris
-    command: "npm start"
+    command: "npm run start-prod"
     container_name: battletris
     ports:
      - "8080:666"
