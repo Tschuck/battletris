@@ -164,12 +164,9 @@ export default class BattleField extends Vue {
    * @param      {any}  battle  The battle
    */
   handleBattleUpdate(battle: any) {
-    if (this.battle) {
-      this.handleBattleIncrement(battle);
-    }
-
     // just update the battle after the old field was cleared
     this.battle = battle;
+    this.handleBattleIncrement(battle);
   }
 
   /**

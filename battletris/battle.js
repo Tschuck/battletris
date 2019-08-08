@@ -57,15 +57,8 @@ module.exports = class Battle {
 
     // remove circular references
     Object.keys(jsonResult.users).forEach(userKey => {
+      jsonResult.users[userKey] = Object.assign({ }, jsonResult.users[userKey]);
       delete jsonResult.users[userKey].loopTimeout;
-
-      Object.keys(jsonResult.users[userKey]).forEach(propKey => {
-        try {
-          JSON.stringify(jsonResult.users[userKey][propKey]);
-        } catch (ex) {
-          console.log(propKey)
-        }
-      })
     });
 
     return jsonResult;
