@@ -139,6 +139,7 @@ export default {
   },
   "config": "Configuration",
   "go-to-tavern": "Back to Tavern",
+  "go-to-github": "View on Github",
   "loading": "loading...",
   "mana": "Mana",
   "members": "Warriors",

@@ -45,6 +45,12 @@
           :title="$t('config')">
           <i class="mdi mdi-cogs h4"></i>
         </button>
+        <a class="btn" target="_blank"
+          v-b-tooltip.hover
+          :title="$t('go-to-github')"
+          href="https://github.com/tschuck/battletris">
+          <i class="mdi mdi-github-circle h4"></i>
+        </a>
       </div>
 
       <div>
