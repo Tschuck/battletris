@@ -4,8 +4,9 @@ RPG based multiplayer tetris using actionhero and vue.js. You can play against 5
 
 ![battletris](https://github.com/tschuck/battletris/raw/develop/img/battletris.png)
 
-Have a look at the [gamplay video](https://github.com/tschuck/battletris/raw/develop/img/battletris.mp4).
-Play it here: [battletris.de](battletris.de).
+Have a look at the [gamplay video](https://github.com/tschuck/battletris/raw/develop/img/battletris.mp4)
+
+Play it here: [battletris.de](https://battletris.de).
 
 ## To install:
 (assuming you have [node](http://nodejs.org/) and NPM installed)
