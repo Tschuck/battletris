@@ -336,11 +336,26 @@ module.exports = class Battle {
     }
 
     // check if the action can be performed
-    const collision = mapHandler.checkForCollision(battleUser.map, activeBlock, battleUser.activeBlock);
+    let collision = mapHandler.checkForCollision(battleUser.map, activeBlock, battleUser.activeBlock);
     switch (collision) {
       // if the stone movement was invalid, stop it!
+      // if it was a spin and it would spin out of the map, move it to the correct position
       case 'invalid': {
-        return;
+        if (key === 38) {
+          if (activeBlock.x < 0) {
+            activeBlock.x = 0;
+            collision = mapHandler.checkForCollision(battleUser.map, activeBlock, battleUser.activeBlock);
+            break;
+          } else if (activeBlock.x + activeBlock.map[0].length >= 9) {
+            activeBlock.x = 10 - activeBlock.map[0].length;
+            collision = mapHandler.checkForCollision(battleUser.map, activeBlock, battleUser.activeBlock);
+            break;
+          } else {
+            return;
+          }
+        } else {
+          return;
+        }
       }
       // dock the activeBlock to the map and generate a new activeBlock
       case 'docked': {
