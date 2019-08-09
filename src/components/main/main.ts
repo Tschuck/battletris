@@ -17,6 +17,7 @@ export default class Main extends Vue {
     try {
       await battletris.initialize();
       this.$store.state.userConfig = await battletris.getUserConfig();
+      this.$store.state.classes = await battletris.getClasses();
     } catch (ex) {
       this.error = ex.message;
     }

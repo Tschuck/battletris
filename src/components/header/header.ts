@@ -43,16 +43,29 @@ export default class Header extends Vue {
 
   async created() {
     // load classes defintion and rooms
-    this.classes = await battletris.getClasses();
+    this.classes = this.$store.state.classes;
     this.theme = window.localStorage['battletris-theme'];
-
     this.loading = false;
+
+    if (this.$store.state.userConfig.initial) {
+      this.$nextTick(() => (this.$refs.configModal as any).show());
+    }
+  }
+
+  /**
+   * Activate the given class name.
+   *
+   * @param      {any}  $event  click event
+   */
+  useClass(className: string, $event: any) {
+    this.$store.state.userConfig.className = className;
+    this.useConfiguration(0);
   }
 
   /**
    * Use current configuration and send update events.
    */
-  async useConfiguration(timeout = 1000) {
+  useConfiguration(timeout = 1000) {
     if (this.changeTimeout) {
       window.clearTimeout(this.changeTimeout);
     }

@@ -36,10 +36,106 @@ export default {
   "block-preview": "Block-Preview",
   "chat": "Chat",
   "classes": {
-    "rouge": "Rouge",
-    "warlord": "Warlord",
-    "warrior": "Warrior",
-    "wizard": "Wizard"
+    "rouge": {
+      "ability0": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability1": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability2": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability3": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "desc": "A rouge acts in the shadows and uses deceitful attacks to try to throw the enemy off course.<br>Possesses abilities to blind and stun enemies.",
+      "title": "Rouge"
+    },
+    "unkown": {
+      "ability0": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability1": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability2": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability3": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "desc": "A traveller from a distant land, looking for his destination.<br>Ows general abilities without a special orientation.",
+      "title": "The unkown"
+    },
+    "warlord": {
+      "ability0": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability1": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability2": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability3": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "desc": "A magician of dark magic. He knows how to manipulate his opponent and play him off against himself.<br>Has abilities to confuse and summon.",
+      "title": "Warlord"
+    },
+    "warrior": {
+      "ability0": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability1": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability2": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability3": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "desc": "An offensive fighter who attacks the enemy with direct attacks and his powerful muscle power.<br>Harnesses abilities to hurt others and trigger entire earthquakes.",
+      "title": "Warrior"
+    },
+    "wizard": {
+      "ability0": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability1": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability2": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "ability3": {
+        "desc": "unkown",
+        "title": "unkown"
+      },
+      "desc": "An offensive magician who uses the power of elemental magic to harm his opponent.<br>Possesses abilities to freeze and damage.",
+      "title": "Wizard"
+    }
   },
   "config": "Configuration",
   "go-to-tavern": "Back to Tavern",

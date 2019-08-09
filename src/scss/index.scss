@@ -28,4 +28,8 @@ body.battletris {
     white-space: nowrap;
     text-overflow: ellipsis;
   }
+
+  .clickable {
+    cursor: pointer;
+  }
 }

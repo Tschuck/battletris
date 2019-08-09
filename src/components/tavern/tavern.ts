@@ -34,9 +34,9 @@ export default class Tavern extends Vue {
   async created() {
     // watch for room status
     this.listeners.push(battletris.watch('tavern/rooms', (data) => {
-      this.loading = true;
+      // this.loading = true;
       this.rooms = data.message.rooms;
-      this.$nextTick(() => this.loading = false);
+      // this.$nextTick(() => this.loading = false);
     }));
 
     this.rooms = await battletris.getRooms();

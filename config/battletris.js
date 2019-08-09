@@ -5,31 +5,34 @@ exports['default'] = {
         cooldown: 5000,
         costs: 20,
         duration: 2000,
-        name: 'clear-line',
+        type: 'clear-line',
+      },
+      {
+        cooldown: 5000,
+        costs: 20,
+        duration: 2000,
         type: 'add-line',
       },
       {
         cooldown: 5000,
         costs: 20,
         duration: 2000,
-        name: 'clear-line',
-        type: 'clear-line',
+        type: 'add-line',
+      },
+      {
+        cooldown: 5000,
+        costs: 20,
+        duration: 2000,
+        type: 'add-line',
       },
     ];
 
     const classes = {
-      rouge: {
-        skills: demoSkills
-      },
-      warlord: {
-        skills: demoSkills
-      },
-      warrior: {
-        skills: demoSkills
-      },
-      wizard: {
-        skills: demoSkills
-      }
+      unkown: demoSkills,
+      rouge: demoSkills,
+      warlord: demoSkills,
+      warrior: demoSkills,
+      wizard: demoSkills
     };
 
     return {

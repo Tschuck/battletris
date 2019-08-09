@@ -36,11 +36,11 @@
           </template>
           <b-dropdown-item v-for="(connectionId, index) in Object.keys(users)">
             {{ users[connectionId].name }}
-            ({{ `classes.${ users[connectionId].className }`  | translate }})
+            ({{ `classes.${ users[connectionId].className }.title`  | translate }})
           </b-dropdown-item>
         </b-dropdown>
         <button class="btn"
-          v-b-modal.modal-config
+          v-b-modal.config-modal
           v-b-tooltip.hover
           :title="$t('config')">
           <i class="mdi mdi-cogs h4"></i>
@@ -49,7 +49,9 @@
 
       <div>
         <b-modal
-          id="modal-config"
+          id="config-modal"
+          ref="configModal"
+          size="lg"
           :title="$t('config')"
           ok-only>
           <div class="d-flex align-items-center">
@@ -57,19 +59,6 @@
             <input type="text" id="name" class="form-control"
               v-model="$store.state.userConfig.name"
               @keyup="useConfiguration(500)">
-          </div>
-
-          <div class="d-flex align-items-center mt-3">
-            <b for="class" class="col-3 p-0 m-0">{{ 'your-class' | translate }}</b>
-            <select id="class" class="form-control"
-              v-model="$store.state.userConfig.className"
-              @change="useConfiguration(0)">
-              <option
-                v-for="(className, index) in Object.keys(classes)"
-                :value="className">
-                {{ `classes.${ className }` | translate }}
-              </option>
-            </select>
           </div>
 
           <div class="d-flex align-items-center mt-3">
@@ -89,6 +78,43 @@
               <input type="checkbox"
                 v-model="$store.state.userConfig.blockPreview"
                 @change="useConfiguration(0)">
+            </div>
+          </div>
+
+          <div class="mt-3 pt-3 border-top">
+            <b for="class" class="col-3 p-0 m-0">{{ 'your-class' | translate }}</b>
+
+            <div class="d-flex justify-content-between mt-3">
+              <div
+                class="text-center clickable"
+                v-for="(className, index) in Object.keys(classes)"
+                @click="useClass(className)">
+                <battletris-class-img
+                  :className="className"
+                  :width="'100px'"
+                  :height="'100px'"
+                  :color="$store.state.userConfig.className !== className ?
+                    'var(--battletris-class-icon-color)':
+                    'var(--battletris-class-icon-color-active)'">
+                </battletris-class-img>
+                <span
+                  :style="{
+                    color: $store.state.userConfig.className !== className ?
+                      'var(--battletris-class-icon-color)':
+                      'var(--battletris-class-icon-color-active)'
+                  }">
+                  {{ `classes.${ className }.title` | translate }}
+                </span>
+              </div>
+            </div>
+
+            <div class="border mt-3 p-3">
+              <small v-html="$t(`classes.${ $store.state.userConfig.className }.desc`)"></small>
+
+              <battletris-abilities
+                class="mt-3"
+                :className="$store.state.userConfig.className">
+              </battletris-abilities>
             </div>
           </div>
         </b-modal>

@@ -35,7 +35,8 @@ async function getUserConfig() {
   try {
     config = JSON.parse(config);
   } catch (ex) {
-    config = { };
+    // set initial flag to show instructions and configuration at first
+    config = { initial: true };
   }
 
   config.name = config.name ||

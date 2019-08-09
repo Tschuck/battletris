@@ -1,6 +1,7 @@
 'use strict'
 const {Action, api} = require('actionhero')
 const axios = require('axios')
+const NameGen = require('../battletris/namegen');
 
 module.exports = class SampleName extends Action {
   constructor () {
@@ -13,6 +14,7 @@ module.exports = class SampleName extends Action {
   }
  
   async run (data) {
-    data.response.name = (await axios.get('http://names.drycodes.com/1?separator=space')).data[0]
+    const generator = NameGen.compile("sV i");
+    data.response.name = generator.toString();
   }
 }

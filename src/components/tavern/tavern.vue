@@ -41,7 +41,7 @@
                     <li class="list-group-item"
                       v-for="(connectionId, index) in Object.keys(rooms[room].users)">
                       {{ rooms[room].users[connectionId].name }}
-                      ({{ `classes.${ rooms[room].users[connectionId].className }`  | translate }})
+                      ({{ `classes.${ rooms[room].users[connectionId].className }.title`  | translate }})
                     </li>
                   </ul>
                 </div>
