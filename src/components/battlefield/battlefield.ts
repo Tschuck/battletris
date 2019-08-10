@@ -1,6 +1,7 @@
 import Component, { mixins } from 'vue-class-component';
 import { Vue } from 'vue-property-decorator';
 import * as mapHandler from '../../../battletris/mapHandler';
+import { merge } from 'lodash';
 
 import * as battletris from '../../battletris';
 
@@ -179,17 +180,7 @@ export default class BattleField extends Vue {
       return;
     }
 
-    // update general data
-    this.optionalIncrementKeys.forEach(key => {
-      if (battle[key]) {
-        this.battle[key] = battle[key];
-      }
-    });
-
-    // parse duration to seconds
-    if (battle.duration) {
-      this.$set(this.battle, 'duration', Math.round(battle.duration / 1000));
-    }
+    this.battle = merge(this.battle, battle);
 
     // update user maps
     if (battle.users) {
@@ -202,13 +193,13 @@ export default class BattleField extends Vue {
 
           if (this.$store.state.userConfig.blockPreview &&
               connectionId === this.connectionId &&
-              battle.status === 'started') {
+              this.battle.status === 'started') {
             // current battle user will not be updated at this point, just redraw the preview with
             // the latest value, from the current new battle update or from the previous battle
             // instance
             this.previewBlock = mapHandler.getDockPreview(
-              battle.users[this.connectionId].map || this.battle.users[this.connectionId].map,
-              battle.users[this.connectionId].activeBlock || this.battle.users[this.connectionId].activeBlock,
+              this.battle.users[this.connectionId].map,
+              this.battle.users[this.connectionId].activeBlock,
             );
 
             // only render preview block after the 4th level
@@ -223,21 +214,15 @@ export default class BattleField extends Vue {
 
           // draw the current block
           this.battleMaps[connectionId].drawBlockMap(
-            battle.users[connectionId].activeBlock || this.battle.users[connectionId].activeBlock,
+            this.battle.users[connectionId].activeBlock,
             // important: the moving active block consists only of a map of 0 and zero, apply the
             // activeBlock type
-            battle.users[connectionId].activeBlock.type,
+            this.battle.users[connectionId].activeBlock.type,
           );
 
           // redraw the map
           this.battleMaps[connectionId].drawBlockMap(
-            battle.users[connectionId].map || this.battle.users[connectionId].map,
-          );
-
-          // apply all changed keys to the users status
-          Object.keys(battle.users[connectionId]).forEach(key =>
-            // update user content for next round, could be undefined by joining a room
-            this.$set(this.battle.users[connectionId], key, battle.users[connectionId][key])
+            this.battle.users[connectionId].map,
           );
         }
       });

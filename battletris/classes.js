@@ -55,7 +55,7 @@ const demoSkill = {
       //   - blocked: prevers a blocked space
       type: 'manual',
       x: 0,
-      y: 0,
+      y: 19,
     }
   }
 };
@@ -67,7 +67,7 @@ module.exports = {
       config: {
         costs: 20,
         map: [ [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ],
-        pos: { y: 0, },
+        pos: { y: 20, },
       }
     },
     {
@@ -75,7 +75,7 @@ module.exports = {
       config: {
         costs: 20,
         map: [ [ ] ],
-        pos: { y: 0 },
+        pos: { y: 20, },
       }
     },
     demoSkill,

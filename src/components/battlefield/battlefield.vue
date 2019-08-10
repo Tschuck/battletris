@@ -37,7 +37,7 @@
                 <div class="d-flex" v-if="battle.status === 'started'">
                   <b>{{ 'battle.duration' | translate }}:</b>
                   <span class="mx-auto"></span>
-                  <span>{{ battle.duration }}s</span>
+                  <span>{{ parseInt(battle.duration / 1000) }}s</span>
                 </div>
 
                 <template v-if="battle.users[connectionId]">
