@@ -1,8 +1,9 @@
 const _ = require('lodash');
-const { api, } = require('actionhero');
 const blocks = require('./blocks');
 const mapHandler = require('./mapHandler');
 const Mutex = require('async-mutex').Mutex;
+const { abilityKeys, executeAbility } = require('./abilities');
+const { api, } = require('actionhero');
 
 module.exports = class Battle {
   /**
@@ -95,6 +96,8 @@ module.exports = class Battle {
     user.userSpeed = this.config.userSpeed;
     // used to handle recursive setTimeout for handling seperated game loops
     user.loopTimeout = null;
+    // index of the active ability
+    user.abilityIndex = 0;
 
     // apply the user to the battle
     this.users[connectionId] = user;
@@ -281,6 +284,7 @@ module.exports = class Battle {
     const battleUser = this.users[connectionId];
     let originBlock = battleUser.activeBlock;
     let activeBlock = JSON.parse(JSON.stringify(originBlock));
+    let detectCollision = true;
 
     // setup update increment 
     const users = {};
@@ -331,7 +335,31 @@ module.exports = class Battle {
         break;
       }
       default: {
-        return;
+        const knownKey = false;
+
+        // if user pressed a ability activation key, it will be set active
+        const abilityIndex = abilityKeys.indexOf(key);
+        if (abilityIndex !== -1) {
+          battleUser.abilityIndex = abilityIndex;
+          // send update, but disable collision detection
+          knownKey = true;
+          detectCollision = false;
+        }
+
+        // ability should be activated
+        if (key > -1 && key < 6) {
+          const targetConnectionId = Object.keys(this.users)[key];
+          if (targetConnectionId) {
+            executeAbility(battleUser, this.users[targetConnectionId], battleUser.abilityIndex);
+            // enable update
+            knownKey = true;
+          }
+        }
+
+        // just return on invalid input
+        if (!knownKey) {
+          return;
+        }
       }
     }
 

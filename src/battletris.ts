@@ -47,7 +47,7 @@ async function getUserConfig() {
   config.blockPreview = typeof config.blockPreview === 'undefined' ? true : config.blockPreview;
 
   // backup name, when prefilled
-  window.localStorage['battletris-user'] = JSON.stringify(config);
+  updateUserConfig(config);
 
   return config;
 }
@@ -61,6 +61,16 @@ async function getUserConfig() {
 async function populateConfig(room: string, userConfig: any) {
   await roomAction(room, 'room-join', userConfig);
 
+  // save go localStorage
+  updateUserConfig(userConfig);
+}
+
+/**
+ * Save the current user configuration to the localStorage.
+ *
+ * @param      {any}  userConfig  user configuration including name, className, ...
+ */
+function updateUserConfig(userConfig) {
   // save go localStorage
   window.localStorage['battletris-user'] = JSON.stringify(userConfig);
 }
@@ -133,6 +143,7 @@ export {
   roomAction,
   setTheme,
   triggerListeners,
+  updateUserConfig,
   watch,
   wsClient,
 }

@@ -49,6 +49,10 @@ export default class Header extends Vue {
 
     if (this.$store.state.userConfig.initial) {
       this.$nextTick(() => (this.$refs.configModal as any).show());
+
+      // clear initial state and save it
+      delete this.$store.state.userConfig.initial;
+      battletris.updateUserConfig(this.$store.state.userConfig);
     }
   }
 
