@@ -41,8 +41,14 @@
         </b-dropdown>
         <button class="btn"
           v-b-tooltip.hover
+          :title="$t('whats-battletris')"
+          @click="$refs.infoModal.show();">
+          <i class="mdi mdi-information-outline h4"></i>
+        </button>
+        <button class="btn"
+          v-b-tooltip.hover
           :title="$t('config')"
-          @click="showExplanations = false; $refs.configModal.show();">
+          @click="$refs.configModal.show();">
           <i class="mdi mdi-cogs h4"></i>
         </button>
         <a class="btn" target="_blank"
@@ -55,6 +61,18 @@
 
       <div>
         <b-modal
+          id="info-modal"
+          ref="infoModal"
+          size="lg"
+          :title="$t('whats-battletris')"
+          ok-only>
+          <span class="d-block text-justify"
+            v-html="$t('whats-battletris-long')">
+          </span>
+          <b class="d-block mt-3">{{ 'battle.controls.title' | translate }}</b>
+          <battletris-controls></battletris-controls>
+        </b-modal>
+        <b-modal
           id="config-modal"
           ref="configModal"
           size="lg"
@@ -63,11 +81,17 @@
             {{ $t('config') | translate }}
             <button class="btn"
               v-b-toggle.more-infos>
-              <i class="mdi mdi-information-outline"></i>
+              <i class="mdi mdi-information-outline"
+                v-b-tooltip.hover
+                :title="$t('whats-battletris')">
+              </i>
             </button>
           </template>
           <div class="mb-3">
-            <b-collapse id="more-infos" class="mt-2">
+            <b-collapse
+              id="more-infos"
+              ref="moreInfos"
+              class="mt-2">
               <div class="p-3 border">
                 <span class="d-block text-justify"
                   v-html="$t('whats-battletris-long')">

@@ -53,7 +53,10 @@ export default class Header extends Vue {
     this.loading = false;
 
     if (this.$store.state.userConfig.initial) {
-      this.$nextTick(() => (this.$refs.configModal as any).show());
+      this.$nextTick(() => {
+        (this.$refs.configModal as any).show();
+        setTimeout(() => (this.$refs.moreInfos as any).toggle());
+      });
 
       // show initial instructions
       this.showExplanations = true;
