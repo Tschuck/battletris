@@ -63,18 +63,18 @@ const demoSkill = {
 module.exports = {
   unkown: [
     {
-      type: 'insert-lines',
-      config: {
-        costs: 20,
-        map: [ [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ],
-        pos: { y: 20, },
-      }
-    },
-    {
       type: 'remove-lines',
       config: {
         costs: 20,
         map: [ [ ] ],
+        pos: { y: 20, },
+      }
+    },
+    {
+      type: 'insert-lines',
+      config: {
+        costs: 20,
+        map: [ [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ],
         pos: { y: 20, },
       }
     },

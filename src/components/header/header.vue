@@ -158,11 +158,12 @@
             </div>
 
             <div class="border mt-3 p-3">
-              <small v-html="$t(`classes.${ $store.state.userConfig.className }.desc`)"></small>
+              <span v-html="$t(`classes.${ $store.state.userConfig.className }.desc`)"></span>
 
               <battletris-abilities
                 class="mt-3"
-                :className="$store.state.userConfig.className">
+                :className="$store.state.userConfig.className"
+                :descriptionMode="true">
               </battletris-abilities>
             </div>
           </div>

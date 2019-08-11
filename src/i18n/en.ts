@@ -42,6 +42,7 @@ export default {
   "chat": "Chat",
   "classes": {
     "in-development": "This class is currently in development. Abilities for this class will be available soon...",
+    "ability-costs": "Mana-Costs",
     "rouge": {
       "ability0": {
         "desc": "unkown",
@@ -64,12 +65,12 @@ export default {
     },
     "unkown": {
       "ability0": {
-        "desc": "unkown",
-        "title": "unkown"
+        "desc": "Uses a simple shovel, that he found under a bridge, to remove a row at the bottom of the field.",
+        "title": "The Shovel"
       },
       "ability1": {
-        "desc": "unkown",
-        "title": "unkown"
+        "title": "The Slingshot",
+        "desc": "In infinite boredom, the wanderer has optimized his skills with the Slingshot to shoot a whole series of stones at the bottom of a playing field."
       },
       "ability2": {
         "desc": "unkown",
@@ -79,7 +80,7 @@ export default {
         "desc": "unkown",
         "title": "unkown"
       },
-      "desc": "A traveller from a distant land, looking for his destination.<br>Ows general abilities without a special orientation.",
+      "desc": "A traveller from a distant land, looking for his destination. Ows general abilities without a special orientation.",
       "title": "The unkown"
     },
     "warlord": {
@@ -99,7 +100,7 @@ export default {
         "desc": "unkown",
         "title": "unkown"
       },
-      "desc": "A magician of dark magic. He knows how to manipulate his opponent and play him off against himself.<br>Has abilities to confuse and summon.",
+      "desc": "A magician of dark magic. He knows how to manipulate his opponent and play him off against himself. Has abilities to confuse and summon.",
       "title": "Warlord"
     },
     "warrior": {
@@ -119,7 +120,7 @@ export default {
         "desc": "unkown",
         "title": "unkown"
       },
-      "desc": "An offensive fighter who attacks the enemy with direct attacks and his powerful muscle power.<br>Harnesses abilities to hurt others and trigger entire earthquakes.",
+      "desc": "An offensive fighter who attacks the enemy with direct attacks and his powerful muscle power. Harnesses abilities to hurt others and trigger entire earthquakes.",
       "title": "Warrior"
     },
     "wizard": {
@@ -139,7 +140,7 @@ export default {
         "desc": "unkown",
         "title": "unkown"
       },
-      "desc": "An offensive magician who uses the power of elemental magic to harm his opponent.<br>Possesses abilities to freeze and damage.",
+      "desc": "An offensive magician who uses the power of elemental magic to harm his opponent. Possesses abilities to freeze and damage.",
       "title": "Wizard"
     }
   },

@@ -95,6 +95,7 @@
                 </template>
                 <template v-else>
                   <button type="button" class="btn btn-warning"
+                    v-if="battle.users[connectionId]"
                     @click="setBattleStatus('leave')">
                     {{ 'battle.leave' | translate }}
                   </button>
@@ -121,7 +122,10 @@
             </battletris-mana-bar>
 
             <div class="mt-5 text-center">
-              {{ 'battle.abilities-coming' | translate }}
+              <battletris-abilities
+                :className="battle.users[connectionId].className"
+                :battleUser="battle.users[connectionId]">
+              </battletris-abilities>
             </div>
           </div>
         </div>

@@ -25,10 +25,14 @@
               v-if="room !== 'tavern'">
               <div class="card">
                 <div class="card-header">
-                  <h5>{{ $t('battlefield', { index: parseInt(room.replace('field', '')) + 1 }) }}</h5>
+                  <span>{{ $t('battlefield', { index: parseInt(room.replace('field', '')) + 1 }) }}</span>
                   <div>
-                    <small>({{ Object.keys(rooms[room].users).length }} {{ 'members' | translate }})</small>
-                    <button class="btn"
+                    <small
+                      v-b-tooltip.hover
+                      :title="$t('members')">
+                      {{ Object.keys(rooms[room].users).length }}
+                    </small>
+                    <button class="btn p-0 ml-1"
                       v-b-tooltip.hover
                       :title="$t('battle.join')"
                       @click="$router.push({ path: `/battlefield/${ room }` })">
