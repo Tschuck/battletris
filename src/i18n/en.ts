@@ -41,6 +41,7 @@ export default {
   "block-preview": "Block-Preview",
   "chat": "Chat",
   "classes": {
+    "in-development": "This class is currently in development. Abilities for this class will be available soon...",
     "rouge": {
       "ability0": {
         "desc": "unkown",

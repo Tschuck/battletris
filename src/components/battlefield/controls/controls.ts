@@ -4,5 +4,4 @@ import { Vue, Prop, Watch } from 'vue-property-decorator';
 import * as battletris from '../../../battletris';
 
 @Component({ })
-export default class BattletrisControls extends Vue {
-}
+export default class BattletrisControls extends Vue { }

@@ -1,7 +1,7 @@
 import Component, { mixins } from 'vue-class-component';
 import { Vue } from 'vue-property-decorator';
 import * as mapHandler from '../../../battletris/mapHandler';
-import { merge } from 'lodash';
+import { mergeWith } from 'lodash';
 
 import * as battletris from '../../battletris';
 
@@ -180,7 +180,11 @@ export default class BattleField extends Vue {
       return;
     }
 
-    this.battle = merge(this.battle, battle);
+    this.battle = mergeWith(this.battle, battle, (objValue, srcValue) => {
+      if (Array.isArray(srcValue)) {
+        return srcValue;
+      }
+    });
 
     // update user maps
     if (battle.users) {

@@ -12,4 +12,9 @@ export default class BattletrisAbilities extends Vue {
    * Battle user with current stats about ability usage
    */
   @Prop() battleUser;
+
+  /**
+   * Shows the full description text for all abilities
+   */
+  @Prop() descriptionMode;
 }

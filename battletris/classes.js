@@ -66,7 +66,7 @@ module.exports = {
       type: 'insert-lines',
       config: {
         costs: 20,
-        map: [ [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ],
+        map: [ [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ],
         pos: { y: 20, },
       }
     },
@@ -78,38 +78,13 @@ module.exports = {
         pos: { y: 20, },
       }
     },
-    demoSkill,
-    demoSkill,
   ],
   rouge: [
-    demoSkill,
-    demoSkill,
-    demoSkill,
-    demoSkill,
   ],
   warlord: [
-    demoSkill,
-    demoSkill,
-    demoSkill,
-    demoSkill,
   ],
   warrior: [
-    {
-      type: 'clear',
-      config: {
-        costs: 20,
-        map: 'activeBlock',
-        pos: 'blocked',
-      }
-    },
-    demoSkill,
-    demoSkill,
-    demoSkill,
   ],
   wizard: [
-    demoSkill,
-    demoSkill,
-    demoSkill,
-    demoSkill,
   ],
 };

@@ -83,6 +83,21 @@ function clearFullRows(map) {
 }
 
 /**
+ * Returns an array of empty rows for the provided row count.
+ *
+ * @param      {number}  count   rows to generate
+ */
+function generateEmptyRows(count) {
+  const rows = [ ];
+
+  for (let i = 0; i < count; i++) {
+    rows.push(Array(10));
+  }
+
+  return rows;
+}
+
+/**
  * Try to detect the next dock position, where the active block can be docked to.
  *
  * @param      {Array<Array<any>>}  map          map definition (20x10)
@@ -107,5 +122,6 @@ function getDockPreview(map, activeBlock) {
 module.exports = {
   checkForCollision,
   clearFullRows,
+  generateEmptyRows,
   getDockPreview,
 };

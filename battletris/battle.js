@@ -6,7 +6,12 @@ const Mutex = require('async-mutex').Mutex;
 const { api, } = require('actionhero');
 
 // keys that sets the active ability
-const abilityKeys = [ 'q', 'w', 'e', 'r' ];
+const abilityKeys = [
+  81, // q
+  87, // w
+  69, // e
+  82, // r
+];
 
 module.exports = class Battle {
   /**
@@ -18,11 +23,12 @@ module.exports = class Battle {
     const type = Math.round(Math.random() * 6);
 
     return {
-      map: blocks[type][0],
+      map: _.cloneDeep(blocks[type][0]),
       rotation: 0,
       type,
       x: 3,
-      y: 0,
+      // the block map for the long block and the square, starting with an empty zero row
+      y: type === 0 || type === 3 ? -1 : 0,
     };
   }
 
@@ -162,64 +168,69 @@ module.exports = class Battle {
    */
   executeAbility(executorId, targetId, abilityIndex) {
     const executor = this.users[executorId];
-    const target = this.users[targetId];
     const ability = classes[executor.className][abilityIndex];
-    const config = ability.config;
 
-    // reduce mana costs
-    executor.mana -= config.costs;
+    if (!ability || (executor.mana - ability.config.costs) < 0) {
+      return;
+    } else {
+      const config = ability.config;
+      const target = this.users[targetId];
 
-    // copy the map, so the original once will not be adjusted
-    const abilityMap = _.cloneDeep(config.map === 'activeBlock' ? executor.activeBlock : config.map);
-    // check for fully filled rows, clear random columns
-    abilityMap.forEach(row => {
-      if (row.length === 9 && row.filter(col => !!col)) {
-        row[Math.ceil(Math.random() * 10)] = null;
+      // reduce mana costs
+      executor.mana -= config.costs;
+
+      // copy the map, so the original once will not be adjusted
+      const abilityMap = _.cloneDeep(config.map === 'activeBlock' ? executor.activeBlock : config.map);
+      // check for fully filled rows, clear random columns
+      abilityMap.forEach(row => {
+        if (row.length === 10 && row.filter(col => !!col)) {
+          row[Math.ceil(Math.random() * 10)] = null;
+        }
+
+        // replace all set columns with the correct fill type
+        row.forEach(col => col = col ? { type: -2 } : 0);
+      });
+
+      // check for automatic position detection
+      const pos = config.pos;
+      if (pos && pos.type) {
+        if (pos.type === 'free') {
+          // TODO: insert correct field detection
+          pos.x = pos.x || 0;
+          pos.y = pos.y || 0;
+        } else if (pos.type === 'blocked') {
+          // TODO: insert correct field detection
+          pos.x = pos.x || 0;
+          pos.y = pos.y || 0;
+        } else {
+          pos.x = pos.x || 0;
+          pos.y = pos.y || 0;
+        }
       }
 
-      // replace all set columns with the correct fill type
-      row.forEach(col => col = col ? { type: -2 } : 0);
-    });
+      switch (ability.type) {
+        // add all lines with the configured map at the configured position
+        case 'insert-lines': {
+          target.map.splice(pos.y, 0, ...abilityMap);
+          target.map.splice(0, abilityMap.length);
 
-    // check for automatic position detection
-    const pos = config.pos;
-    if (pos && pos.type) {
-      if (pos.type === 'free') {
-        // TODO: insert correct field detection
-        pos.x = pos.x || 0;
-        pos.y = pos.y || 0;
-      } else if (pos.type === 'blocked') {
-        // TODO: insert correct field detection
-        pos.x = pos.x || 0;
-        pos.y = pos.y || 0;
-      } else {
-        pos.x = pos.x || 0;
-        pos.y = pos.y || 0;
-      }
-    }
+          break;
+        }
+        // add lines into the y range
+        case 'remove-lines': {
+          target.map.splice(pos.y - abilityMap.length, abilityMap.length);
+          target.map.splice(0, 0, ...(mapHandler.generateEmptyRows(abilityMap.length)));
 
-    switch (ability.type) {
-      // add all lines with the configured map at the configured position
-      case 'insert-lines': {
-        target.map.splice(pos.y, 0, ...abilityMap);
-        target.map.splice(0, abilityMap.length);
-
-        break;
-      }
-      // add lines into the y range
-      case 'remove-lines': {
-        target.map.splice(pos.y, abilityMap.length);
-        target.map.splice(0, 0, ...(new Array(abilityMap.length)));
-
-        break;
-      }
-      // clears everything in range
-      case 'clear': {
-        break;
-      }
-      // adds a line to range
-      case 'fill': {
-        break;
+          break;
+        }
+        // clears everything in range
+        case 'clear': {
+          break;
+        }
+        // adds a line to range
+        case 'fill': {
+          break;
+        }
       }
     }
 
@@ -372,22 +383,24 @@ module.exports = class Battle {
    * Returns the newly generated next active block for a specific user.
    */
   setNextBlock(connectionId) {
+    const currUser = this.users[connectionId];
+
     // increase block index
-    this.users[connectionId].blockIndex++;
+    currUser.blockIndex++;
 
     // generate new blocks
-    if (!this.blocks[this.users[connectionId].blockIndex]) {
+    if (!this.blocks[currUser.blockIndex]) {
       this.blocks.push(Battle.generateRandomBlock());
     }
 
     // generate next block
-    if (!this.blocks[this.users[connectionId].blockIndex + 1]) {
+    if (!this.blocks[currUser.blockIndex + 1]) {
       this.blocks.push(Battle.generateRandomBlock());
     }
 
     // set active block
-    this.users[connectionId].activeBlock = this.blocks[this.users[connectionId].blockIndex];
-    this.users[connectionId].nextBlock = this.blocks[this.users[connectionId].blockIndex + 1];
+    currUser.activeBlock = _.cloneDeep(this.blocks[currUser.blockIndex]);
+    currUser.nextBlock = _.cloneDeep(this.blocks[currUser.blockIndex + 1]);
   }
 
   /**
@@ -487,7 +500,6 @@ module.exports = class Battle {
     let activeBlock = currUser.activeBlock;
     // backup current user, so we can roll back latest changes
     const currUserOrigin = _.cloneDeep(currUser);
-    let originBlock = _.cloneDeep(activeBlock);
     // only send updates back to the current user, that have changed during this function call
     const lastUserStatus = _.cloneDeep(this.users);
     // save original user objects as backups, so collision detection can retract last actions
@@ -525,10 +537,10 @@ module.exports = class Battle {
       // press space
       case 32: {
         // move the original block to the next dock position
-        originBlock = mapHandler.getDockPreview(currUser.map, activeBlock);
+        currUserOrigin.activeBlock = mapHandler.getDockPreview(currUser.map, activeBlock);
         // assign the new original block to the current currUser active block position, so the
         // collision logic will render this block as docked
-        activeBlock = _.cloneDeep(originBlock);
+        currUser.activeBlock = activeBlock = _.cloneDeep(currUserOrigin.activeBlock);
         // after this, increase the y position by one, so a collision will be generated
         activeBlock.y++;
         break;
@@ -538,17 +550,17 @@ module.exports = class Battle {
 
         // if user pressed a ability activation key, it will be set active
         const abilityIndex = abilityKeys.indexOf(key);
-        if (abilityIndex !== -1) {
+        if (abilityIndex !== -1 && this.classes[currUser.className][abilityIndex]) {
           currUser.abilityIndex = abilityIndex;
           // send update, but disable collision detection
           delete collisionUsers[connectionId];
           knownKey = true;
         }
 
-        // ability should be activated (use 1 to 6 for a better keyboard experience)
-        // also allow tab as direct key for self cast
-        if ((key > 0 && key < 7) || key === 9) {
-          const targetConnectionId = key === 9 ? connectionId : Object.keys(this.users)[key - 1];
+        // ability should be activated (use 1 to 6 for a better keyboard experience) (keyCode 48
+        // equals to zero) also allow tab as direct key for self cast
+        if ((key > 48 && key < 55) || key === 9) {
+          const targetConnectionId = key === 9 ? connectionId : Object.keys(this.users)[key - 49];
           if (targetConnectionId) {
             // enforce collision check for the target user
             if (!collisionUsers[targetConnectionId]) {
