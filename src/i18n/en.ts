@@ -4,12 +4,17 @@ export default {
     "abilities-coming": "Abilities coming soon...",
     "battle": "Battle",
     "controls": {
+      "activate-ability": "Activate ability",
       "down": "Move down",
       "left": "Move left",
       "right": "Move right",
       "space": "Space",
       "space-desc": "Drop down",
-      "turn": "Turn"
+      "tab": "Tab",
+      "title": "Controls",
+      "turn": "Turn",
+      "use-ability": "Use active ability on user",
+      "use-ability-self": "Use ability on yourself"
     },
     "duration": "Duration",
     "join": "Join",
@@ -138,8 +143,8 @@ export default {
     }
   },
   "config": "Configuration",
-  "go-to-tavern": "Back to Tavern",
   "go-to-github": "View on Github",
+  "go-to-tavern": "Back to Tavern",
   "loading": "loading...",
   "mana": "Mana",
   "members": "Warriors",
@@ -156,6 +161,7 @@ export default {
   "use-config": "Use configuration",
   "user": "User {name}",
   "welcome": "Welcome to Battletris, a multiplayer block stacking game. You are currently in the tavern, a place where everyone can hang around to search for opponents. Checkup the battlefields and join a match.",
+  "whats-battletris-long": "<b class=\"d-block\">What is Battletris?</b>Battletris is a multiplayer block stacking game with up to 6 players.<br><br><b class=\"d-block\">Tavern</b>In the beginning you will find yourself in the \"Tavern\", a kind of lobby where players can find each other and join different battles. Once you have decided on a battlefield, you can join it with the small icon (<i class=\"mdi mdi-login-variant\"></i>) in the upper right corner.<br><br><b class=\"d-block\">Battle Control</b>Once you have joined a battlefield, you can see the battle controls on the left and the overview of the different players on the right. If a battle is already running, you can simply watch the action. As soon as no battle has started and there is still free space available, you can join the battle at the bottom of the Battle Controls. After you are joined and ready, use the \"Start Battle\" button to start the battle. As soon as all joined Warriors have started the battle, start a 10 second timer after the actual game starts.<br><br><b class=\"d-block\">This is how to play</b>I hope everyone knows the game principle of good old Tetris. The goal is to stack the opponent's field with blocks up to the top, so that the opponent is eliminated from the battle. The last player with free spaces wins the battle. As soon as you resolve more than one row at a time, all other players will have n - 1 rows attached to the bottom of the field.<br>With the arrow keys (<i class=\"mdi mdi-arrow-left\"></i>, <i class=\"mdi mdi-arrow-right\"></i>) the active block can be changed to the right and to the left. The arrow up key (<i class=\"mdi mdi-arrow-up\"></i>) rotates the active tile. With the arrow down key (<i class=\"mdi mdi-arrow-down\"></i>) you can move the block down faster.<br>By pressing the space bar the active block is docked directly to the existing playing field, so you save a lot of time.<br><br><b class=\"d-block\">Something Special</b>After the basics come some special information. At the beginning, each player selects a class that grants him special abilities like \"Add line\" or \"Remove line\". During the battles an ability can be activated with the \"q, w, e, r\". With the number keys 1 - 6 these abilities can be activated on enemies. With the tab key, abilities can be activated directly on yourself. Each ability requires mana to be activated, which you get by dissolving rows. Again, the more rows you dissolve at once, the more mana you will receive. And be careful, some abilities also have cooldowns.",
   "your-class": "Class",
   "your-name": "Name"
 }

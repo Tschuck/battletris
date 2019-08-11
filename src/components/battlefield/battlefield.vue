@@ -41,7 +41,7 @@
                 </div>
 
                 <template v-if="battle.users[connectionId]">
-                  <div class="border-top mt-3 py-3">
+                  <div class="border-top mt-3 pt-3">
                     <battletris-user-status
                       :battle="battle"
                       :user="battle.users[connectionId]">
@@ -64,10 +64,10 @@
                       </div>
                     </div> 
                   </div>
-                  <div class="border-top pt-3">
-                    <battletris-controls></battletris-controls>
-                  </div>
                 </template>
+                <div class="border-top mt-3 pt-3">
+                  <battletris-controls></battletris-controls>
+                </div>
               </div>
               <div class="p-3 text-right border-top">
                 <template v-if="battle.status !== 'started'">

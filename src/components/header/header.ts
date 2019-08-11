@@ -41,6 +41,11 @@ export default class Header extends Vue {
    */
   setTheme = battletris.setTheme;
 
+  /**
+   * was the configuration opened the first time? Show some explanations
+   */
+  showExplanations = false;
+
   async created() {
     // load classes defintion and rooms
     this.classes = this.$store.state.classes;
@@ -49,6 +54,9 @@ export default class Header extends Vue {
 
     if (this.$store.state.userConfig.initial) {
       this.$nextTick(() => (this.$refs.configModal as any).show());
+
+      // show initial instructions
+      this.showExplanations = true;
 
       // clear initial state and save it
       delete this.$store.state.userConfig.initial;

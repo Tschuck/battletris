@@ -40,9 +40,9 @@
           </b-dropdown-item>
         </b-dropdown>
         <button class="btn"
-          v-b-modal.config-modal
           v-b-tooltip.hover
-          :title="$t('config')">
+          :title="$t('config')"
+          @click="showExplanations = false; $refs.configModal.show();">
           <i class="mdi mdi-cogs h4"></i>
         </button>
         <a class="btn" target="_blank"
@@ -58,8 +58,27 @@
           id="config-modal"
           ref="configModal"
           size="lg"
-          :title="$t('config')"
           ok-only>
+          <template slot="modal-title">
+            {{ $t('config') | translate }}
+            <button class="btn"
+              v-b-toggle.more-infos>
+              <i class="mdi mdi-information-outline"></i>
+            </button>
+          </template>
+          <div class="mb-3">
+            <b-collapse id="more-infos" class="mt-2">
+              <div class="p-3 border">
+                <span class="d-block text-justify"
+                  v-html="$t('whats-battletris-long')">
+                </span>
+              </div>
+              <div class="mt-3 p-3 border">
+                <b>Tldr</b>
+                <battletris-controls></battletris-controls>
+              </div>
+            </b-collapse>
+          </div>
           <div class="d-flex align-items-center">
             <b for="name" class="col-3 p-0 m-0">{{ 'your-name' | translate }}</b>
             <input type="text" id="name" class="form-control"

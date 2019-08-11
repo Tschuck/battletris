@@ -1,88 +1,88 @@
 .battletris-controls {
   position: relative;
 
-  .arrows {
-    position: absolute;
-    right: 0;
-    left: 0;
+  // .arrows {
+  //   position: absolute;
+  //   right: 0;
+  //   left: 0;
 
-    width: 180px;
-    height: 180px;
-    margin: auto;
-    margin-top: 40px;
+  //   width: 180px;
+  //   height: 180px;
+  //   margin: auto;
+  //   margin-top: 40px;
 
-    & > div {
-      position: absolute;
+  //   & > div {
+  //     position: absolute;
 
-      width: 60px;
-      height: 60px;
-      padding: 20px;
+  //     width: 60px;
+  //     height: 60px;
+  //     padding: 20px;
 
-      text-align: center;
+  //     text-align: center;
 
-      border: 1px solid var(--battletris-bg);
+  //     border: 1px solid var(--battletris-bg);
 
-      span {
-        position: absolute;
-        top: -35px;
-        right: 0;
-        left: 0;
-      }
+  //     span {
+  //       position: absolute;
+  //       top: -35px;
+  //       right: 0;
+  //       left: 0;
+  //     }
 
-      &:nth-child(1) {
-        top: 0;
-        left: 59px;
-      }
+  //     &:nth-child(1) {
+  //       top: 0;
+  //       left: 59px;
+  //     }
 
-      &:nth-child(2) {
-        top: 59px;
-        left: 0;
+  //     &:nth-child(2) {
+  //       top: 59px;
+  //       left: 0;
 
-        span {
-          top: 65px;
-        }
-      }
+  //       span {
+  //         top: 65px;
+  //       }
+  //     }
 
-      &:nth-child(3) {
-        top: 59px;
-        left: 59px;
+  //     &:nth-child(3) {
+  //       top: 59px;
+  //       left: 59px;
 
-        span {
-          top: 65px;
-        }
-      }
+  //       span {
+  //         top: 65px;
+  //       }
+  //     }
 
-      &:nth-child(4) {
-        top: 59px;
-        left: 118px;
+  //     &:nth-child(4) {
+  //       top: 59px;
+  //       left: 118px;
 
-        span {
-          top: 65px;
-        }
-      }
+  //       span {
+  //         top: 65px;
+  //       }
+  //     }
 
-      i {
-        font-size: 20px;
-      }
-    }
-  }
+  //     i {
+  //       font-size: 20px;
+  //     }
+  //   }
+  // }
 
-  .space {
-    position: absolute;
-    top: 250px;
+  // .space {
+  //   position: absolute;
+  //   top: 250px;
 
-    width: 100%;
-    padding: 7px;
+  //   width: 100%;
+  //   padding: 7px;
 
-    text-align: center;
+  //   text-align: center;
 
-    border: 1px solid var(--battletris-bg);
+  //   border: 1px solid var(--battletris-bg);
 
-    span:nth-child(2) {
-      position: absolute;
-      top: 45px;
-      right: 0;
-      left: 0;
-    }
-  }
+  //   span:nth-child(2) {
+  //     position: absolute;
+  //     top: 45px;
+  //     right: 0;
+  //     left: 0;
+  //   }
+  // }
 }
