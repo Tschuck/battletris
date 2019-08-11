@@ -1,7 +1,7 @@
 <template>
   <div>
     <template v-if="$store.state.classes[className] && $store.state.classes[className].length !== 0">
-      <template v-if="descriptionMode">
+      <template v-if="!battleUser">
         <div class="d-flex mt-3 align-items-center"
           v-for="(ability, index) of $store.state.classes[className]">
           <div class="p-1 text-center border">
@@ -32,23 +32,40 @@
           </div>
         </div>
       </template>
-      <div v-else>
-        <div class="p-3 text-center border"
-          v-b-tooltip.hover
-          :title="$t(`classes.${ className }.ability${ index }.desc`)">
-          <battletris-ability-img
-            :className="className"
-            :abilityIndex="index"
-            :width="descriptionMode ? '50px' : '20px'"
-            :height="descriptionMode ? '50px' : '20px'"
-            :color="'var(--battletris-class-ability-color)'">
-          </battletris-ability-img>
-          <small class="mt-1 mb-0"
-            v-if="!descriptionMode">
-            {{ `classes.${ className }.ability${ index }.title` | translate }}
-          </small>
+      <template v-else>
+        <div class="d-flex pt-3 px-3 justify-content-between">
+          <div class="text-center border align-items-center position-relative pt-4 pb-3"
+            style="height: 80px; width: 80px;"
+            v-for="(ability, index) of $store.state.classes[className]"
+            :class="{
+              'active-ability': index === battleUser.abilityIndex
+            }">
+            <battletris-ability-img
+              :className="className"
+              :abilityIndex="index"
+              :width="'25px'"
+              :height="'25px'"
+              :color="'var(--battletris-class-ability-color)'">
+            </battletris-ability-img>
+            <small class="d-block mt-1 mb-0">
+              {{ `classes.${ className }.ability${ index }.title` | translate }}
+            </small>
+            <small class="ability-activator"
+              v-b-tooltip.hover
+              :title="$t(`classes.ability-activator`)">
+              {{ [ 'q', 'w', 'e', 'r' ][index] }}
+            </small>
+            <small class="ability-costs"
+              v-b-tooltip.hover
+              :title="$t(`classes.ability-costs`)">
+              {{ ability.config.costs }}
+            </small>
+          </div>
         </div>
-      </div>
+        <span class="text-left mt-1" style="font-size: 15px;">
+          {{ `classes.${ className }.ability${ battleUser.abilityIndex }.desc` | translate }}
+        </span>
+      </template>
     </template>
     <div class="border m-3 p-3" v-else>
       <small>{{ 'classes.in-development' | translate }}</small>

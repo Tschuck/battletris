@@ -32,4 +32,16 @@ body.battletris {
   .clickable {
     cursor: pointer;
   }
+
+  .top-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .top-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 }

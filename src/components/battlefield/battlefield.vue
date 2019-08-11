@@ -120,10 +120,9 @@
               class="mx-1 mt-2"
               :mana="battle.users[connectionId].mana">
             </battletris-mana-bar>
-
-            <div class="mt-5 text-center">
+            <div class="text-center">
               <battletris-abilities
-                :className="battle.users[connectionId].className"
+                :className="roomDetails.users[connectionId].className"
                 :battleUser="battle.users[connectionId]">
               </battletris-abilities>
             </div>

@@ -43,6 +43,7 @@ export default {
   "classes": {
     "in-development": "This class is currently in development. Abilities for this class will be available soon...",
     "ability-costs": "Mana-Costs",
+    "ability-activator": "Key",
     "rouge": {
       "ability0": {
         "desc": "unkown",
@@ -66,10 +67,10 @@ export default {
     "unkown": {
       "ability0": {
         "desc": "Uses a simple shovel, that he found under a bridge, to remove a row at the bottom a Battlefield.",
-        "title": "The Shovel"
+        "title": "Shovel"
       },
       "ability1": {
-        "title": "The Slingshot",
+        "title": "Slingshot",
         "desc": "In infinite boredom, the wanderer has optimized his skills with the Slingshot to shoot a whole series of stones at the bottom of a Battlefield."
       },
       "ability2": {

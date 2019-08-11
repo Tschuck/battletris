@@ -7,7 +7,7 @@
         :users="rooms.tavern.users">
       </battletris-header>
       <div class="d-flex w-100 h-100">
-        <div class="p-3 w-100 h-100" style="min-width: 350px; width: 350px;">
+        <div class="p-3 h-100" style="min-width: 350px; width: 350px;">
           <battletris-chat :room="'tavern'"></battletris-chat>
         </div>
         <div class="h-100 overflow-auto p-3">
