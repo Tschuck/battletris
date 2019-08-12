@@ -16,4 +16,4 @@ deploy:
   script: chmod 600 deploy_key && ssh -o StrictHostKeyChecking=no -i deploy_key ubuntu@52.57.144.103
     ./deploy.sh
   on:
-    branch: develop
+    branch: master
