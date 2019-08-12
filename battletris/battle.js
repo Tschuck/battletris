@@ -170,8 +170,6 @@ module.exports = class Battle {
     const executor = this.users[executorId];
     const ability = classes[executor.className][abilityIndex];
 
-    executor.mana = 100;
-
     // if the ability was not implemented or the user has not enough mana, just reject the action
     if (!ability || (executor.mana - ability.costs) < 0) {
       return;
