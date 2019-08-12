@@ -71,7 +71,7 @@ export default {
       },
       "ability1": {
         "title": "Slingshot",
-        "desc": "In infinite boredom, the wanderer has optimized his skills with the Slingshot to shoot a whole series of stones at the bottom of a Battlefield."
+        "desc": "In infinite boredom, The Unkwon has optimized his skills with the Slingshot to shoot a whole series of stones at the bottom of a Battlefield."
       },
       "ability2": {
         "desc": "unkown",

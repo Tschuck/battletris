@@ -1,6 +1,7 @@
 'use strict'
 const {Action, api} = require('actionhero')
 const axios = require('axios')
+const _ = require('lodash')
 
 module.exports = class Config extends Action {
   constructor () {
@@ -11,6 +12,15 @@ module.exports = class Config extends Action {
   }
  
   async run (data) {
-    data.response.config = api.config.battletris;
+    const config = _.cloneDeep(api.config.battletris);
+
+    // clear functions from abilities that will be passed to ui
+    Object.keys(config.classes).forEach(className => {
+      config.classes[className].forEach(ability => {
+        delete ability.execute;
+      });
+    });
+
+    data.response.config = config;
   }
 }

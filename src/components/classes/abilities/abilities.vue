@@ -22,11 +22,11 @@
             </span>
             <div class="d-flex font-italic" style="opacity: 0.5">
               <small class="mr-3">
-                {{ 'classes.ability-costs' | translate }}: {{ ability.config.costs }}
+                {{ 'classes.ability-costs' | translate }}: {{ ability.costs }}
               </small>
               <small class="mr-3"
-                v-if="ability.config.cooldown">
-                {{ 'classes.ability-costs' | translate }}: {{ ability.config.cooldown }}ms
+                v-if="ability.cooldown">
+                {{ 'classes.ability-costs' | translate }}: {{ ability.cooldown }}ms
               </small>
             </div>
           </div>
@@ -42,7 +42,7 @@
               'active-ability': index === battleUser.abilityIndex
             }"
             :style="{
-              'opacity': battleUser.mana < ability.config.costs ? 0.5: 1,
+              'opacity': battleUser.mana < ability.costs ? 0.5: 1,
             }"
             :title="$t(`classes.${ className }.ability${ battleUser.abilityIndex }.desc`)">
             <battletris-ability-img
@@ -63,7 +63,7 @@
             <small class="ability-costs"
               v-b-tooltip.hover
               :title="$t(`classes.ability-costs`)">
-              {{ ability.config.costs }}
+              {{ ability.costs }}
             </small>
           </div>
         </div>

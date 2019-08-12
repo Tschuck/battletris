@@ -83,21 +83,6 @@ function clearFullRows(map) {
 }
 
 /**
- * Returns an array of empty rows for the provided row count.
- *
- * @param      {number}  count   rows to generate
- */
-function generateEmptyRows(count) {
-  const rows = [ ];
-
-  for (let i = 0; i < count; i++) {
-    rows.push(Array(10));
-  }
-
-  return rows;
-}
-
-/**
  * Try to detect the next dock position, where the active block can be docked to.
  *
  * @param      {Array<Array<any>>}  map          map definition (20x10)
@@ -119,9 +104,46 @@ function getDockPreview(map, activeBlock) {
   return blockCopy;
 }
 
+/**
+ * Returns an array of empty rows for the provided row count.
+ *
+ * @param      {number}  count   rows to generate
+ */
+function generateEmptyRows(count) {
+  const rows = [ ];
+
+  for (let i = 0; i < count; i++) {
+    rows.push(Array(10));
+  }
+
+  return rows;
+}
+
+/**
+ * Takes some rows and make random clear within the rows until clearCount is reached
+ *
+ * @param      {Arra<Array<any>>}   rows        array of rows
+ * @param      {number}             clearCount  number of random clears
+ * @return     {Array<Array<any>>}  rows
+ */
+function generateRandomClears(rows, clearCount = 1) {
+  while (clearCount > 0) {
+    const randomY = Math.round(Math.random() * (rows.length - 1));
+    const randomX = Math.round(Math.random() * (rows[randomY].length - 1));
+
+    if (rows[randomY][randomX]) {
+      rows[randomY][randomX] = null;
+      clearCount--;
+    }
+  }
+
+  return rows;
+}
+
 module.exports = {
   checkForCollision,
   clearFullRows,
   generateEmptyRows,
+  generateRandomClears,
   getDockPreview,
 };

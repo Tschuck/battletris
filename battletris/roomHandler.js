@@ -6,11 +6,6 @@ const Battle = require('./battle');
  */
 const generateRoom = () => {
   return {
-    // room configuration
-    config: {
-      maxUsers: 6,
-      speed: 1, // ???
-    },
     // key = connection id
     // value => { name, class }
     users: { },
