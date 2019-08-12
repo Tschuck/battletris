@@ -37,9 +37,14 @@
           <div class="text-center border align-items-center position-relative pt-4 pb-3"
             style="height: 80px; width: 80px;"
             v-for="(ability, index) of $store.state.classes[className]"
+            v-b-tooltip.hover
             :class="{
               'active-ability': index === battleUser.abilityIndex
-            }">
+            }"
+            :style="{
+              'opacity': battleUser.mana < ability.config.costs ? 0.5: 1,
+            }"
+            :title="$t(`classes.${ className }.ability${ battleUser.abilityIndex }.desc`)">
             <battletris-ability-img
               :className="className"
               :abilityIndex="index"
@@ -62,9 +67,6 @@
             </small>
           </div>
         </div>
-        <span class="text-left mt-1" style="font-size: 15px;">
-          {{ `classes.${ className }.ability${ battleUser.abilityIndex }.desc` | translate }}
-        </span>
       </template>
     </template>
     <div class="border m-3 p-3" v-else>

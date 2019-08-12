@@ -550,7 +550,7 @@ module.exports = class Battle {
 
         // if user pressed a ability activation key, it will be set active
         const abilityIndex = abilityKeys.indexOf(key);
-        if (abilityIndex !== -1 && this.classes[currUser.className][abilityIndex]) {
+        if (abilityIndex !== -1 && classes[currUser.className][abilityIndex]) {
           currUser.abilityIndex = abilityIndex;
           // send update, but disable collision detection
           delete collisionUsers[connectionId];
