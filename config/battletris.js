@@ -15,6 +15,8 @@ exports['default'] = {
       increaseInterval: 30 * 1000,
       // reduce the speed timeout with the amount of ms
       increaseSteps: 100,
+      // google analytics id
+      gaId: 'UA-145312365-1'
     };
   }
 }

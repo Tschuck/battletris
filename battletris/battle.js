@@ -105,13 +105,13 @@ module.exports = class Battle {
               .keys(this.users)
               .filter((userKey) => this.users[userKey].status !== 'lost');
 
-            // if one player has played alone or one player has left, he won  
+            // if one player has played alone or one player has left, he won
             if (wonUsers.length < 2) {
               this.status = 'open';
 
               // set the won user
               if (wonUsers.length === 1) {
-                this.users[wonUsers[0]].status = 'won'; 
+                this.users[wonUsers[0]].status = 'won';
               }
 
               // one user has won and game has been stopped stop the game
@@ -126,7 +126,7 @@ module.exports = class Battle {
         const clearedRows = mapHandler.clearFullRows(changed.map);
         if (clearedRows) {
           changed.rows = changed.rows + clearedRows;
-          
+
           // increase mana
           const mana = changed.mana + (clearedRows * 5);
           changed.mana = mana > 100 ? 100 : mana;
@@ -465,12 +465,24 @@ module.exports = class Battle {
    * Stop the runtime interval
    */
   stop() {
-    // clear gamme loop intervals 
+    // clear gamme loop intervals
     clearInterval(this.startingLoopInterval);
     clearInterval(this.gameLoopInterval);
     // clear user loop intervals
     Object.keys(this.users).forEach(connectionId =>
       clearTimeout(this.users[connectionId].loopTimeout));
+
+
+    // send out statistics for the battle
+
+    api.analytics.ga.event("Battle", "Stats", "Duration", (this.duration/1000)).send()
+    api.analytics.ga.event("Battle", "Stats", "Players", Object.keys(this.users).length).send()
+    const userKeys = Object.keys(this.users)
+    let clearedRows = 0
+    for(let user of userKeys) {
+      clearedRows += this.users[user].rows
+    }
+    api.analytics.ga.event("Battle", "Stats", "Cleared Rows", clearedRows).send()
 
     // reset to initial battle values
     this.initialize();
@@ -615,7 +627,7 @@ module.exports = class Battle {
       user.userSpeed = user.userSpeed - this.config.increaseSteps;
     }
 
-    // if user has not the status lost, run the next 
+    // if user has not the status lost, run the next
     if (this.status === 'started' &&
         user.status !== 'lost' &&
         user.status !== 'won') {
@@ -625,7 +637,7 @@ module.exports = class Battle {
         this.userAction(connectionId, 40);
       }
 
-      // trigger next automated user action 
+      // trigger next automated user action
       this.timeouts[connectionId] = setTimeout(() => this.userLoop(connectionId), user.userSpeed);
     }
 
