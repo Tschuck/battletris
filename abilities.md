@@ -4,6 +4,7 @@
 - Soil is lava
 - Mini Tetris, enter The Dungeon (duel with small square, who wins gets mana, fields ?)
 - Dirt throwing
+- Random Field Swap
 
 ## Classes
 1. Abl. - low costs (~ 10 - 30)
@@ -37,7 +38,7 @@
 
 ### Warlord
 - stone throwing (positiv)
-- black field
+- black field (darkness)
 - false preview
 - Rotate field view
 
