@@ -67,6 +67,8 @@ export default class Analytics extends Vue {
    * Load latest analytics
    */
   async created() {
+    this.loading = true;
+
     // setup custom chartjs colors
     Chart.defaults.global.defaultFontColor = battletris.getCssVariable('card-color');
     this.chartJsOptions.scales.xAxes[0].gridLines.color = battletris.getCssVariable('card-border');
@@ -80,14 +82,14 @@ export default class Analytics extends Vue {
 
     // load analytics data
     await this.loadAnalytics();
+
+    this.loading = false;
   }
 
   /**
    * Load analytics data.
    */
   async loadAnalytics() {
-    this.loading = true;
-
     const datesToLoad = [ ];
     const startDate = new Date(this.dateRange.start);
     const endDate = new Date(this.dateRange.end);
@@ -109,8 +111,6 @@ export default class Analytics extends Vue {
     this.setupDateToBattle();
     this.setupTodayBattles();
     this.setupTableBattle();
-
-    this.loading = false;
   }
 
   /**
@@ -137,9 +137,7 @@ export default class Analytics extends Vue {
     while (startDate <= endDate) {
       const dateString = this.getOnlyDateKey(startDate);
 
-      this.dateToBattleData.labels.push(
-        `${ startDate.getDate() }.${ startDate.getMonth() + 1 }.${ startDate.getFullYear() }`
-      );
+      this.dateToBattleData.labels.push(this.getDateInputValue(startDate));
       this.dateToBattleData.datasets[0].data.push(
         this.analytics[dateString] ? this.analytics[dateString].length : 0
       );
@@ -178,11 +176,10 @@ export default class Analytics extends Vue {
    *
    * @param      {Date}  date    date object
    */
-  getDateInputValue(date) {
+  getDateInputValue(date: Date) {
     return [
       date.getFullYear(),
-      (date.getMonth() + 1).toString().padStart(2, '0')
-      date.getDate().toString().padStart(2, '0')
+      (date.getMonth() + 1).toString().padStart(2, '0'),
+      date.getDate().toString().padStart(2, '0'),
     ].join('-');
-  }
-}
+  }}

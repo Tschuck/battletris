@@ -15,8 +15,8 @@
 
         <i class="mdi mdi-chevron-right h4 mb-0 mx-3"></i>
         <h5 class="mb-0">
-          <template v-if="room === 'tavern'">
-            {{ 'tavern' | translate }}
+          <template v-if="room.indexOf('field') === -1">
+            {{ `rooms.${ room }` | translate }}
           </template>
           <template v-else>
             {{ $t('battlefield', { index: parseInt(room.replace('field', '')) + 1 }) }}
@@ -29,7 +29,8 @@
           toggle-class="text-decoration-none"
           no-caret
           v-b-tooltip.hover
-          :title="$t('members')">
+          :title="$t('members')"
+          v-if="users">
           <template slot="button-content">
             <i class="mdi mdi-account-group h4"></i>
             ({{ Object.keys(users).length }})
@@ -41,15 +42,22 @@
         </b-dropdown>
         <button class="btn"
           v-b-tooltip.hover
-          :title="$t('whats-battletris')"
-          @click="$refs.infoModal.show();">
-          <i class="mdi mdi-information-outline h4"></i>
-        </button>
-        <button class="btn"
-          v-b-tooltip.hover
           :title="$t('config')"
           @click="$refs.configModal.show();">
           <i class="mdi mdi-cogs h4"></i>
+        </button>
+        <a class="btn"
+          v-if="room !== 'analytics'"
+          v-b-tooltip.hover
+          :title="$t('rooms.analytics')"
+          href="#/analytics">
+          <i class="mdi mdi-poll h4"></i>
+        </a>
+        <button class="btn"
+          v-b-tooltip.hover
+          :title="$t('whats-battletris')"
+          @click="$refs.infoModal.show();">
+          <i class="mdi mdi-information-outline h4"></i>
         </button>
         <a class="btn" target="_blank"
           v-b-tooltip.hover

@@ -6,14 +6,14 @@ export default {
     "battle-count-overview": "Battles over Time",
     "battle-count-today": "Battles Today",
     "battles": "Battles",
+    "date": "Date",
     "detailed": "Detailed Overview",
     "end-date": "End-Date",
     "start-date": "Start-Date",
-    "date": "Date",
     "table": {
-      "name": "Name",
-      "className": "Class",
       "blocks": "Blocks",
+      "className": "Class",
+      "name": "Name",
       "rows": "Rows"
     }
   },
@@ -169,6 +169,10 @@ export default {
   "mana": "Mana",
   "members": "Warriors",
   "message": "Message",
+  "rooms": {
+    "analytics": "Analytics",
+    "tavern": "Tavern"
+  },
   "rows": "Rows",
   "send-message": "Send",
   "tavern": "Tavern",
