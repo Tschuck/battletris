@@ -22,14 +22,15 @@ module.exports = class Rooms extends Action {
   }
 
   async run (data) {
-    if (api.battletris.battles[data.params.room]) {
-      try {
-        const update = api.battletris.battles[data.params.room].userAction(
-          data.params.connectionId,
-          data.params.key,
-        );
+    const battle = api.battletris.battles[data.params.room];
 
-        data.response.battle = update;
+    if (battle) {
+      try {
+        // run user action
+        battle.userAction(data.params.connectionId, data.params.key);
+
+        // return last battle update, so the user gets updated directly
+        data.response.battle = battle.getUserStateIncrement(data.params.connectionId);
       } catch (ex) {
         console.error(ex);
         console.trace();        

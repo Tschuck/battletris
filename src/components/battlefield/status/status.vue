@@ -8,6 +8,13 @@
       </div>
     </div>
     <div class="d-flex">
+      <b>{{ 'battle.level' | translate }}:</b>
+      <span class="mx-auto"></span>
+      <div>
+        {{ user.level }}
+      </div>
+    </div>
+    <div class="d-flex">
       <b>{{ 'battle.rows' | translate }}:</b>
       <span class="mx-auto"></span>
       <div>

@@ -180,6 +180,9 @@ export default class BattleField extends Vue {
       return;
     }
 
+    console.log(this.connectionId);
+    console.log(battle.identifier);
+
     this.battle = mergeWith(this.battle, battle, (objValue, srcValue) => {
       if (Array.isArray(srcValue)) {
         return srcValue;

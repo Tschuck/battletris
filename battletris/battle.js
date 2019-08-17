@@ -187,7 +187,7 @@ module.exports = class Battle {
    * @param  {Object} base   Object to compare with
    * @return {Object}        Return a new object who represent the diff
    */
-  getDifference(object, base) {
+  getDifference(object = { }, base = { }) {
     function changes(object, base) {
       return _.transform(object, function(result, value, key) {
         if (!_.isEqual(value, base[key])) {
@@ -208,31 +208,31 @@ module.exports = class Battle {
   gameLoop() {
     // set general data
     this.duration = Date.now() - this.startTime;
-
-    // send the battle updates
-    api.chatRoom.broadcast({}, this.roomName, {
-      type: 'battle-increment',
-      battle: this.getLastBattleUpdate(),
-    });
-
-    // clear the last changes
-    this.lastUserStatus = _.cloneDeep(this.users);
   }
 
   /**
    * Returns the lastest battle status and user updates.
    *
-   * @param      {any}     [lastUserStatus=this.lastUserStatus]  last users status object to
-   *                                                             generate the diff, default is from
-   *                                                             instance
-   * @return     {Object}  status, duration, users.
+   * @param      {string}   connectionId                 connection id of the user, for that the
+   *                                                     last battle update should be returned
+   * @param      {boolean}  [updateUserState=true]  automatic update last user status to the
+   *                                                     latest state
+   * @return     {Object}   status, duration, users.
    */
-  getLastBattleUpdate(lastUserStatus = this.lastUserStatus) {
-    return {
+  getUserStateIncrement(connectionId, updateUserState = true) {
+    const increment = {
       status: this.status,
       duration: this.duration,
-      users: this.getDifference(this.users, lastUserStatus),
+      users: this.getDifference(this.users, this.userStates[connectionId]),
     };
+
+    // save latest version of the users status, so each user has his own update stack that can
+    // be send directly after an action
+    if (updateUserState) {
+      this.userStates[connectionId] = _.cloneDeep(this.users);
+    }
+
+    return increment;
   }
 
   /**
@@ -256,7 +256,7 @@ module.exports = class Battle {
     this.blocks = [ ];
     this.config = _.cloneDeep(api.config.battletris);
     this.duration = 0;
-    this.lastUserStatus = _.cloneDeep(this.users);
+    this.userStates = { };
     this.startCounter = this.config.startCounter;
     this.startTime = 0;
     this.status = 'open';
@@ -294,6 +294,8 @@ module.exports = class Battle {
     user.userSpeed = this.config.userSpeed;
     // index of the active ability
     user.abilityIndex = 0;
+    // current speed level
+    user.level = 1;
 
     // apply the user to the battle
     this.users[connectionId] = user;
@@ -377,6 +379,9 @@ module.exports = class Battle {
         // start auomated user actions
         Object.keys(this.users).forEach(connectionId => {
           this.userLoop(connectionId, true);
+          // used to handle increment user battle states, only a diff will be sent to the user after
+          // an user action or an userLoop turn
+          this.userStates[connectionId] = _.cloneDeep(this.users);
         });
 
         // start the game, count time and send latest updates every X seconds
@@ -390,8 +395,6 @@ module.exports = class Battle {
           type: 'battle-increment',
           battle: this.getJSON(),
         });
-
-        this.lastUserStatus = _.cloneDeep(this.users);
       } else {
         // update the counter within the UI
         await api.chatRoom.broadcast({}, this.roomName, {
@@ -477,8 +480,6 @@ module.exports = class Battle {
     let activeBlock = currUser.activeBlock;
     // backup current user, so we can roll back latest changes
     const currUserOrigin = _.cloneDeep(currUser);
-    // only send updates back to the current user, that have changed during this function call
-    const lastUserStatus = _.cloneDeep(this.users);
     // save original user objects as backups, so collision detection can retract last actions
     let collisionUsers = {
       [ connectionId ]: currUserOrigin
@@ -572,9 +573,6 @@ module.exports = class Battle {
         collisionUserId === connectionId ? key : false
       )
     );
-
-    // return last battle update, so the user gets updated directly
-    return this.getLastBattleUpdate(lastUserStatus);
   }
 
   /**
@@ -587,7 +585,9 @@ module.exports = class Battle {
     const user = this.users[connectionId];
 
     // increase speed every X seconds
-    if ((this.duration % this.config.increaseInterval) === 0) {
+    if (this.duration > (this.config.increaseInterval * user.level)) {
+      // increase users level to speedup the game after another increaseInterval
+      user.level++;
       // reduce the user speed
       user.userSpeed = user.userSpeed - this.config.increaseSteps;
     }
@@ -600,6 +600,12 @@ module.exports = class Battle {
       // if (!initial && !user.skipAutoMove) {
       if (!initial) {
         this.userAction(connectionId, 40);
+
+        // send new battle update
+        api.chatRoom.broadcast({}, this.roomName, {
+          type: 'battle-increment',
+          battle: this.getUserStateIncrement(connectionId),
+        });
       }
 
       // trigger next automated user action

@@ -36,6 +36,7 @@ export default {
     "duration": "Duration",
     "join": "Join",
     "leave": "Leave",
+    "level": "Level",
     "mana": "Mana",
     "next-block": "Next Block",
     "rows": "Rows",
