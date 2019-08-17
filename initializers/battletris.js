@@ -3,7 +3,6 @@
 const { Initializer, api } = require('actionhero');
 const webpackConfig = require('../webpack.config.js');
 const webpack = require('webpack');
-const ua = require('universal-analytics');
 const { roomHandler, generateRoom, } = require('../battletris/roomHandler');
 const Battle = require('../battletris/battle');
 
@@ -21,11 +20,6 @@ module.exports = class Battletris extends Initializer {
       battles: { },
       rooms: { },
     };
-
-    // initialize analytics module
-    api.analytics = {
-      ga: ua(api.config.battletris.gaId)
-    }
 
     const chatMiddleware = {
       name: 'chat middleware',
@@ -54,6 +48,8 @@ module.exports = class Battletris extends Initializer {
       }
     };
 
+    api.log('starting battletris...', 'debug');
+
     // open all the chat rooms and 10 battlefields
     try {
       api.battletris.rooms[`tavern`] = generateRoom();
@@ -70,6 +66,8 @@ module.exports = class Battletris extends Initializer {
     }
 
     api.chatRoom.addMiddleware(chatMiddleware)
+
+    api.log('battletris started', 'debug');
   }
 
   async stop() { }

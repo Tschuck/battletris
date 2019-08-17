@@ -160,6 +160,45 @@ module.exports = class Battle {
   }
 
   /**
+   * Starts a effect loop for specific class and ability.
+   *
+   * @param      {any}  executor      battle user that executes the ability
+   * @param      {any}  target        battle user target
+   * @param      {any}  abilityIndex  ability of that the effect should be started
+   */
+  effectLoop(executor, target, abilityIndex) {
+    const timeouts = this.timeouts[target.connectionId];
+    const effectId = `${ executor.className }.${ abilityIndex }`;
+    const ability = classes[executor.className][abilityIndex];
+    const effect = target.effects[effectId] = target.effects[effectId] || _.clone(ability.effect);
+
+    // specify start time
+    effect.start = Date.now();
+
+    // if effect is already running, increase effect duration
+    if (target.effects[effectId]) {
+      effect.duration += ability.effect.duration;
+      clearTimeout(timeouts[effectId]);
+    }
+
+    // is called until the effect 
+    const runEffect = () => {  
+      // check if effect is expired
+      if ((effect.start + effect.duration) <= Date.now()) {
+        delete target.effects[effectId];
+      } else {
+        ability.execute.call(ability, this, executor, target);
+        timeouts[effectId] = setTimeout(() => runEffect(), effect.timeout);
+      }
+
+      this.sendBattleIncrement();
+    };
+
+    // start the effect loop
+    runEffect();
+  }
+
+  /**
    * Executes a ability for a specific user
    *
    * @param      {any}     executorId    connection id for the user that executes the ability
@@ -173,11 +212,18 @@ module.exports = class Battle {
     // if the ability was not implemented or the user has not enough mana, just reject the action
     if (!ability || (executor.mana - ability.costs) < 0) {
       return;
+    // else, call the ability
     } else {
       // reduce mana of current player
       executor.mana -= ability.costs;
-      // else, call the ability
-      ability.execute.call(this, executor, this.users[targetId]);
+
+      // start the effect loop
+      if (ability.effect) {
+        this.effectLoop(executor, this.users[targetId], abilityIndex);
+      } else {
+        // execute ability directly, if no effect should be applied
+        ability.execute.call(ability, this, executor, this.users[targetId]);
+      }
     }
   }
 
@@ -219,17 +265,17 @@ module.exports = class Battle {
    *                                                     latest state
    * @return     {Object}   status, duration, users.
    */
-  getUserStateIncrement(connectionId, updateUserState = true) {
+  getUserStateIncrement(updateUserState = true) {
     const increment = {
       status: this.status,
       duration: this.duration,
-      users: this.getDifference(this.users, this.userStates[connectionId]),
+      users: this.getDifference(this.users, this.userStates),
     };
 
     // save latest version of the users status, so each user has his own update stack that can
     // be send directly after an action
     if (updateUserState) {
-      this.userStates[connectionId] = _.cloneDeep(this.users);
+      this.userStates = _.cloneDeep(this.users);
     }
 
     return increment;
@@ -285,7 +331,7 @@ module.exports = class Battle {
     // block turn (press up)
     user.blockIndex = -1;
     // buffs / debuffs
-    user.effects = [ ];
+    user.effects = { };
     // amount of mana
     user.mana = 0;
     // cleared rows
@@ -299,10 +345,14 @@ module.exports = class Battle {
 
     // apply the user to the battle
     this.users[connectionId] = user;
+    // setup timeouts object
+    this.timeouts[connectionId] = { };
 
     // clear previous active block, so a old one does not will be displayed during start a new game
     // set it to an empty array to force reloading
     this.setNextBlock(connectionId);
+
+    this.log(`user joined battle ${ connectionId }`);
   }
 
   /**
@@ -313,7 +363,9 @@ module.exports = class Battle {
   leave(connectionId) {
     if (this.users[connectionId]) {
       // clear user loop timeout
-      clearTimeout(this.timeouts[connectionId]);
+      const timeouts = this.timeouts[connectionId];
+      Object.keys(timeouts).forEach(timeout => clearTimeout(timeouts[timeout]));
+
       // remove user from runtime
       delete this.users[connectionId];
       delete this.timeouts[connectionId];
@@ -323,6 +375,13 @@ module.exports = class Battle {
     if (Object.keys(this.users).length === 0) {
       this.stop();
     }
+  }
+
+  /**
+   * Logs in context to this battle.
+   */
+  log(message, level = 'debug') {
+    api.log(`[battletris] [${ this.roomName }]: ${ message }`);
   }
 
   /**
@@ -347,6 +406,16 @@ module.exports = class Battle {
     // set active block
     currUser.activeBlock = _.cloneDeep(this.blocks[currUser.blockIndex]);
     currUser.nextBlock = _.cloneDeep(this.blocks[currUser.blockIndex + 1]);
+  }
+
+  /**
+   * Send latest changes to the battlefield
+   */
+  sendBattleIncrement() {
+    api.chatRoom.broadcast({}, this.roomName, {
+      type: 'battle-increment',
+      battle: this.getUserStateIncrement(),
+    });
   }
 
   /**
@@ -379,9 +448,6 @@ module.exports = class Battle {
         // start auomated user actions
         Object.keys(this.users).forEach(connectionId => {
           this.userLoop(connectionId, true);
-          // used to handle increment user battle states, only a diff will be sent to the user after
-          // an user action or an userLoop turn
-          this.userStates[connectionId] = _.cloneDeep(this.users);
         });
 
         // start the game, count time and send latest updates every X seconds
@@ -389,6 +455,10 @@ module.exports = class Battle {
           async () => this.gameLoop(),
           this.config.gameLoopSpeed
         );
+
+        // used to handle increment user battle states, only a diff will be sent to the user after
+        // an user action or an userLoop turn
+        this.userStates = _.cloneDeep(this.users);
 
         // update the counter within the UI
         await api.chatRoom.broadcast({}, this.roomName, {
@@ -416,8 +486,11 @@ module.exports = class Battle {
     clearInterval(this.startingLoopInterval);
     clearInterval(this.gameLoopInterval);
     // clear user loop intervals
-    Object.keys(this.users).forEach(connectionId =>
-      clearTimeout(this.users[connectionId].loopTimeout));
+    Object.keys(this.timeouts).forEach(connectionId => {
+      Object.keys(this.timeouts[connectionId]).forEach(timeout => {
+        clearTimeout(this.users[connectionId][timeout])
+      })
+    });
 
     // only save reports, when game was not canceled
     if (Object.keys(this.users).length !== 0) {
@@ -508,8 +581,6 @@ module.exports = class Battle {
       // down
       case 40: {
         activeBlock.y++;
-        // just skip next gameloop auto move down
-        currUser.skipAutoMove = true;
         break;
       }
       // press space
@@ -596,22 +667,18 @@ module.exports = class Battle {
     if (this.status === 'started' &&
         user.status !== 'lost' &&
         user.status !== 'won') {
-      // move block down, if the user does not used the down key
-      // if (!initial && !user.skipAutoMove) {
       if (!initial) {
+        // move stone down
         this.userAction(connectionId, 40);
-
-        // send new battle update
-        api.chatRoom.broadcast({}, this.roomName, {
-          type: 'battle-increment',
-          battle: this.getUserStateIncrement(connectionId),
-        });
+        // send latest data to battle room
+        this.sendBattleIncrement();
       }
 
       // trigger next automated user action
-      this.timeouts[connectionId] = setTimeout(() => this.userLoop(connectionId), user.userSpeed);
+      this.timeouts[connectionId].userLoop = setTimeout(() =>
+        this.userLoop(connectionId),
+        user.userSpeed,
+      );
     }
-
-    delete user.skipAutoMove;
   }
 }
