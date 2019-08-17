@@ -1,5 +1,22 @@
 /* tslint:disable */
 export default {
+  "analytics": {
+    "analyze": "Analyze",
+    "battle-count-current": "Battles Running",
+    "battle-count-overview": "Battles over Time",
+    "battle-count-today": "Battles Today",
+    "battles": "Battles",
+    "detailed": "Detailed Overview",
+    "end-date": "End-Date",
+    "start-date": "Start-Date",
+    "date": "Date",
+    "table": {
+      "name": "Name",
+      "className": "Class",
+      "blocks": "Blocks",
+      "rows": "Rows"
+    }
+  },
   "battle": {
     "abilities-coming": "Abilities coming soon...",
     "battle": "Battle",
@@ -41,9 +58,9 @@ export default {
   "block-preview": "Block-Preview",
   "chat": "Chat",
   "classes": {
-    "in-development": "This class is currently in development. Abilities for this class will be available soon...",
-    "ability-costs": "Mana-Costs",
     "ability-activator": "Key",
+    "ability-costs": "Mana-Costs",
+    "in-development": "This class is currently in development. Abilities for this class will be available soon...",
     "rouge": {
       "ability0": {
         "desc": "unkown",
@@ -70,8 +87,8 @@ export default {
         "title": "Shovel"
       },
       "ability1": {
-        "title": "Slingshot",
-        "desc": "In infinite boredom, The Unkwon has optimized his skills with the Slingshot to shoot a whole series of stones at the bottom of a Battlefield."
+        "desc": "In infinite boredom, The Unkwon has optimized his skills with the Slingshot to shoot a whole series of stones at the bottom of a Battlefield.",
+        "title": "Slingshot"
       },
       "ability2": {
         "desc": "unkown",

@@ -11,6 +11,7 @@
 
   // class icon color
   --battletris-class-ability-color: #000000;
+  --battletris-class-ability-color-active: #5074c1;
   --battletris-class-icon-color-active: #5074c1;
   --battletris-class-icon-color: #000000;
 
@@ -33,4 +34,8 @@
   --battletris-block-bg-5: #9f00e8;
   --battletris-block-bg-6: #f10000;
   --battletris-block-border: var(--battletris-card-bg);
+
+  // analytics
+  --battletris-analytics-bg: #5074c1;
+  --battletris-analytics-line: #000000;
 }

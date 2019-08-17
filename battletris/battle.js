@@ -416,21 +416,14 @@ module.exports = class Battle {
     Object.keys(this.users).forEach(connectionId =>
       clearTimeout(this.users[connectionId].loopTimeout));
 
-
-    // send out statistics for the battle
-    api.analytics.ga.event("Battle", "Stats", "Duration", (this.duration/1000)).send()
-    api.analytics.ga.event("Battle", "Stats", "Players", Object.keys(this.users).length).send()
-    const userKeys = Object.keys(this.users)
-    let clearedRows = 0
-    for(let user of userKeys) {
-      clearedRows += this.users[user].rows
-    }
-    api.analytics.ga.event("Battle", "Stats", "Cleared Rows", clearedRows).send()
-
     // only save reports, when game was not canceled
     if (Object.keys(this.users).length !== 0) {
       // add data for analysis
-      const report = { date: Date.now(), };
+      const report = {
+        date: Date.now(),
+        time: Date.now() - this.startTime,
+        room: this.roomName,
+      };
       const date = new Date();
       // parse users for analysis report saving in redis 
       report.users = Object.keys(this.users).map((userId) => {
@@ -445,10 +438,11 @@ module.exports = class Battle {
           blockIndex: battleUser.blockIndex,
           className: battleUser.className,
           name: userInfo.name,
-          room: this.roomName,
           rows: battleUser.rows,
         }
       });
+
+      // push to redis
       api.redis.clients.client.lpush(
         `battletris:${ date.getFullYear() }:${ date.getMonth() }:${ date.getDate() }:${ date.getHours() }`,
         JSON.stringify(report)

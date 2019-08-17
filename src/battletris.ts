@@ -130,9 +130,26 @@ function getCookie(cname) {
   return '';
 }
 
+/**
+ * Returns the value of a battletris css variable.
+ *
+ * @param      {string}  variable  variable name after --battletris-
+ */
+function getCssVariable(variable) {
+  const bodyStyle = getCssVariable.prototype.bodyStyle || getComputedStyle(document.body);
+
+  // cache computed style
+  if (!getCssVariable.prototype.bodyStyle) {
+    getCssVariable.prototype.bodyStyle = bodyStyle;
+  }
+
+  return bodyStyle.getPropertyValue(`--battletris-${ variable }`);
+}
+
 export {
   getClasses,
   getCookie,
+  getCssVariable,
   getRooms,
   getUserConfig,
   initialize,
