@@ -1,11 +1,15 @@
 version: '2'
 services:
   redis:
-    image: redis
+    image: "redis"
     container_name: redis
+    volumes:
+      - ./redis/data:/data
+      - ./redis/redis.conf:/redis.conf
+    command: redis-server /redis.conf
   battletris:
     image: sebdechant/battletris
-    command: "npm run start-prod"
+    command: "npm run start"
     container_name: battletris
     ports:
      - "8080:666"
