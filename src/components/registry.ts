@@ -4,6 +4,7 @@ import BattletrisAbilityImg from './classes/ability-img/ability-img.vue';
 import Chat from './chat/chat.vue';
 import ClassImg from './classes/class-img/class-img.vue';
 import Controls from './battlefield/controls/controls.vue';
+import Effects from './classes/effects/effects.vue';
 import Header from './header/header.vue';
 import Loading from './loading/loading.vue';
 import ManaBar from './battlefield/mana-bar/mana-bar.vue';
@@ -19,6 +20,7 @@ export default [
   { name: 'battletris-chat', component: Chat, },
   { name: 'battletris-class-img', component: ClassImg, },
   { name: 'battletris-controls', component: Controls, },
+  { name: 'battletris-effects', component: Effects, },
   { name: 'battletris-header', component: Header, },
   { name: 'battletris-loading', component: Loading, },
   { name: 'battletris-mana-bar', component: ManaBar, },

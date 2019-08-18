@@ -26,7 +26,7 @@
               </small>
               <small class="mr-3"
                 v-if="ability.cooldown">
-                {{ 'classes.ability-costs' | translate }}: {{ ability.cooldown }}ms
+                {{ 'classes.cooldown' | translate }}: {{ Math.round(ability.cooldown / 1000) }}s
               </small>
             </div>
           </div>
@@ -65,6 +65,13 @@
               :title="$t(`classes.ability-costs`)">
               {{ ability.costs }}
             </small>
+            <!-- explicitly check for battleUser to force reactive cooldowns -->
+            <div class="ability-cooldown"
+              v-if="battleUser &&
+                    battleUser.cooldowns[index] &&
+                    battleUser.cooldowns[index] > dateNow">
+              {{ Math.round((battleUser.cooldowns[index] - dateNow) / 1000) }}s
+            </div>
           </div>
         </div>
       </template>

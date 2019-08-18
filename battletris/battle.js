@@ -34,6 +34,8 @@ module.exports = class Battle {
 
   constructor(roomName) {
     this.roomName = roomName;
+
+    // current joined users, their status, active blocks, effects, ...
     this.users = { };
 
     // used to handle setTimeout calls to prevent circular references in users object
@@ -167,28 +169,36 @@ module.exports = class Battle {
    * @param      {any}  abilityIndex  ability of that the effect should be started
    */
   effectLoop(executor, target, abilityIndex) {
-    const timeouts = this.timeouts[target.connectionId];
-    const effectId = `${ executor.className }.${ abilityIndex }`;
+    const effectId = `effect.${ executor.className }.${ abilityIndex }`;
     const ability = classes[executor.className][abilityIndex];
-    const effect = target.effects[effectId] = target.effects[effectId] || _.clone(ability.effect);
-
-    // specify start time
-    effect.start = Date.now();
+    const existingEffect = target.effects
+      .filter(effect =>
+        effect.className === executor.className &&
+        effect.abilityIndex == executor.abilityIndex
+      )[0];
+    const effect = existingEffect || _.clone(ability.effect);
 
     // if effect is already running, increase effect duration
-    if (target.effects[effectId]) {
+    if (existingEffect) {
       effect.duration += ability.effect.duration;
-      clearTimeout(timeouts[effectId]);
+      this.clearTimeout(target.connectionId, effectId);
+    } else {
+      // specify start time and identifiers
+      effect.start = Date.now();
+      effect.className = executor.className;
+      effect.abilityIndex = executor.abilityIndex;
+      // push it to the target effects
+      target.effects.push(effect);
     }
 
     // is called until the effect 
     const runEffect = () => {  
       // check if effect is expired
       if ((effect.start + effect.duration) <= Date.now()) {
-        delete target.effects[effectId];
+        delete target.effects.splice(target.effects.indexOf(effect), 1);
       } else {
         ability.execute.call(ability, this, executor, target);
-        timeouts[effectId] = setTimeout(() => runEffect(), effect.timeout);
+        this.setTimeout(target.connectionId, effectId, () => runEffect(), effect.timeout);
       }
 
       this.sendBattleIncrement();
@@ -210,12 +220,31 @@ module.exports = class Battle {
     const ability = classes[executor.className][abilityIndex];
 
     // if the ability was not implemented or the user has not enough mana, just reject the action
-    if (!ability || (executor.mana - ability.costs) < 0) {
+    if (
+      // ability not found
+      !ability ||
+      // not enough mana
+      (executor.mana - ability.costs) < 0 ||
+      // cooldown is active
+      executor.cooldowns[abilityIndex]
+    ) {
       return;
     // else, call the ability
     } else {
       // reduce mana of current player
       executor.mana -= ability.costs;
+
+      // lock the ability for 
+      if (ability.cooldown) {
+        // start the cooldown by setting the expiration time to the cooldowns object
+        executor.cooldowns[abilityIndex] = Date.now() + ability.cooldown;
+        
+        // unlock the cooldown after X milliseconds
+        this.setTimeout(executorId, `cooldown.${ abilityIndex }`, () => {
+          delete executor.cooldowns[abilityIndex];
+          this.sendBattleIncrement();
+        }, ability.cooldown);
+      }
 
       // start the effect loop
       if (ability.effect) {
@@ -322,31 +351,31 @@ module.exports = class Battle {
       map.push([...Array(10)]);
     }
 
-    // connection id
-    user.connectionId = connectionId;
-    // keep old status of the user (open, joined, accepted, lost, won)
-    user.status = user.status || 'open';
-    // users full map
-    user.map = map;
+    // index of the active ability
+    user.abilityIndex = 0;
     // block turn (press up)
     user.blockIndex = -1;
+    // connection id
+    user.connectionId = connectionId;
+    // locked abilities for a specific time
+    user.cooldowns = [ ];
     // buffs / debuffs
-    user.effects = { };
+    user.effects = [ ];
+    // current speed level
+    user.level = 1;
+    // users full map
+    user.map = map;
     // amount of mana
     user.mana = 0;
     // cleared rows
     user.rows = 0;
+    // keep old status of the user (open, joined, accepted, lost, won)
+    user.status = user.status || 'open';
     // users speed
     user.userSpeed = this.config.userSpeed;
-    // index of the active ability
-    user.abilityIndex = 0;
-    // current speed level
-    user.level = 1;
 
     // apply the user to the battle
     this.users[connectionId] = user;
-    // setup timeouts object
-    this.timeouts[connectionId] = { };
 
     // clear previous active block, so a old one does not will be displayed during start a new game
     // set it to an empty array to force reloading
@@ -363,12 +392,12 @@ module.exports = class Battle {
   leave(connectionId) {
     if (this.users[connectionId]) {
       // clear user loop timeout
-      const timeouts = this.timeouts[connectionId];
-      Object.keys(timeouts).forEach(timeout => clearTimeout(timeouts[timeout]));
+      Object.keys(this.timeouts).forEach((timeoutId) => {
+        timeoutId.startsWith(connectionId) && this.clearTimeout(timeoutId);
+      });
 
       // remove user from runtime
       delete this.users[connectionId];
-      delete this.timeouts[connectionId];
     }
 
     // if all users have left the game, stop it
@@ -446,9 +475,12 @@ module.exports = class Battle {
         clearInterval(this.gameLoopInterval);
 
         // start auomated user actions
-        Object.keys(this.users).forEach(connectionId => {
-          this.userLoop(connectionId, true);
-        });
+        Object.keys(this.users).forEach(connectionId => this.setTimeout(
+          connectionId,
+          'userLoop',
+          () => this.userLoop(connectionId),
+          this.users[connectionId].userSpeed
+        ));
 
         // start the game, count time and send latest updates every X seconds
         this.gameLoopInterval = setInterval(
@@ -485,12 +517,9 @@ module.exports = class Battle {
     // clear gamme loop intervals
     clearInterval(this.startingLoopInterval);
     clearInterval(this.gameLoopInterval);
+
     // clear user loop intervals
-    Object.keys(this.timeouts).forEach(connectionId => {
-      Object.keys(this.timeouts[connectionId]).forEach(timeout => {
-        clearTimeout(this.users[connectionId][timeout])
-      })
-    });
+    Object.keys(this.timeouts).forEach((timeoutId) => this.clearTimeout(timeoutId));
 
     // only save reports, when game was not canceled
     if (Object.keys(this.users).length !== 0) {
@@ -533,6 +562,28 @@ module.exports = class Battle {
       type: 'battle',
       battle: this.getJSON(),
     });
+  }
+
+  /**
+   * Runs a setTimeout and maps the reference to the timeouts object, so they can be cleared, when
+   * game is stopping or the user lost.
+   */
+  setTimeout(connectionId, id, func, timeout) {
+    // if previous timeout is running, clear it and trigger the new one
+    if (this.timeouts[`${ connectionId }${ id }`]) {
+      this.clearTimeout(connectionId, id);
+    }
+
+    // execute the callback func and register the timeout reference
+    this.timeouts[`${ connectionId }${ id }`] = setTimeout(func, timeout);
+  }
+
+  /**
+   * Removes and stops a timeout from the timeouts object.
+   */
+  clearTimeout(connectionId, id = '') {
+    clearTimeout(this.timeouts[`${ connectionId }${ id }`]);
+    delete this.timeouts[`${ connectionId }${ id }`];
   }
 
   /**
@@ -652,7 +703,7 @@ module.exports = class Battle {
    * @param      {string}   connectionId     users connection id
    * @param      {boolean}  [initial=false]  disables the automatic block move down user action
    */
-  userLoop(connectionId, initial = false) {
+  userLoop(connectionId) {
     const user = this.users[connectionId];
 
     // increase speed every X seconds
@@ -667,18 +718,12 @@ module.exports = class Battle {
     if (this.status === 'started' &&
         user.status !== 'lost' &&
         user.status !== 'won') {
-      if (!initial) {
-        // move stone down
-        this.userAction(connectionId, 40);
-        // send latest data to battle room
-        this.sendBattleIncrement();
-      }
-
+      // move stone down
+      this.userAction(connectionId, 40);
+      // send latest data to battle room
+      this.sendBattleIncrement();
       // trigger next automated user action
-      this.timeouts[connectionId].userLoop = setTimeout(() =>
-        this.userLoop(connectionId),
-        user.userSpeed,
-      );
+      this.setTimeout(connectionId, 'userLoop', () => this.userLoop(connectionId), user.userSpeed);
     }
   }
 }

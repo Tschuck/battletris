@@ -20,13 +20,13 @@ module.exports = {
     },
     // rotate stone, lock space, move down and turn
     {
-      costs: 0,
+      cooldown: 10 * 1000,
+      costs: 30,
       effect: {
-        duration: 5000,
+        duration: 5 * 1000,
         timeout: 100,
       },
       execute: (battle, executor, target) => {
-        battle.log(`turning stone for ${ target.connectionId }`, 'info');
         battle.userAction(target.connectionId, 38);
       },
     },

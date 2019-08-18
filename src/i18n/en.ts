@@ -61,6 +61,7 @@ export default {
   "classes": {
     "ability-activator": "Key",
     "ability-costs": "Mana-Costs",
+    "cooldown": "Cooldown",
     "in-development": "This class is currently in development. Abilities for this class will be available soon...",
     "rouge": {
       "ability0": {

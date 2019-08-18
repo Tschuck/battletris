@@ -180,9 +180,6 @@ export default class BattleField extends Vue {
       return;
     }
 
-    console.log(this.connectionId);
-    console.log(battle.identifier);
-
     this.battle = mergeWith(this.battle, battle, (objValue, srcValue) => {
       if (Array.isArray(srcValue)) {
         return srcValue;
@@ -195,6 +192,10 @@ export default class BattleField extends Vue {
         if (this.battleMaps[connectionId] &&
             this.battleMaps[connectionId].$refs &&
             this.battle.users[connectionId]) {
+          if (battle.users[connectionId].cooldowns) {
+            this.$set(this.battle.users[connectionId], 'cooldowns', this.battle.users[connectionId].cooldowns);
+          }
+
           // clear previous map
           this.battleMaps[connectionId].clearBlockMap();
 

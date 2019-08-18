@@ -126,6 +126,11 @@
                 :battleUser="battle.users[connectionId]">
               </battletris-abilities>
             </div>
+            <div class="text-center">
+              <battletris-effects
+                :battleUser="battle.users[connectionId]">
+              </battletris-effects>
+            </div>
           </div>
         </div>
 
