@@ -5,6 +5,7 @@
 - Mini Tetris, enter The Dungeon (duel with small square, who wins gets mana, fields ?)
 - Dirt throwing
 - Random Field Swap
+- Double movements (2 left, 2 right) (The Drunken)
 
 ## Classes
 1. Abl. - low costs (~ 10 - 30)
@@ -16,7 +17,7 @@
 - clear line
 - add line
 - Auto Spin active stone (Spinning top)
-- Double movements (2 left, 2 right) (The Drunken)
+- Hat game (change active stone into an jester hat)
 
 ### Warrior
 - stone throwing (negative)

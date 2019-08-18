@@ -52,7 +52,7 @@
               :height="'25px'"
               :color="'var(--battletris-class-ability-color)'">
             </battletris-ability-img>
-            <small class="d-block mt-1 mb-0">
+            <small class="d-block mt-1 mb-0" style="font-size: 10px;">
               {{ `classes.${ className }.ability${ index }.title` | translate }}
             </small>
             <small class="ability-activator"

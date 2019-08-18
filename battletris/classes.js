@@ -20,14 +20,31 @@ module.exports = {
     },
     // rotate stone, lock space, move down and turn
     {
-      cooldown: 10 * 1000,
-      costs: 30,
+      costs: 50,
       effect: {
-        duration: 5 * 1000,
+        duration: 15 * 1000,
         timeout: 100,
       },
       execute: (battle, executor, target) => {
         battle.userAction(target.connectionId, 38);
+      },
+    },
+    // replaces the activeBlock of an enemy with an giant block
+    {
+      costs: 80,
+      execute: (battle, executor, target) => {
+        target.activeBlock = {
+          map: [
+            [ 0, 0, 1, 0, 0, 1, 0, 0, ],
+            [ 0, 1, 1, 1, 1, 1, 1, 0, ],
+            [ 1, 0, 0, 1, 1, 0, 0, 1, ],
+            [ 0, 0, 1, 1, 1, 1, 0, 0, ],
+          ],
+          rotation: -1,
+          type: -2,
+          x: 1,
+          y: 0,
+        };
       },
     },
   ],

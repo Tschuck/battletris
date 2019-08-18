@@ -89,16 +89,16 @@ export default {
         "title": "Shovel"
       },
       "ability1": {
-        "desc": "In infinite boredom, The Unkwon has optimized his skills with the Slingshot to shoot a whole series of stones at the bottom of a Battlefield.",
+        "desc": "In infinite boredom, the Unkwon has optimized his skills with the Slingshot to shoot a whole series of stones at the bottom of a Battlefield.",
         "title": "Slingshot"
       },
       "ability2": {
-        "desc": "unkown",
-        "title": "unkown"
+        "desc": "The Unkown has spent his time with a spinning top. The fast spins confuse opponents and they will spin their stones endless.",
+        "title": "Spinning Top"
       },
       "ability3": {
-        "desc": "unkown",
-        "title": "unkown"
+        "desc": "The Unkown met a juggler on his journey and perfected his hat game. Transforms the block into a jester hat.",
+        "title": "Jester's Game"
       },
       "desc": "A traveller from a distant land, looking for his destination. Ows general abilities without a special orientation.",
       "title": "The unkown"

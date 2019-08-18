@@ -617,8 +617,9 @@ module.exports = class Battle {
       }
       // up
       case 38: {
-        // if it's not a block, turn it
-        if (activeBlock.type !== 3) {
+        // if it's not a 4x4 block, turn it
+        // the rotation will be -1 for some abilities, so disable turning
+        if (activeBlock.type !== 3 && activeBlock.rotation !== -1) {
           activeBlock.rotation = activeBlock.rotation === 3 ? 0 : activeBlock.rotation + 1;
           activeBlock.map = blocks[activeBlock.type][activeBlock.rotation];
         }
