@@ -22,8 +22,8 @@ module.exports = {
     {
       costs: 50,
       effect: {
-        duration: 15 * 1000,
-        timeout: 100,
+        duration: 10 * 1000,
+        timeout: 175,
       },
       execute: (battle, executor, target) => {
         battle.userAction(target.connectionId, 38);

@@ -5,7 +5,7 @@
       <template v-if="userId && battle.users && battle.users[userId]">
         <div class="card-header position-relative">
           <h5>
-            {{ roomDetails.users[userId].name }}
+            {{ Object.keys(battle.users).indexOf(userId) + 1 }}. {{ roomDetails.users[userId].name }}
           </h5>
           <span class="mx-auto"></span>
           <small style="opacity: 0.5">

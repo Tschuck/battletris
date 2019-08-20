@@ -20,7 +20,7 @@ module.exports = class Battle {
    * @return     {any}  block definition
    */
   static generateRandomBlock() {
-    const type = Math.round(Math.random() * 6);
+    const type = Math.floor(Math.random() * 6);
 
     return {
       map: _.cloneDeep(blocks[type][0]),
@@ -252,6 +252,7 @@ module.exports = class Battle {
       } else {
         // execute ability directly, if no effect should be applied
         ability.execute.call(ability, this, executor, this.users[targetId]);
+        this.sendBattleIncrement();
       }
     }
   }
