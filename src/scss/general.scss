@@ -1,17 +1,17 @@
 .border {
-  border: 1px solid var(--battletris-card-border) !important;
+  border: 1px solid var(--battletris-border) !important;
 }
 .border-top {
-  border-top: 1px solid var(--battletris-card-border) !important;
+  border-top: 1px solid var(--battletris-border) !important;
 }
 .border-bottom {
-  border-bottom: 1px solid var(--battletris-card-border) !important;
+  border-bottom: 1px solid var(--battletris-border) !important;
 }
 .border-left {
-  border-left: 1px solid var(--battletris-card-border) !important;
+  border-left: 1px solid var(--battletris-border) !important;
 }
 .border-right {
-  border-right: var(--battletris-card-border) !important;
+  border-right: var(--battletris-border) !important;
 }
 
 .navbar {
@@ -32,13 +32,17 @@
   display: flex;
 
   color: var(--battletris-card-color);
-  border: 1px solid var(--battletris-card-border);
+  border: 2px solid var(--battletris-card-border);
   background-color: var(--battletris-card-bg);
+
+  &.active-card {
+    box-shadow: 0 0 8px 1px var(--battletris-card-active);
+  }
 
   .card-header {
     display: flex;
 
-    border-bottom: 1px solid var(--battletris-card-border);
+    border-bottom: 1px solid var(--battletris-border);
     background-color: var(--battletris-card-header-bg);
 
     align-items: center;
@@ -86,7 +90,7 @@
 }
 
 .modal-header {
-  border-bottom: 1px solid var(--battletris-card-border);
+  border-bottom: 1px solid var(--battletris-border);
 }
 
 .modal-content {
@@ -95,5 +99,5 @@
 }
 
 .modal-footer {
-  border-top: 1px solid var(--battletris-card-border);
+  border-top: 1px solid var(--battletris-border);
 }

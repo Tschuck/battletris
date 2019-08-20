@@ -61,6 +61,12 @@
         </button>
         <a class="btn" target="_blank"
           v-b-tooltip.hover
+          :title="$t('buy-me-coffee')"
+          href="https://www.buymeacoffee.com/eo3m4BAyO">
+          <i class="mdi mdi-coffee h4"></i>
+        </a>
+        <a class="btn" target="_blank"
+          v-b-tooltip.hover
           :title="$t('go-to-github')"
           href="https://github.com/tschuck/battletris">
           <i class="mdi mdi-github-circle h4"></i>

@@ -3,9 +3,32 @@
 
   .card {
     .card-header {
-      padding: 10px;
+      overflow: hidden;
+
+      padding: 7px 10px 10px 10px;
 
       border: 0;
+
+      & > span {
+        opacity: .9;
+      }
     }
+  }
+
+  .opponent-number {
+    position: absolute;
+    top: -22px;
+    left: calc(50% - 22px);
+
+    display: flex;
+
+    width: 44px;
+    height: 44px;
+
+    border-radius: 50%;
+    background-color: var(--battletris-bg);
+
+    align-items: flex-end;
+    justify-content: center;
   }
 }

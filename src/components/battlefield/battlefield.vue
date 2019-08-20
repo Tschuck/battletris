@@ -110,7 +110,10 @@
         <div class="p-3">
           <div class="card h-100"
             style="min-width: auto;"
-            v-if="battle.users[connectionId]">
+            v-if="battle.users[connectionId]"
+            :class="{
+              'active-card': battle.users[connectionId].targetId === connectionId 
+            }">
             <battletris-map
               class="w-100 mt-3"
               style="height: calc(100% - 200px); min-width: 400px"

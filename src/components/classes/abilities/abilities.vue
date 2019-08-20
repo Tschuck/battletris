@@ -38,13 +38,10 @@
             style="height: 80px; width: 80px;"
             v-for="(ability, index) of $store.state.classes[className]"
             v-b-tooltip.hover
-            :class="{
-              'active-ability': index === battleUser.abilityIndex
-            }"
             :style="{
               'opacity': battleUser.mana < ability.costs ? 0.5: 1,
             }"
-            :title="$t(`classes.${ className }.ability${ battleUser.abilityIndex }.desc`)">
+            :title="$t(`classes.${ className }.ability${ index }.desc`)">
             <battletris-ability-img
               :className="className"
               :abilityIndex="index"

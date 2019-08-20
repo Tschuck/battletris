@@ -174,7 +174,7 @@ module.exports = class Battle {
     const existingEffect = target.effects
       .filter(effect =>
         effect.className === executor.className &&
-        effect.abilityIndex == executor.abilityIndex
+        effect.abilityIndex == abilityIndex
       )[0];
     const effect = existingEffect || _.clone(ability.effect);
 
@@ -186,7 +186,7 @@ module.exports = class Battle {
       // specify start time and identifiers
       effect.start = Date.now();
       effect.className = executor.className;
-      effect.abilityIndex = executor.abilityIndex;
+      effect.abilityIndex = abilityIndex;
       // push it to the target effects
       target.effects.push(effect);
     }
@@ -352,8 +352,8 @@ module.exports = class Battle {
       map.push([...Array(10)]);
     }
 
-    // index of the active ability
-    user.abilityIndex = 0;
+    // target connection id for applying abilities and block resolvles
+    user.targetId = connectionId;
     // block turn (press up)
     user.blockIndex = -1;
     // connection id
@@ -650,34 +650,37 @@ module.exports = class Battle {
       default: {
         let knownKey = false;
 
-        // if user pressed a ability activation key, it will be set active
-        const abilityIndex = abilityKeys.indexOf(key);
-        if (abilityIndex !== -1 && classes[currUser.className][abilityIndex]) {
-          currUser.abilityIndex = abilityIndex;
-          // send update, but disable collision detection
-          delete collisionUsers[connectionId];
-          knownKey = true;
-        }
-
-        // ability should be activated (use 1 to 6 for a better keyboard experience) (keyCode 48
-        // equals to zero) also allow tab as direct key for self cast
+        // user has changed his target, check if the target for the specific index exists and change
+        // it (use 1 to 6 for a better keyboard experience) (keyCode 48 equals to zero) also allow
+        // tab as direct targeting yourself
         if ((key > 48 && key < 55) || key === 9) {
-          const targetConnectionId = key === 9 ? connectionId : Object.keys(this.users)[key - 49];
-          if (targetConnectionId) {
-            // enforce collision check for the target user
-            if (!collisionUsers[targetConnectionId]) {
-              collisionUsers[targetConnectionId] = _.cloneDeep(this.users[targetConnectionId]);
-            }
-
-            // run the users action
-            this.executeAbility(
-              connectionId,
-              targetConnectionId,
-              currUser.abilityIndex
-            );
-
+          const targetId = key === 9 ? connectionId : Object.keys(this.users)[key - 49];
+          if (targetId) {
+            currUser.targetId = targetId;
+            // send update, but disable collision detection
+            delete collisionUsers[connectionId];
             knownKey = true;
           }
+        }
+
+        // execute ability, when available
+        const abilityIndex = abilityKeys.indexOf(key);
+        if (abilityIndex !== -1 && classes[currUser.className][abilityIndex]) {
+          knownKey = true;
+
+          // enforce collision check for the target user
+          if (!collisionUsers[currUser.targetId]) {
+            collisionUsers[currUser.targetId] = _.cloneDeep(this.users[currUser.targetId]);
+          }
+
+          // run the users action
+          this.executeAbility(
+            connectionId,
+            currUser.targetId,
+            abilityIndex
+          );
+
+          knownKey = true;
         }
 
         // just return on invalid input

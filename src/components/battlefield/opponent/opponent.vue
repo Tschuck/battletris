@@ -1,16 +1,28 @@
 <template>
   <div class="col-4 p-3 opponent"
     v-if="userId !== connectionId">
-    <div class="card w-100 h-100">
+    <div class="card w-100 h-100"
+      :class="{
+        'active-card': battle.users[connectionId] && battle.users[connectionId].targetId === userId 
+      }">
       <template v-if="userId && battle.users && battle.users[userId]">
         <div class="card-header position-relative">
-          <h5>
-            {{ Object.keys(battle.users).indexOf(userId) + 1 }}. {{ roomDetails.users[userId].name }}
-          </h5>
+          <div class="opponent-number"
+            v-b-tooltip.hover
+            :title="'battle.user-number' | translate">
+            {{ Object.keys(battle.users).indexOf(userId) + 1 }}
+          </div>
+          <span
+            v-b-tooltip.hover
+            :title="'battle.user-name' | translate">
+            {{ roomDetails.users[userId].name }}
+          </span>
           <span class="mx-auto"></span>
-          <small style="opacity: 0.5">
+          <span
+            v-b-tooltip.hover
+            :title="'battle.user-status.title' | translate">
             {{ `battle.user-status.${ battle.users[userId].status }` | translate }}
-          </small>
+          </span>
         </div>
         <div class="card-body p-0 d-flex flex-column">
           <div class="d-flex">

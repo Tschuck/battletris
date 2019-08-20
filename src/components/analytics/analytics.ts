@@ -71,8 +71,8 @@ export default class Analytics extends Vue {
 
     // setup custom chartjs colors
     Chart.defaults.global.defaultFontColor = battletris.getCssVariable('card-color');
-    this.chartJsOptions.scales.xAxes[0].gridLines.color = battletris.getCssVariable('card-border');
-    this.chartJsOptions.scales.yAxes[0].gridLines.color = battletris.getCssVariable('card-border');
+    this.chartJsOptions.scales.xAxes[0].gridLines.color = battletris.getCssVariable('border');
+    this.chartJsOptions.scales.yAxes[0].gridLines.color = battletris.getCssVariable('border');
 
     // setup initial date ranges and transform to correct input values
     this.dateRange.start.setDate(this.dateRange.start.getDate() - 30);

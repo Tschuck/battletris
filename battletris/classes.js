@@ -1,7 +1,7 @@
 const mapHandler = require('./mapHandler');
 
 module.exports = {
-  unkown: [
+  unknown: [
     // clear line
     {
       costs: 20,
