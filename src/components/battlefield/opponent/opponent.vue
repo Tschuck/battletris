@@ -23,7 +23,6 @@
             :title="'battle.user-status.title' | translate">
             {{ `battle.user-status.${ battle.users[userId].status }` | translate }}
           </span>
-          {{ battle.users[connectionId].armor }}
         </div>
         <div class="card-body p-0 d-flex flex-column">
           <div class="d-flex">

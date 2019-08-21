@@ -32,6 +32,8 @@ module.exports = class Rooms extends Action {
         (await api.redis.clients.client.keys(`battletris:${ pattern }`)) :
         [ `battletris:${ pattern }` ];
 
+      console.log(`checking analytics keys: ${ keys.concat(', ') }`);
+
       // iterate over all keys and load the data
       await Throttle.all(keys.map(key => async () => {
         // generate correct analytics keys to generate a good looking nested format
@@ -40,6 +42,8 @@ module.exports = class Rooms extends Action {
 
         // load entries from redis
         const entries = await api.redis.clients.client.lrange(key, 0, -1);
+        console.log(`checking analytics key: ${ key }`);
+        console.log(entries);
         // parse to valid JSON
         entries.forEach((entry, index) => entries[index] = JSON.parse(entry));
 
