@@ -472,10 +472,18 @@ module.exports = class Battle {
    * Send latest changes to the battlefield
    */
   sendBattleIncrement() {
-    api.chatRoom.broadcast({}, this.roomName, {
-      type: 'battle-increment',
-      battle: this.getUserStateIncrement(),
-    });
+    // wait until battle-increment timeout is solved
+    if (this.timeouts[`battle-increment`]) {
+      return;
+    }
+
+    // send battle-increment only each 100ms
+    this.setTimeout('', 'battle-increment', () => {
+      api.chatRoom.broadcast({}, this.roomName, {
+        type: 'battle-increment',
+        battle: this.getUserStateIncrement(),
+      });
+    }, 100);
   }
 
   /**
@@ -606,7 +614,10 @@ module.exports = class Battle {
     }
 
     // execute the callback func and register the timeout reference
-    this.timeouts[`${ connectionId }${ id }`] = setTimeout(func, timeout);
+    this.timeouts[`${ connectionId }${ id }`] = setTimeout(() => {
+      delete this.timeouts[`${ connectionId }${ id }`];
+      func();
+    }, timeout);
   }
 
   /**
