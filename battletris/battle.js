@@ -46,6 +46,26 @@ module.exports = class Battle {
   }
 
   /**
+   * Adds a row to a map.
+   *
+   * @param      {Array<Arra<any>>}  map     user map
+   */
+  addFilledRowToMap(map) {
+    const emptyRow = { type: -2 };
+
+    // pushes new line
+    map.push(mapHandler.generateRandomClears(
+      [[
+        emptyRow, emptyRow, emptyRow, emptyRow, emptyRow,
+        emptyRow, emptyRow, emptyRow, emptyRow, emptyRow
+      ]],
+      1
+    )[0]);
+    // remove the first line
+    map.splice(0, 1);
+  }
+
+  /**
    * Gets the previous battle user object and the changed battle user object and check for
    * collisions.
    *
@@ -133,24 +153,14 @@ module.exports = class Battle {
           const mana = changed.mana + (clearedRows * 5);
           changed.mana = mana > 100 ? 100 : mana;
 
-          // add rows to the bottom of all oponents, when more than one line was removed
-          const userKeys = Object.keys(this.users).filter(userKey => userKey !== connectionId);
-          for (let i = 0; i < (clearedRows - 1); i++) {
-            // create a filled row that should be added to the others
-            const emptyRow = [ ];
-            for (let i = 0; i < 10; i++) {
-              emptyRow.push({ type: -2 });
-            }
-            // clear one column
-            emptyRow[Math.ceil(Math.random() * 10)] = null;
-            userKeys.forEach(userKey => {
-              // add the new row and remove the first row
-              this.users[userKey].map.push(emptyRow);
-              this.users[userKey].map.splice(0, 1);
-            });
-          }
-
-          // TODO: check if anyone has lost after new lines where stacked at the bottom
+          // start the armor damage / heal ability for the target user
+          this.executeAbility(
+            'battletris',
+            changed.targetId,
+            // if user activated ability on his self, start the specific repair ability, else start
+            // the damage ability
+            changed.targetId === changed.connectionId ? clearedRows - 1 : 3 + clearedRows,
+          );
         }
 
         // set the next block to display for the current user
@@ -167,8 +177,10 @@ module.exports = class Battle {
    * @param      {any}  executor      battle user that executes the ability
    * @param      {any}  target        battle user target
    * @param      {any}  abilityIndex  ability of that the effect should be started
+   * @param      {any}  payload       optional payload that should be passed into the ability
+   *                                  execute function
    */
-  effectLoop(executor, target, abilityIndex) {
+  effectLoop(executor, target, abilityIndex, payload) {
     const effectId = `effect.${ executor.className }.${ abilityIndex }`;
     const ability = classes[executor.className][abilityIndex];
     const existingEffect = target.effects
@@ -187,25 +199,36 @@ module.exports = class Battle {
       effect.start = Date.now();
       effect.className = executor.className;
       effect.abilityIndex = abilityIndex;
+      effect.stack = 1;
       // push it to the target effects
       target.effects.push(effect);
     }
 
     // is called until the effect 
-    const runEffect = () => {  
+    const runEffect = () => {
       // check if effect is expired
       if ((effect.start + effect.duration) <= Date.now()) {
         delete target.effects.splice(target.effects.indexOf(effect), 1);
       } else {
-        ability.execute.call(ability, this, executor, target);
-        this.setTimeout(target.connectionId, effectId, () => runEffect(), effect.timeout);
+        // reduce the stack count
+        effect.stack = Math.round(effect.duration / ability.duration);
+
+        // run the ability
+        ability.execute.call(ability, this, executor, target, payload);
+
+        // start next the next call
+        this.setTimeout(target.connectionId, effectId, runEffect, effect.timeout);
       }
 
       this.sendBattleIncrement();
     };
 
-    // start the effect loop
-    runEffect();
+      // start the effect loop
+    if (effect.type === 'delayed') {
+      this.setTimeout(target.connectionId, effectId, runEffect, effect.timeout);
+    } else {
+      runEffect();
+    }
   }
 
   /**
@@ -214,9 +237,14 @@ module.exports = class Battle {
    * @param      {any}     executorId    connection id for the user that executes the ability
    * @param      {any}     targetId      connection id of the target
    * @param      {number}  abilityIndex  0 - 3, index of the ability that should be executed
+   * @param      {any}     payload       optional payload that should be passed into the ability
+   *                                     execute function
    */
-  executeAbility(executorId, targetId, abilityIndex) {
-    const executor = this.users[executorId];
+  executeAbility(executorId, targetId, abilityIndex, payload) {
+    // side load faked battletris user, to activate game abilities
+    let executor = executorId === 'battletris' ?
+      { className: 'battletris', connectionId: 'battletris', cooldowns: { }, mana: 100, } :
+      this.users[executorId];
     const ability = classes[executor.className][abilityIndex];
 
     // if the ability was not implemented or the user has not enough mana, just reject the action
@@ -248,10 +276,10 @@ module.exports = class Battle {
 
       // start the effect loop
       if (ability.effect) {
-        this.effectLoop(executor, this.users[targetId], abilityIndex);
+        this.effectLoop(executor, this.users[targetId], abilityIndex, payload);
       } else {
         // execute ability directly, if no effect should be applied
-        ability.execute.call(ability, this, executor, this.users[targetId]);
+        ability.execute.call(ability, this, executor, this.users[targetId], payload);
         this.sendBattleIncrement();
       }
     }
@@ -352,8 +380,8 @@ module.exports = class Battle {
       map.push([...Array(10)]);
     }
 
-    // target connection id for applying abilities and block resolvles
-    user.targetId = connectionId;
+    // when armor gets damaged to zero, the add line ability is called
+    user.armor = 100;
     // block turn (press up)
     user.blockIndex = -1;
     // connection id
@@ -374,6 +402,8 @@ module.exports = class Battle {
     user.status = user.status || 'open';
     // users speed
     user.userSpeed = this.config.userSpeed;
+    // target connection id for applying abilities and block resolvles
+    user.targetId = connectionId;
 
     // apply the user to the battle
     this.users[connectionId] = user;

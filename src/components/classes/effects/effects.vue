@@ -3,9 +3,8 @@
     <div class="text-center border"
       style="height: 40px; width: 40px;"
       v-for="(effect, index) in battleUser.effects"
-      v-if="$store.state.classes[effect.className] && $store.state.classes[effect.className][effect.abilityIndex]"
       v-b-tooltip.hover
-      :title="$t(`classes.${ cclassName }.ability${ effect.abilityIndex }.desc`)">
+      :title="$t(`classes.${ effect.className }.ability${ effect.abilityIndex }.desc`)">
       <battletris-ability-img
         :className="effect.className"
         :abilityIndex="effect.abilityIndex"

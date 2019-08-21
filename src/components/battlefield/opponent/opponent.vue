@@ -23,14 +23,24 @@
             :title="'battle.user-status.title' | translate">
             {{ `battle.user-status.${ battle.users[userId].status }` | translate }}
           </span>
+          {{ battle.users[connectionId].armor }}
         </div>
         <div class="card-body p-0 d-flex flex-column">
           <div class="d-flex">
-            <battletris-mana-bar
-              :mana="battle.users[userId].mana">
-            </battletris-mana-bar>
+            <div class="w-100">
+              <battletris-resource-bar
+                :color="'var(--battletris-mana-bg)'"
+                :resource="battle.users[userId].mana"
+                :type="'mana'">
+              </battletris-resource-bar>
+              <battletris-resource-bar
+                :color="'var(--battletris-armor-bg)'"
+                :resource="battle.users[userId].armor"
+                :type="'armor'">
+              </battletris-resource-bar>
+            </div>
 
-            <span class="d-block pl-3 pr-1"
+            <span class="d-block pt-1 pl-3 pr-1"
               style="font-size: 8px;"
               v-b-tooltip.hover
               :title="$t('battle.rows')">

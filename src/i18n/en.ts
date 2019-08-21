@@ -38,6 +38,7 @@ export default {
     "leave": "Leave",
     "level": "Level",
     "mana": "Mana",
+    "armor": "Armor",
     "next-block": "Next Block",
     "rows": "Rows",
     "speed": "Speed",
@@ -64,6 +65,40 @@ export default {
   "classes": {
     "ability-activator": "Key",
     "ability-costs": "Mana-Costs",
+    "battletris": {
+      "ability0": {
+        "desc": "Repairs your armor a little bit.",
+        "title": "Reparing Armor"
+      },
+      "ability1": {
+        "desc": "Repairs your armor a little bit more.",
+        "title": "Reparing Armor"
+      },
+      "ability2": {
+        "desc": "Repairs your armor.",
+        "title": "Reparing Armor"
+      },
+      "ability3": {
+        "desc": "Repairs your armor massively.",
+        "title": "Reparing Armor"
+      },
+      "ability4": {
+        "desc": "Damages your armor a little bit.",
+        "title": "Armor Damage"
+      },
+      "ability5": {
+        "desc": "Damages your armor a little bit more.",
+        "title": "Armor Damage"
+      },
+      "ability6": {
+        "desc": "Damages your armor.",
+        "title": "Armor Damage"
+      },
+      "ability7": {
+        "desc": "Damages your armor massively.",
+        "title": "Armor Damage"
+      }
+    },
     "cooldown": "Cooldown",
     "in-development": "This class is currently in development. Abilities for this class will be available soon...",
     "rouge": {

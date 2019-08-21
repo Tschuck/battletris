@@ -119,10 +119,18 @@
               style="height: calc(100% - 200px); min-width: 400px"
               @init="battleMaps[connectionId] = $event">
             </battletris-map>
-            <battletris-mana-bar
+            <battletris-resource-bar
               class="mx-1 mt-2"
-              :mana="battle.users[connectionId].mana">
-            </battletris-mana-bar>
+              :color="'var(--battletris-mana-bg)'"
+              :resource="battle.users[connectionId].mana"
+              :type="'mana'">
+            </battletris-resource-bar>
+            <battletris-resource-bar
+              class="mx-1"
+              :color="'var(--battletris-armor-bg)'"
+              :resource="battle.users[connectionId].armor"
+              :type="'armor'">
+            </battletris-resource-bar>
             <div class="text-center">
               <battletris-abilities
                 :className="roomDetails.users[connectionId].className"

@@ -14,6 +14,9 @@ module.exports = class Config extends Action {
   async run (data) {
     const config = _.cloneDeep(api.config.battletris);
 
+    // never return the battletris class, it's only for backend use
+    delete config.classes.battletris;
+
     // clear functions from abilities that will be passed to ui
     Object.keys(config.classes).forEach(className => {
       config.classes[className].forEach(ability => {

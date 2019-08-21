@@ -31,7 +31,7 @@ module.exports = class Rooms extends Action {
 
         // return last battle update, so the user gets updated directly
         // data.response.battle = battle.getUserStateIncrement();
-        data.response.battle = battle.getUserStateIncrement(false);
+        data.response.battle = battle.getUserStateIncrement();
       } catch (ex) {
         console.error(ex);
         console.trace();        
