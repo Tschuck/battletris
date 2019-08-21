@@ -32,6 +32,16 @@ export default class BattleField extends Vue {
   battle = null;
 
   /**
+   * Connection for maps that should be rerendered
+   */
+  battleUsersToUpdate: Array<string> = [ ];
+
+  /**
+   * Don't render multiple times.
+   */
+  animationTimeout: number;
+
+  /**
    * Array of empty elements to render all game fields everytime
    */
   userArray = [ null, null, null, null, null, null, ];
@@ -50,15 +60,6 @@ export default class BattleField extends Vue {
    * Block for previewing the user the next dock position
    */
   previewBlock: any = [[]];
-
-  /**
-   * dynamically update when increment has changed the value
-   */
-  optionalIncrementKeys = [
-    'config',
-    'startCounter',
-    'status',
-  ];
 
   /**
    * Allow key pressing only each 50 milliseconds
@@ -188,51 +189,67 @@ export default class BattleField extends Vue {
 
     // update user maps
     if (battle.users) {
+      // mark updated users to be rerendered
       Object.keys(battle.users).forEach(connectionId => {
-        if (this.battleMaps[connectionId] &&
-            this.battleMaps[connectionId].$refs &&
-            this.battle.users[connectionId]) {
-          if (battle.users[connectionId].cooldowns) {
-            this.$set(this.battle.users[connectionId], 'cooldowns', this.battle.users[connectionId].cooldowns);
-          }
+        if (this.battleUsersToUpdate.indexOf(connectionId) === -1) {
+          this.battleUsersToUpdate.push(connectionId);
+        }
+      });
 
-          // clear previous map
-          this.battleMaps[connectionId].clearBlockMap();
+      this.renderBattleIncrements();
+    }
+  }
 
-          if (this.$store.state.userConfig.blockPreview &&
-              connectionId === this.connectionId &&
-              this.battle.status === 'started') {
-            // current battle user will not be updated at this point, just redraw the preview with
-            // the latest value, from the current new battle update or from the previous battle
-            // instance
-            this.previewBlock = mapHandler.getDockPreview(
-              this.battle.users[this.connectionId].map,
-              this.battle.users[this.connectionId].activeBlock,
+  /**
+   * Takes the current battle and the as updated flagged users and rerender the maps.
+   */
+  renderBattleIncrements() {
+    if (!this.animationTimeout) {
+      this.animationTimeout = requestAnimationFrame(() => {
+        this.battleUsersToUpdate.forEach(connectionId => {
+          if (this.battleMaps[connectionId] &&
+              this.battleMaps[connectionId].$refs &&
+              this.battle.users[connectionId]) {
+            // clear previous map
+            this.battleMaps[connectionId].clearBlockMap();
+
+            if (this.$store.state.userConfig.blockPreview &&
+                connectionId === this.connectionId &&
+                this.battle.status === 'started') {
+              // current battle user will not be updated at this point, just redraw the preview with
+              // the latest value, from the current new battle update or from the previous battle
+              // instance
+              this.previewBlock = mapHandler.getDockPreview(
+                this.battle.users[this.connectionId].map,
+                this.battle.users[this.connectionId].activeBlock,
+              );
+
+              // only render preview block after the 4th level
+              if (this.previewBlock.y > 4) {
+                // draw the block preview
+                this.battleMaps[this.connectionId].drawBlockMap(
+                  this.previewBlock,
+                  -3,
+                );
+              }
+            }
+
+            // draw the current block
+            this.battleMaps[connectionId].drawBlockMap(
+              this.battle.users[connectionId].activeBlock,
+              // important: the moving active block consists only of a map of 0 and zero, apply the
+              // activeBlock type
+              this.battle.users[connectionId].activeBlock.type,
             );
 
-            // only render preview block after the 4th level
-            if (this.previewBlock.y > 4) {
-              // draw the block preview
-              this.battleMaps[this.connectionId].drawBlockMap(
-                this.previewBlock,
-                -3,
-              );
-            }
+            // redraw the map
+            this.battleMaps[connectionId].drawBlockMap(
+              this.battle.users[connectionId].map,
+            );
           }
+        });
 
-          // draw the current block
-          this.battleMaps[connectionId].drawBlockMap(
-            this.battle.users[connectionId].activeBlock,
-            // important: the moving active block consists only of a map of 0 and zero, apply the
-            // activeBlock type
-            this.battle.users[connectionId].activeBlock.type,
-          );
-
-          // redraw the map
-          this.battleMaps[connectionId].drawBlockMap(
-            this.battle.users[connectionId].map,
-          );
-        }
+        delete this.animationTimeout;
       });
     }
   }

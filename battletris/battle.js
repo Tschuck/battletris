@@ -642,7 +642,7 @@ module.exports = class Battle {
    */
   userAction(connectionId, key) {
     // cancel action when a wrong connection id was passed or the user has already lost
-    if (!this.users[connectionId] || user.status === 'lost') {
+    if (!this.users[connectionId] || this.users[connectionId].status === 'lost') {
       return;
     }
 
