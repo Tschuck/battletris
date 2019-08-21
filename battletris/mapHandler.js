@@ -19,14 +19,17 @@ function checkForCollision(map, activeBlock, originalBlock) {
     );
 
   // iterate through the activeBlock map
-  for (let y = 0; y < activeBlock.map.length; y++) {
+  for (let y = activeBlock.map.length - 1; y !== -1; y--) {
     for (let x = 0; x < activeBlock.map[y].length; x++) {
       // skip empty blocks
       if (activeBlock.map[y][x]) {
         // only detect docking when y was moved, but not the x axes
         if (detectDocking) {
+          // user have spinned a stone directly on the ground
+          if (y + activeBlock.y > 20) {
+            return 'invalid-y';
           // user has reached the ground
-          if (y + activeBlock.y === 20) {
+          } else if (y + activeBlock.y === 20) {
             return 'docked';
           }
 
@@ -36,18 +39,18 @@ function checkForCollision(map, activeBlock, originalBlock) {
           }
         } else {
           if (map[activeBlock.y + y] && map[activeBlock.y + y][activeBlock.x + x]) {
-            return 'invalid';
+            return 'invalid-y';
           }
         }
 
         // active block is moved out of the left screen
         if (x + activeBlock.x < 0) {
-          return 'invalid';
+          return 'invalid-x';
         }
 
         // active block is moved out of the right screen
         if (x + activeBlock.x > 9) {
-          return 'invalid';
+          return 'invalid-x';
         }
       }
     }

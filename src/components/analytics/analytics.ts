@@ -28,11 +28,7 @@ export default class Analytics extends Vue {
   /**
    * Date range for displaying battle analytics
    */
-  dateRange: any = {
-    start: new Date(),
-    end: new Date(),
-    table: new Date(),
-  };
+  dateRange: any = { start: null, end: null, table: null, };
 
   /**
    * object for displaying date to battle correlations
@@ -74,6 +70,11 @@ export default class Analytics extends Vue {
     this.chartJsOptions.scales.xAxes[0].gridLines.color = battletris.getCssVariable('border');
     this.chartJsOptions.scales.yAxes[0].gridLines.color = battletris.getCssVariable('border');
 
+    // set initial utc dates
+    this.dateRange.start = this.getUTC();
+    this.dateRange.end = this.getUTC();
+    this.dateRange.table = this.getUTC();
+
     // setup initial date ranges and transform to correct input values
     this.dateRange.start.setDate(this.dateRange.start.getDate() - 30);
     this.dateRange.start = this.getDateInputValue(this.dateRange.start);
@@ -91,8 +92,8 @@ export default class Analytics extends Vue {
    */
   async loadAnalytics() {
     const datesToLoad = [ ];
-    const startDate = new Date(this.dateRange.start);
-    const endDate = new Date(this.dateRange.end);
+    const startDate = this.getUTC(new Date(this.dateRange.start));
+    const endDate = this.getUTC(new Date(this.dateRange.end));
 
     // until end date is reached, map all days that should be loaded to the dates to load array
     while (startDate <= endDate) {
@@ -130,8 +131,8 @@ export default class Analytics extends Vue {
     };
 
     // copy start and end date
-    const startDate = new Date(this.dateRange.start);
-    const endDate = new Date(this.dateRange.end);
+    const startDate = this.getUTC(new Date(this.dateRange.start));
+    const endDate = this.getUTC(new Date(this.dateRange.end));
 
     // iterate over all days and add them to the graph data
     while (startDate <= endDate) {
@@ -168,7 +169,7 @@ export default class Analytics extends Vue {
    * @param      {number}  date    date time number
    */
   getOnlyDateKey(date = new Date()) {
-    return (new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0)).getTime();
+    return this.getUTC(new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0)).getTime();
   }
 
   /**
@@ -182,4 +183,14 @@ export default class Analytics extends Vue {
       (date.getMonth() + 1).toString().padStart(2, '0'),
       date.getDate().toString().padStart(2, '0'),
     ].join('-');
-  }}
+  }
+
+  /**
+   * Returns a utc date.
+   *
+   * @param      {<type>}  date    The date
+   */
+  getUTC(date = new Date()) {
+    return new Date(date.toISOString());
+  }
+}

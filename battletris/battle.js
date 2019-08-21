@@ -82,8 +82,13 @@ module.exports = class Battle {
     let collision = mapHandler.checkForCollision(changed.map, activeBlock, origin.activeBlock);
     switch (collision) {
       // if the stone movement was invalid, stop it!
+      case 'invalid-y': {
+        // reset activeBlock changes and return
+        changed.activeBlock = origin.activeBlock;
+        return;
+      }
       // if it was a spin and it would spin out of the map, move it to the correct position
-      case 'invalid': {
+      case 'invalid-x': {
         if (key === 38) {
           if (activeBlock.x < 0) {
             activeBlock.x = 0;
@@ -568,7 +573,7 @@ module.exports = class Battle {
         time: Date.now() - this.startTime,
         room: this.roomName,
       };
-      const date = new Date();
+      const date = new Date((new Date()).toISOString());
       // parse users for analysis report saving in redis 
       report.users = Object.keys(this.users).map((userId) => {
         const battleUser = this.users[userId];
@@ -636,8 +641,8 @@ module.exports = class Battle {
    * @return     {Promise}  void
    */
   userAction(connectionId, key) {
-    // cancel action when a wrong connection id was passed
-    if (!this.users[connectionId]) {
+    // cancel action when a wrong connection id was passed or the user has already lost
+    if (!this.users[connectionId] || user.status === 'lost') {
       return;
     }
 

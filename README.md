@@ -8,13 +8,19 @@ Have a look at the [gamplay video](https://github.com/tschuck/battletris/raw/dev
 
 Play it here: [battletris.de](https://battletris.de).
 
-## To install:
+## To install
 (assuming you have [node](http://nodejs.org/) and NPM installed)
 
-`npm install`
+`npm install` or `yarn install`
 
-## To Run:
+## Use Docker Image
+```
+docker pull sebdechant/battletris
+docker run sebdechant/battletris
+```
+
+## To Run
 `npm start`
 
-## To Test:
+## To Test
 `npm test`
