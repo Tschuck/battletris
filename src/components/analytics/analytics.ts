@@ -28,7 +28,11 @@ export default class Analytics extends Vue {
   /**
    * Date range for displaying battle analytics
    */
-  dateRange: any = { start: null, end: null, table: null, };
+  dateRange: any = {
+    start: new Date(),
+    end: new Date(),
+    table: new Date(),
+  };
 
   /**
    * object for displaying date to battle correlations
@@ -70,16 +74,11 @@ export default class Analytics extends Vue {
     this.chartJsOptions.scales.xAxes[0].gridLines.color = battletris.getCssVariable('border');
     this.chartJsOptions.scales.yAxes[0].gridLines.color = battletris.getCssVariable('border');
 
-    // set initial utc dates
-    this.dateRange.start = this.getUTC();
-    this.dateRange.end = this.getUTC();
-    this.dateRange.table = this.getUTC();
-
     // setup initial date ranges and transform to correct input values
     this.dateRange.start.setDate(this.dateRange.start.getDate() - 30);
-    this.dateRange.start = this.getDateInputValue(this.dateRange.start);
-    this.dateRange.end = this.getDateInputValue(this.dateRange.end);
-    this.dateRange.table = this.getDateInputValue(this.dateRange.table);
+    this.dateRange.start = this.getDateString(this.dateRange.start);
+    this.dateRange.end = this.getDateString(this.dateRange.end);
+    this.dateRange.table = this.getDateString(this.dateRange.table);
 
     // load analytics data
     await this.loadAnalytics();
@@ -92,8 +91,8 @@ export default class Analytics extends Vue {
    */
   async loadAnalytics() {
     const datesToLoad = [ ];
-    const startDate = this.getUTC(new Date(this.dateRange.start));
-    const endDate = this.getUTC(new Date(this.dateRange.end));
+    const startDate = new Date(this.dateRange.start);
+    const endDate = new Date(this.dateRange.end);
 
     // until end date is reached, map all days that should be loaded to the dates to load array
     while (startDate <= endDate) {
@@ -131,14 +130,14 @@ export default class Analytics extends Vue {
     };
 
     // copy start and end date
-    const startDate = this.getUTC(new Date(this.dateRange.start));
-    const endDate = this.getUTC(new Date(this.dateRange.end));
+    const startDate = new Date(this.dateRange.start);
+    const endDate = new Date(this.dateRange.end);
 
     // iterate over all days and add them to the graph data
     while (startDate <= endDate) {
-      const dateString = this.getOnlyDateKey(startDate);
+      const dateString = this.getDateString(startDate, 0);
 
-      this.dateToBattleData.labels.push(this.getDateInputValue(startDate));
+      this.dateToBattleData.labels.push(this.getDateString(startDate));
       this.dateToBattleData.datasets[0].data.push(
         this.analytics[dateString] ? this.analytics[dateString].length : 0
       );
@@ -151,7 +150,7 @@ export default class Analytics extends Vue {
    * Calculate battles that were runned today
    */
   setupTodayBattles() {
-    const dateTime = this.getOnlyDateKey();
+    const dateTime = this.getDateString();
     this.todayBattles = this.analytics[dateTime] ? this.analytics[dateTime].length : 0;
   }
 
@@ -159,17 +158,8 @@ export default class Analytics extends Vue {
    * Setup data that should be displayed within tables for detailed analyze.
    */
   setupTableBattle() {
-    const dateTime = this.getOnlyDateKey(new Date(this.dateRange.table));
+    const dateTime = this.getDateString(new Date(this.dateRange.table));
     this.tableData = this.analytics[dateTime] ? this.analytics[dateTime] : [ ];
-  }
-
-  /**
-   * Return a getTime number of a date without hours / minutes.
-   *
-   * @param      {number}  date    date time number
-   */
-  getOnlyDateKey(date = new Date()) {
-    return this.getUTC(new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0)).getTime();
   }
 
   /**
@@ -177,20 +167,11 @@ export default class Analytics extends Vue {
    *
    * @param      {Date}  date    date object
    */
-  getDateInputValue(date: Date) {
+  getDateString(date: Date = new Date(), zeroPad = 2) {
     return [
       date.getFullYear(),
-      (date.getMonth() + 1).toString().padStart(2, '0'),
-      date.getDate().toString().padStart(2, '0'),
+      (date.getMonth() + 1).toString().padStart(zeroPad, '0'),
+      date.getDate().toString().padStart(zeroPad, '0'),
     ].join('-');
-  }
-
-  /**
-   * Returns a utc date.
-   *
-   * @param      {<type>}  date    The date
-   */
-  getUTC(date = new Date()) {
-    return new Date(date.toISOString());
   }
 }

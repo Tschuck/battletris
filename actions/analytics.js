@@ -36,9 +36,7 @@ module.exports = class Rooms extends Action {
       await Throttle.all(keys.map(key => async () => {
         // generate correct analytics keys to generate a good looking nested format
         const [ namespace, year, month, day, hour ] = key.split(':');
-        // ensure to use utc time
-        let date = new Date((new Date(year, month, day, data.params.useHour ? hour : 0))
-          .toISOString()).getTime();
+        let dateString = `${ year }-${ parseInt(month) + 1 }-${ day }`;
 
         // load entries from redis
         const entries = await api.redis.clients.client.lrange(key, 0, -1);
@@ -46,7 +44,7 @@ module.exports = class Rooms extends Action {
         entries.forEach((entry, index) => entries[index] = JSON.parse(entry));
 
         // build correct analytics object structure
-        analytics[date] = (analytics[date] || [ ]).concat(entries);
+        analytics[dateString] = (analytics[dateString] || [ ]).concat(entries);
       }), { maxInProgress: 10 });
     }));
 

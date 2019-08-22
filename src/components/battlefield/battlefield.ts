@@ -12,6 +12,7 @@ export default class BattleField extends Vue {
    */
   loading = true;
   error = '';
+  stopped = false;
 
   /**
    * left panel displayed stuff
@@ -98,6 +99,9 @@ export default class BattleField extends Vue {
     this.keyHandler = ((e) => this.handleUserKey(e)).bind(this);
     window.addEventListener('keydown', this.keyHandler);
 
+    // start game loop
+    this.renderBattleIncrements();
+
     this.loading = false;
   }
 
@@ -105,6 +109,9 @@ export default class BattleField extends Vue {
    * Clear listeners
    */
   async beforeDestroy() {
+    // cancel game loop
+    this.stopped = true;
+
     await battletris.leaveRoom(this.room);
     this.listeners.forEach(listener => listener());
     window.removeEventListener('keydown', this.keyHandler);
@@ -195,8 +202,6 @@ export default class BattleField extends Vue {
           this.battleUsersToUpdate.push(connectionId);
         }
       });
-
-      this.renderBattleIncrements();
     }
   }
 
@@ -204,7 +209,7 @@ export default class BattleField extends Vue {
    * Takes the current battle and the as updated flagged users and rerender the maps.
    */
   renderBattleIncrements() {
-    if (!this.animationTimeout) {
+    if (!this.animationTimeout && !this.stopped) {
       this.animationTimeout = requestAnimationFrame(() => {
         this.battleUsersToUpdate.forEach(connectionId => {
           if (this.battleMaps[connectionId] &&
@@ -250,6 +255,7 @@ export default class BattleField extends Vue {
         });
 
         delete this.animationTimeout;
+        this.renderBattleIncrements();
       });
     }
   }

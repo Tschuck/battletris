@@ -573,7 +573,7 @@ module.exports = class Battle {
         time: Date.now() - this.startTime,
         room: this.roomName,
       };
-      const date = new Date((new Date()).toISOString());
+      const date = new Date();
       // parse users for analysis report saving in redis 
       report.users = Object.keys(this.users).map((userId) => {
         const battleUser = this.users[userId];

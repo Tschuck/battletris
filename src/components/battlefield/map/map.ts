@@ -1,5 +1,4 @@
 import Component, { mixins } from 'vue-class-component';
-import { GPU } from 'gpu.js';
 import { Vue, Prop, Watch } from 'vue-property-decorator';
 
 import * as battletris from '../../../battletris';
