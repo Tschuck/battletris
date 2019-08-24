@@ -2,6 +2,7 @@
   <div class="battletris-map">
     <canvas ref="canvas">
     </canvas>
+    <slot></slot>
   </div>
 </template>
 

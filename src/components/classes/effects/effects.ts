@@ -1,8 +1,7 @@
 import Component, { mixins } from 'vue-class-component';
 import { Vue, Prop, Watch } from 'vue-property-decorator';
 
-@Component({
-})
+@Component({ })
 export default class BattletrisEffects extends Vue {
   /**
    * Battle user with current stats about ability usage
@@ -14,6 +13,17 @@ export default class BattletrisEffects extends Vue {
    */
   dateNow = Date.now();
   dateNowInterval;
+  /**
+   * Card size
+   */
+  @Prop({
+    default: '40px'
+  }) size;
+
+  /**
+   * Show only icons
+   */
+  @Prop() minimize;
 
   /**
    * Bind date watcher to be able to update cooldown times

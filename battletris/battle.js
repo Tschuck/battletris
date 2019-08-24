@@ -5,6 +5,9 @@ const mapHandler = require('./mapHandler');
 const Mutex = require('async-mutex').Mutex;
 const { api, } = require('actionhero');
 
+// get current node env
+const env = process.env.NODE_ENV;
+
 // keys that sets the active ability
 const abilityKeys = [
   81, // q
@@ -254,12 +257,15 @@ module.exports = class Battle {
 
     // if the ability was not implemented or the user has not enough mana, just reject the action
     if (
-      // ability not found
-      !ability ||
-      // not enough mana
-      (executor.mana - ability.costs) < 0 ||
-      // cooldown is active
-      executor.cooldowns[abilityIndex]
+      env !== 'development' &&
+      (
+        // ability not found
+        !ability ||
+        // not enough mana
+        (executor.mana - ability.costs) < 0 ||
+        // cooldown is active
+        executor.cooldowns[abilityIndex]
+      )
     ) {
       return;
     // else, call the ability
@@ -485,8 +491,9 @@ module.exports = class Battle {
     // send battle-increment only each 100ms
     this.setTimeout('', 'battle-increment', () => {
       api.chatRoom.broadcast({}, this.roomName, {
-        type: 'battle-increment',
         battle: this.getUserStateIncrement(),
+        date: Date.now(),
+        type: 'battle-increment',
       });
     }, 100);
   }
@@ -695,6 +702,11 @@ module.exports = class Battle {
       }
       default: {
         let knownKey = false;
+
+        // if 's' was pressed, switch to next user
+        if (key === 83) {
+          key = Object.keys(this.users).indexOf(currUser.targetId) + 49;
+        }
 
         // user has changed his target, check if the target for the specific index exists and change
         // it (use 1 to 6 for a better keyboard experience) (keyCode 48 equals to zero) also allow

@@ -19,6 +19,7 @@ export default {
   },
   "battle": {
     "abilities-coming": "Abilities coming soon...",
+    "armor": "Armor",
     "battle": "Battle",
     "controls": {
       "activate-ability": "Activate ability",
@@ -34,12 +35,14 @@ export default {
       "use-ability-self": "Choose yourself as target"
     },
     "duration": "Duration",
+    "fps": "FPS",
     "join": "Join",
     "leave": "Leave",
     "level": "Level",
     "mana": "Mana",
-    "armor": "Armor",
     "next-block": "Next Block",
+    "performance": "Performance",
+    "ping": "Ping",
     "rows": "Rows",
     "speed": "Speed",
     "start": "Start",
@@ -57,6 +60,7 @@ export default {
     },
     "waiting": "Waiting for opponents..."
   },
+  "battle-hover": "Battle status hover",
   "battlefield": "Battlefield {index}",
   "battletris": "Battletris",
   "block-preview": "Block-Preview",

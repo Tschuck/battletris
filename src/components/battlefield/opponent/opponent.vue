@@ -1,5 +1,5 @@
 <template>
-  <div class="col-4 p-3 opponent"
+  <div class="col-4 p-1 opponent"
     v-if="userId !== connectionId">
     <div class="card w-100 h-100"
       :class="{
@@ -12,45 +12,38 @@
             :title="'battle.user-number' | translate">
             {{ Object.keys(battle.users).indexOf(userId) + 1 }}
           </div>
-          <span
-            v-b-tooltip.hover
-            :title="'battle.user-name' | translate">
-            {{ roomDetails.users[userId].name }}
-          </span>
-          <span class="mx-auto"></span>
-          <span
+          <small>
+            <small
+              v-b-tooltip.hover
+              :title="'battle.user-name' | translate">
+              {{ roomDetails.users[userId].name }}
+            </small>
+
+            <small
+              v-b-tooltip.hover
+              :title="$t('battle.rows')">
+              ({{ battle.users[userId].rows }})
+            </small>
+          </small>
+          <small
             v-b-tooltip.hover
             :title="'battle.user-status.title' | translate">
             {{ `battle.user-status.${ battle.users[userId].status }` | translate }}
-          </span>
+          </small>
         </div>
         <div class="card-body p-0 d-flex flex-column">
-          <div class="d-flex">
-            <div class="w-100">
-              <battletris-resource-bar
-                :color="'var(--battletris-mana-bg)'"
-                :resource="battle.users[userId].mana"
-                :type="'mana'">
-              </battletris-resource-bar>
-              <battletris-resource-bar
-                :color="'var(--battletris-armor-bg)'"
-                :resource="battle.users[userId].armor"
-                :type="'armor'">
-              </battletris-resource-bar>
-            </div>
-
-            <span class="d-block pt-1 pl-3 pr-1"
-              style="font-size: 8px;"
-              v-b-tooltip.hover
-              :title="$t('battle.rows')">
-              {{ battle.users[userId].rows }}
-            </span>
-          </div>
-          <div class="px-3 py-2" style="flex: 1; height: calc(100% - 12px)">
+          <div class="px-3 py-2" style="flex: 1;">
             <battletris-map
               @init="map = $event; initialized();">
             </battletris-map>
           </div>
+          <battletris-battle-user-info
+            style="min-height: 75px;"
+            :battle="battle"
+            :roomDetails="roomDetails"
+            :userId="userId"
+            :minimize="true">
+          </battletris-battle-user-info>
         </div>
       </template>
     </div>

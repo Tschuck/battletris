@@ -33,9 +33,8 @@
         </div>
       </template>
       <template v-else>
-        <div class="d-flex pt-3 px-3 justify-content-between">
-          <div class="text-center border align-items-center position-relative pt-4 pb-3"
-            style="height: 80px; width: 80px;"
+        <div class="row m-0">
+          <div class="col-3 m-0 p-0 text-center border position-relative"
             v-for="(ability, index) of $store.state.classes[className]"
             v-b-tooltip.hover
             :style="{
@@ -45,19 +44,12 @@
             <battletris-ability-img
               :className="className"
               :abilityIndex="index"
-              :width="'25px'"
-              :height="'25px'"
+              :width="minimize ? '15px': '20px'"
+              :height="minimize ? '15px': '20px'"
               :color="'var(--battletris-class-ability-color)'">
             </battletris-ability-img>
-            <small class="d-block mt-1 mb-0" style="font-size: 10px;">
-              {{ `classes.${ className }.ability${ index }.title` | translate }}
-            </small>
-            <small class="ability-activator"
-              v-b-tooltip.hover
-              :title="$t(`classes.ability-activator`)">
-              {{ [ 'q', 'w', 'e', 'r' ][index] }}
-            </small>
-            <small class="ability-costs"
+            <small class="text-nowrap mana-costs"
+              v-if="!minimize"
               v-b-tooltip.hover
               :title="$t(`classes.ability-costs`)">
               {{ ability.costs }}

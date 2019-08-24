@@ -1,7 +1,10 @@
 <template>
-  <div class="d-flex pt-3 px-3">
-    <div class="text-center border"
-      style="height: 40px; width: 40px;"
+  <div class="d-flex">
+    <div class="d-flex align-items-center flex-column justify-content-center border"
+      :style="{
+        'height': size,
+        'width': size,
+      }"
       v-for="(effect, index) in battleUser.effects"
       v-b-tooltip.hover
       :title="$t(`classes.${ effect.className }.ability${ effect.abilityIndex }.desc`)">
@@ -14,7 +17,10 @@
       </battletris-ability-img>
 
       <!-- explicitly check for battleUser to force reactive cooldowns -->
-      <small class="d-block" style="font-size: 10px;">
+      <small class="d-block"
+        :style="{
+          'font-size': minimize ? '5px': '10px'
+        }">
         {{ Math.round(((effect.start + effect.duration) - dateNow) / 1000) }}s
       </small>
     </div>

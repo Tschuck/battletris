@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar navbar-expand-lg d-flex">
-    <template v-if="!loading">
+    <template>
       <div class="d-flex align-items-center">
         <a class="navbar-brand d-flex align-items-center mr-0"
           v-b-tooltip.hover
@@ -25,52 +25,54 @@
       </div>
       <span class="mx-auto"></span>
       <div>
-        <b-dropdown size="lg" variant="link" dropleft
-          toggle-class="text-decoration-none"
-          no-caret
-          v-b-tooltip.hover
-          :title="$t('members')"
-          v-if="users">
-          <template slot="button-content">
-            <i class="mdi mdi-account-group h4"></i>
-            ({{ Object.keys(users).length }})
-          </template>
-          <b-dropdown-item v-for="(connectionId, index) in Object.keys(users)">
-            {{ users[connectionId].name }}
-            ({{ `classes.${ users[connectionId].className }.title`  | translate }})
-          </b-dropdown-item>
-        </b-dropdown>
-        <button class="btn"
-          v-b-tooltip.hover
-          :title="$t('config')"
-          @click="$refs.configModal.show();">
-          <i class="mdi mdi-cogs h4"></i>
-        </button>
-        <a class="btn"
-          v-if="room !== 'analytics'"
-          v-b-tooltip.hover
-          :title="$t('rooms.analytics')"
-          href="#/analytics">
-          <i class="mdi mdi-poll h4"></i>
-        </a>
-        <button class="btn"
-          v-b-tooltip.hover
-          :title="$t('whats-battletris')"
-          @click="$refs.infoModal.show();">
-          <i class="mdi mdi-information-outline h4"></i>
-        </button>
-        <a class="btn" target="_blank"
-          v-b-tooltip.hover
-          :title="$t('buy-me-coffee')"
-          href="https://www.buymeacoffee.com/eo3m4BAyO">
-          <i class="mdi mdi-coffee h4"></i>
-        </a>
-        <a class="btn" target="_blank"
-          v-b-tooltip.hover
-          :title="$t('go-to-github')"
-          href="https://github.com/tschuck/battletris">
-          <i class="mdi mdi-github-circle h4"></i>
-        </a>
+        <template v-if="!loading">
+          <b-dropdown size="lg" variant="link" dropleft
+            toggle-class="text-decoration-none"
+            no-caret
+            v-b-tooltip.hover
+            :title="$t('members')"
+            v-if="users">
+            <template slot="button-content">
+              <i class="mdi mdi-account-group h4"></i>
+              ({{ Object.keys(users).length }})
+            </template>
+            <b-dropdown-item v-for="(connectionId, index) in Object.keys(users)">
+              {{ users[connectionId].name }}
+              ({{ `classes.${ users[connectionId].className }.title`  | translate }})
+            </b-dropdown-item>
+          </b-dropdown>
+          <button class="btn"
+            v-b-tooltip.hover
+            :title="$t('config')"
+            @click="$refs.configModal.show();">
+            <i class="mdi mdi-cogs h4"></i>
+          </button>
+          <a class="btn"
+            v-if="room !== 'analytics'"
+            v-b-tooltip.hover
+            :title="$t('rooms.analytics')"
+            href="#/analytics">
+            <i class="mdi mdi-poll h4"></i>
+          </a>
+          <button class="btn"
+            v-b-tooltip.hover
+            :title="$t('whats-battletris')"
+            @click="$refs.infoModal.show();">
+            <i class="mdi mdi-information-outline h4"></i>
+          </button>
+          <a class="btn" target="_blank"
+            v-b-tooltip.hover
+            :title="$t('buy-me-coffee')"
+            href="https://www.buymeacoffee.com/eo3m4BAyO">
+            <i class="mdi mdi-coffee h4"></i>
+          </a>
+          <a class="btn" target="_blank"
+            v-b-tooltip.hover
+            :title="$t('go-to-github')"
+            href="https://github.com/tschuck/battletris">
+            <i class="mdi mdi-github-circle h4"></i>
+          </a>
+        </template>
       </div>
 
       <div>
@@ -140,6 +142,15 @@
             <div class="form-check">
               <input type="checkbox"
                 v-model="$store.state.userConfig.blockPreview"
+                @change="useConfiguration(0)">
+            </div>
+          </div>
+          <div class="d-flex align-items-center mt-3">
+            <b for="theme" class="col-3 p-0 m-0">{{ 'battle-hover' | translate }}</b>
+            <span class="mx-auto"></span>
+            <div class="form-check">
+              <input type="checkbox"
+                v-model="$store.state.userConfig.battleHover"
                 @change="useConfiguration(0)">
             </div>
           </div>

@@ -17,7 +17,7 @@ exports['default'] = {
         // set to `undefined` to not render the client-side JS on boot
         clientJsName: 'ActionheroWebsocketClient',
         // should the server signal clients to not reconnect when the server is shutdown/reboot
-        destroyClientsOnShutdown: false,
+        destroyClientsOnShutdown: true,
 
         // websocket Server Options:
         server: {

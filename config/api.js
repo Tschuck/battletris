@@ -23,7 +23,7 @@ exports['default'] = {
       // Watch for changes in actions and tasks, and reload/restart them on the fly
       developmentMode: true,
       // How many pending actions can a single connection be working on
-      simultaneousActions: 50,
+      simultaneousActions: 100,
       // allow connections to be created without remoteIp and remotePort (they will be set to 0)
       enforceConnectionProperties: true,
       // disables the whitelisting of client params

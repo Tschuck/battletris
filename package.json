@@ -10,6 +10,7 @@
     "chart.js": "^2.8.0",
     "es6-promisify": "^6.0.1",
     "fakeredis": "^2.0.0",
+    "fpsmeter": "^0.3.1",
     "html-loader": "^0.5.5",
     "ioredis": "^4.10.0",
     "jest": "^24.8.0",
@@ -50,7 +51,7 @@
   "name": "battletris",
   "scripts": {
     "debug": "node --inspect node_modules/actionhero/bin/actionhero",
-    "start": "actionhero",
+    "start": "NODE_ENV=development actionhero",
     "start-prod": "NODE_ENV=production actionhero"
   },
   "version": "0.0.1"

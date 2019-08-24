@@ -7,7 +7,7 @@
         :users="roomDetails.users">
       </battletris-header>
       <div class="d-flex w-100 h-100">
-        <div class="p-3 d-flex flex-column" style="min-width: 350px; width: 350px;">
+        <div class="p-1 d-flex flex-column" style="min-width: 350px; width: 350px;">
           <b-nav tabs>
             <b-nav-item :active="leftPanelIndex === 0" @click="leftPanelIndex = 0">
               {{ 'battle.battle' | translate }}
@@ -34,6 +34,21 @@
                     </template>
                   </div>
                 </div>
+                <div class="d-flex">
+                  <b>{{ `battle.performance` | translate }}:</b>
+                  <span class="mx-auto"></span>
+                  <div class="d-flex">
+                    <div class="fps-meter mr-1"
+                      v-b-tooltip.hover
+                      :title="$t('battle.fps')"></div>
+                    <span class="mx-1">|</span>
+                    <div
+                      v-b-tooltip.hover
+                      :title="$t('battle.ping')">
+                      ~{{ estimatedResponseTime }}ms
+                    </div>
+                  </div>
+                </div>
                 <div class="d-flex" v-if="battle.status === 'started'">
                   <b>{{ 'battle.duration' | translate }}:</b>
                   <span class="mx-auto"></span>
@@ -42,10 +57,34 @@
 
                 <template v-if="battle.users[connectionId]">
                   <div class="border-top mt-3 pt-3">
-                    <battletris-user-status
-                      :battle="battle"
-                      :user="battle.users[connectionId]">
-                    </battletris-user-status>
+                    <div class="d-flex">
+                      <b>{{ 'battle.user-status.title' | translate }}:</b>
+                      <span class="mx-auto"></span>
+                      <div>
+                        {{ `battle.user-status.${ battle.users[connectionId].status }` | translate }}
+                      </div>
+                    </div>
+                    <div class="d-flex">
+                      <b>{{ 'battle.level' | translate }}:</b>
+                      <span class="mx-auto"></span>
+                      <div>
+                        {{ battle.users[connectionId].level }}
+                      </div>
+                    </div>
+                    <div class="d-flex">
+                      <b>{{ 'battle.rows' | translate }}:</b>
+                      <span class="mx-auto"></span>
+                      <div>
+                        {{ battle.users[connectionId].rows }}
+                      </div>
+                    </div>
+                    <div class="d-flex">
+                      <b>{{ 'battle.mana' | translate }}:</b>
+                      <span class="mx-auto"></span>
+                      <div>
+                        {{ battle.users[connectionId].mana }}
+                      </div>
+                    </div>
                       
                     <div class="d-flex">
                       <b>{{ 'battle.next-block' | translate }}:</b>
@@ -107,7 +146,7 @@
           <battletris-chat :room="room" v-if="leftPanelIndex === 1"></battletris-chat>
         </div>
 
-        <div class="p-3">
+        <div class="p-1">
           <div class="card h-100"
             style="min-width: auto;"
             v-if="battle.users[connectionId]"
@@ -118,34 +157,30 @@
               class="w-100 mt-3"
               style="height: calc(100% - 200px); min-width: 400px"
               @init="battleMaps[connectionId] = $event">
+              <battletris-battle-user-info
+                class="battle-hover"
+                v-if="$store.state.userConfig.battleHover && battleMaps[connectionId] && battleStatusBlock"
+                :style="{
+                  'top': `${ (battleMaps[connectionId].fieldSize.height / 20) * (battleStatusBlock.y - 3) }px`
+                }"
+                :battle="battle"
+                :map="battleMaps[connectionId]"
+                :minimize="true"
+                :roomDetails="roomDetails"
+                :userId="connectionId">
+              </battletris-battle-user-info>
             </battletris-map>
-            <battletris-resource-bar
-              class="mx-1 mt-2"
-              :color="'var(--battletris-mana-bg)'"
-              :resource="battle.users[connectionId].mana"
-              :type="'mana'">
-            </battletris-resource-bar>
-            <battletris-resource-bar
-              class="mx-1"
-              :color="'var(--battletris-armor-bg)'"
-              :resource="battle.users[connectionId].armor"
-              :type="'armor'">
-            </battletris-resource-bar>
-            <div class="text-center">
-              <battletris-abilities
-                :className="roomDetails.users[connectionId].className"
-                :battleUser="battle.users[connectionId]">
-              </battletris-abilities>
-            </div>
-            <div class="text-center">
-              <battletris-effects
-                :battleUser="battle.users[connectionId]">
-              </battletris-effects>
+            <div class="p-3">
+              <battletris-battle-user-info
+                :battle="battle"
+                :roomDetails="roomDetails"
+                :userId="connectionId">
+              </battletris-battle-user-info>
             </div>
           </div>
         </div>
 
-        <div class="row w-100 m-0 pr-5">
+        <div class="row w-100 m-0">
           <template v-for="(userIndex, index) in userArray">
             <battletris-opponent
               :battle="battle"

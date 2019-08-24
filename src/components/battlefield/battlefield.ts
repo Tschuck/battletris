@@ -1,9 +1,13 @@
-import Component, { mixins } from 'vue-class-component';
-import { Vue } from 'vue-property-decorator';
+import FPSMeter from 'fpsmeter';
 import * as mapHandler from '../../../battletris/mapHandler';
+import Component, { mixins } from 'vue-class-component';
 import { mergeWith } from 'lodash';
+import { Vue } from 'vue-property-decorator';
 
 import * as battletris from '../../battletris';
+
+// just use this, to be able to use FPSMeter
+const fpsMeter = FPSMeter;
 
 @Component({ })
 export default class BattleField extends Vue {
@@ -29,8 +33,21 @@ export default class BattleField extends Vue {
    * Opened room, save it to the variable, else, we cannot handle correct roomLeave
    */
   room = '';
+
+  /**
+   * Chat room details including user names, ...
+   */
   roomDetails = null;
+
+  /**
+   * Current battle object
+   */
   battle = null;
+
+  /**
+   * Last battle data update, don't update older data! Could be possible by overtaking requests
+   */
+  battleDataDate = Date.now();
 
   /**
    * Connection for maps that should be rerendered
@@ -63,9 +80,25 @@ export default class BattleField extends Vue {
   previewBlock: any = [[]];
 
   /**
+   * Block that is used to positionate battle status hover preview
+   */
+  battleStatusBlock: any = null;
+
+  /**
    * Allow key pressing only each 50 milliseconds
    */
   keyTimeout = { };
+
+  /**
+   * fps meter
+   */
+  fpsMeter;
+
+  /**
+   * estimated server response times
+   */
+  responseTimes = [ ];
+  estimatedResponseTime = 0;
 
   async created() {
     this.room = this.$route.params.room;
@@ -93,16 +126,34 @@ export default class BattleField extends Vue {
     this.watch('battle', (data) => this.handleBattleUpdate(data.message.battle));
 
     // watch for incremental battle updates
-    this.watch('battle-increment', (data) => this.handleBattleIncrement(data.message.battle));
+    this.watch('battle-increment', (data) => this.handleBattleIncrement(
+      data.message.battle,
+      data.message.date,
+    ));
 
     // bind key handler
     this.keyHandler = ((e) => this.handleUserKey(e)).bind(this);
     window.addEventListener('keydown', this.keyHandler);
 
-    // start game loop
-    this.renderBattleIncrements();
+    // use this for usually known game loop (is currently not required)
+    // this.renderBattleIncrements();
 
     this.loading = false;
+  }
+
+  /**
+   * Bind ipfs meter.
+   */
+  mounted() {
+    setTimeout(() => {
+      this.fpsMeter = new (<any>window).FPSMeter(
+        document.querySelectorAll('.fps-meter')[0],
+        {
+          show: 'fps',
+          theme: 'transparent',
+        }
+      );
+    }, 1000);
   }
 
   /**
@@ -111,6 +162,9 @@ export default class BattleField extends Vue {
   async beforeDestroy() {
     // cancel game loop
     this.stopped = true;
+
+    // stop fps meter
+    this.fpsMeter.destroy();
 
     await battletris.leaveRoom(this.room);
     this.listeners.forEach(listener => listener());
@@ -130,33 +184,57 @@ export default class BattleField extends Vue {
   /**
    * Send user key to backend.
    */
-  handleUserKey($event: any) {
+  async handleUserKey($event: any) {
     if (this.battle.status === 'started') {
-      // only send key press event, when no key press timeout is running
-      if (!this.keyTimeout[$event.keyCode]) {
-        // execute the battle action and directly use the result for the update
-        (async () => {
-          const update = await battletris.promiseClient.action('battletris/battles-actions', {
-            room: this.room,
-            connectionId: this.connectionId,
-            key: $event.keyCode,
-          });
+      const startDate = Date.now();
 
-          this.handleBattleIncrement(update.battle);
-        })();
+      const update = await battletris.promiseClient.action('battletris/battles-actions', {
+        room: this.room,
+        connectionId: this.connectionId,
+        key: $event.keyCode,
+      });
 
-        // wait 50 milliseconds until sending next key code
-        this.keyTimeout[$event.keyCode] = setTimeout(() => {
-          delete this.keyTimeout[$event.keyCode];
-        }, 30);
-      } else {
-        console.log('key timeout')
-      }
+      // estimate response times
+      this.responseTimes.push(Date.now() - startDate);
+      this.responseTimes = this.responseTimes.splice(0, 10);
+      this.estimatedResponseTime = Math.round(
+        this.responseTimes.reduce((previous, current) => current += previous) /
+        this.responseTimes.length
+      );
+
+      this.handleBattleIncrement(update.battle);
 
       // stop event handling
       $event.stopPropagation();
       $event.preventDefault();
       return false;
+
+
+      // // only send key press event, when no key press timeout is running
+      // if (!this.keyTimeout[$event.keyCode]) {
+      //   // execute the battle action and directly use the result for the update
+      //   (async () => {
+      //     const update = await battletris.promiseClient.action('battletris/battles-actions', {
+      //       room: this.room,
+      //       connectionId: this.connectionId,
+      //       key: $event.keyCode,
+      //     });
+
+      //     this.handleBattleIncrement(update.battle);
+      //   })();
+
+      //   // wait 50 milliseconds until sending next key code
+      //   this.keyTimeout[$event.keyCode] = setTimeout(() => {
+      //     delete this.keyTimeout[$event.keyCode];
+      //   }, 30);
+      // } else {
+      //   console.log('key timeout')
+      // }
+
+      // // stop event handling
+      // $event.stopPropagation();
+      // $event.preventDefault();
+      // return false;
     }
   }
 
@@ -183,9 +261,14 @@ export default class BattleField extends Vue {
    *
    * @param      {any}  battle  battle obj
    */
-  handleBattleIncrement(battle) {
-    if (!battle) {
+  handleBattleIncrement(battle: any, date?: number) {
+    // - reject if no battle was send
+    // - only merge battle, when it's newer data
+    if (!battle || (date && this.battleDataDate > date)) {
       return;
+    } else if (date) {
+      // update last battle data date
+      this.battleDataDate = date;
     }
 
     this.battle = mergeWith(this.battle, battle, (objValue, srcValue) => {
@@ -202,6 +285,8 @@ export default class BattleField extends Vue {
           this.battleUsersToUpdate.push(connectionId);
         }
       });
+
+      this.renderBattleIncrements();
     }
   }
 
@@ -210,6 +295,7 @@ export default class BattleField extends Vue {
    */
   renderBattleIncrements() {
     if (!this.animationTimeout && !this.stopped) {
+      this.fpsMeter && this.fpsMeter.tickStart();
       this.animationTimeout = requestAnimationFrame(() => {
         this.battleUsersToUpdate.forEach(connectionId => {
           if (this.battleMaps[connectionId] &&
@@ -218,23 +304,36 @@ export default class BattleField extends Vue {
             // clear previous map
             this.battleMaps[connectionId].clearBlockMap();
 
-            if (this.$store.state.userConfig.blockPreview &&
-                connectionId === this.connectionId &&
-                this.battle.status === 'started') {
-              // current battle user will not be updated at this point, just redraw the preview with
-              // the latest value, from the current new battle update or from the previous battle
-              // instance
-              this.previewBlock = mapHandler.getDockPreview(
-                this.battle.users[this.connectionId].map,
-                this.battle.users[this.connectionId].activeBlock,
-              );
+            if (connectionId === this.connectionId && this.battle.status === 'started') {
+              if (this.$store.state.userConfig.blockPreview) {
+                // current battle user will not be updated at this point, just redraw the preview with
+                // the latest value, from the current new battle update or from the previous battle
+                // instance
+                this.previewBlock = mapHandler.getDockPreview(
+                  this.battle.users[this.connectionId].map,
+                  this.battle.users[this.connectionId].activeBlock,
+                );
 
-              // only render preview block after the 4th level
-              if (this.previewBlock.y > 4) {
-                // draw the block preview
-                this.battleMaps[this.connectionId].drawBlockMap(
-                  this.previewBlock,
-                  -3,
+                // only render preview block after the 4th level
+                if (this.previewBlock.y > 4) {
+                  // draw the block preview
+                  this.battleMaps[this.connectionId].drawBlockMap(
+                    this.previewBlock,
+                    -3,
+                  );
+                }
+              }
+
+              if (this.$store.state.userConfig.battleHover) {
+                // analyze the highest field position to show battle status hover (use one full line
+                // to check this)
+                this.battleStatusBlock = mapHandler.getDockPreview(
+                  this.battle.users[this.connectionId].map,
+                  {
+                    y: 0,
+                    x: 0,
+                    map: [[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]]
+                  },
                 );
               }
             }
@@ -254,8 +353,14 @@ export default class BattleField extends Vue {
           }
         });
 
+        // reset battle users to update
+        this.battleUsersToUpdate = [ ];
+
+        // let the user render the next animation frame
         delete this.animationTimeout;
-        this.renderBattleIncrements();
+
+        // finish fps meter tick
+        this.fpsMeter && this.fpsMeter.tick();
       });
     }
   }

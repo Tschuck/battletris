@@ -1,3 +1,6 @@
+// get current node env
+const env = process.env.NODE_ENV;
+
 exports['default'] = {
   battletris: (api) => {
     return {
@@ -6,7 +9,7 @@ exports['default'] = {
       // amount of battlefields
       battlefields: 20,
       // seconds until the game starts, after all users has accepted
-      startCounter: 1,
+      startCounter: env === 'production' ? 10 : 1,
       // run game loop every Xms
       gameLoopSpeed: 500,
       // "user speed", moves blocks down, ...

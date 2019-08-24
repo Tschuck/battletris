@@ -135,9 +135,9 @@ export default class Analytics extends Vue {
 
     // iterate over all days and add them to the graph data
     while (startDate <= endDate) {
-      const dateString = this.getDateString(startDate, 0);
+      const dateString = this.getDateString(startDate);
 
-      this.dateToBattleData.labels.push(this.getDateString(startDate));
+      this.dateToBattleData.labels.push(this.getDateString(startDate, 2));
       this.dateToBattleData.datasets[0].data.push(
         this.analytics[dateString] ? this.analytics[dateString].length : 0
       );
@@ -167,7 +167,7 @@ export default class Analytics extends Vue {
    *
    * @param      {Date}  date    date object
    */
-  getDateString(date: Date = new Date(), zeroPad = 2) {
+  getDateString(date: Date = new Date(), zeroPad = 0) {
     return [
       date.getFullYear(),
       (date.getMonth() + 1).toString().padStart(zeroPad, '0'),

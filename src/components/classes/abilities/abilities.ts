@@ -15,6 +15,11 @@ export default class BattletrisAbilities extends Vue {
   @Prop() battleUser;
 
   /**
+   * Show less and smaller information
+   */
+  @Prop() minimize;
+
+  /**
    * Current date time, will be updated each second.
    */
   dateNow = Date.now();
