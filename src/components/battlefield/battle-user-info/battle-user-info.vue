@@ -35,7 +35,9 @@
           <small
             :style="{
               'background-color': userId === battle.users[userId].targetId ? 'var(--battletris-self-target)' : 'var(--battletris-armor-bg)'
-            }">
+            }"
+            v-b-tooltip.hover
+            :title="$t('battle.my-target', { name: roomDetails.users[battle.users[userId].targetId].name })">
             {{ Object.keys(battle.users).indexOf(battle.users[userId].targetId) + 1 }}
           </small>
 
@@ -43,10 +45,12 @@
 
           <small
             v-for="(opponentId, index) in Object.keys(battle.users)"
-            v-if="battle.users[opponentId].targetId === userId"
+            v-if="battle.users[opponentId].targetId === userId && opponentId !== userId"
             :style="{
               'background-color': userId === opponentId ? 'var(--battletris-self-target)' : 'var(--battletris-armor-bg)'
-            }">
+            }"
+            v-b-tooltip.hover
+            :title="$t('battle.targets-me', { name: roomDetails.users[userId].name })">
             {{ Object.keys(battle.users).indexOf(userId) + 1 }}
           </small>
         </div>

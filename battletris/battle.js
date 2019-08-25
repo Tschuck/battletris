@@ -647,7 +647,7 @@ module.exports = class Battle {
    * @param      {number}   key           number key
    * @return     {Promise}  void
    */
-  userAction(connectionId, key) {
+  userAction(connectionId, key, keyPressed = false) {
     // cancel action when a wrong connection id was passed or the user has already lost
     if (!this.users[connectionId] || this.users[connectionId].status === 'lost') {
       return;
@@ -702,17 +702,31 @@ module.exports = class Battle {
       }
       default: {
         let knownKey = false;
+        const userKeys = Object.keys(this.users);
 
-        // if 's' was pressed, switch to next user
-        if (key === 83) {
-          key = Object.keys(this.users).indexOf(currUser.targetId) + 49;
+        // if 'tab' was pressed, switch to next user
+        if (key === 9) {
+          // directly target yourself, when tab key was pressed longer
+          if (keyPressed) {
+            key = userKeys.indexOf(connectionId) + 49;
+          } else {
+            // select next target
+            const targetIndex = userKeys.indexOf(currUser.targetId) + 1;
+
+            // target next user
+            if (userKeys.length > targetIndex) {
+              key = targetIndex + 49;
+            // start by the first user again
+            } else {
+              key = 49;
+            }
+          }
         }
 
         // user has changed his target, check if the target for the specific index exists and change
-        // it (use 1 to 6 for a better keyboard experience) (keyCode 48 equals to zero) also allow
-        // tab as direct targeting yourself
-        if ((key > 48 && key < 55) || key === 9) {
-          const targetId = key === 9 ? connectionId : Object.keys(this.users)[key - 49];
+        // it (use 1 to 6 for a better keyboard experience) (keyCode 48 equals to zero)
+        if (key > 48 && key < 55) {
+          const targetId = Object.keys(this.users)[key - 49];
           if (targetId) {
             currUser.targetId = targetId;
             // send update, but disable collision detection

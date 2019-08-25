@@ -1,29 +1,31 @@
 .battletris-dark {
   // general styles
-  --battletris-bg: #5e6264;
+  --battletris-bg: #7e848a;
   --battletris-border: #5e6264;
   --battletris-card-active: #ffffff;
-  --battletris-card-bg: #212529;
+  --battletris-card-bg: #1d252d;
   --battletris-card-border: #212529;
   --battletris-card-color: #ffffff;
-  --battletris-card-header-bg: #212529;
+  --battletris-card-header-bg: #2e3c48;
   --battletris-card-header-color: #fff;
-  --battletris-nav-bg: #212529;
+  --battletris-nav-bg: #1c252d;
   --battletris-nav-color: #ffffff;
 
   // class icon color
   --battletris-class-ability-color: #ffffff;
   --battletris-class-icon-color: #ffffff;
   --battletris-class-icon-color-active: #5074c1;
-  --battletris-self-target: #28a745;
 
   // game colors
+  --battletris-canvas-bg: #2e3c48;
+  --battletris-canvas-border: #000000;
+  --battletris-self-target: #28a745;
   // mana color
   --battletris-mana-bg: #1874cd;
   --battletris-armor-bg: #d61919;
   --battletris-mana-color: #ffffff;
   // reset color
-  --battletris-block-bg--1: var(--battletris-card-bg);
+  --battletris-block-bg--1: var(--battletris-canvas-bg);
   // opponent stacked blocks
   --battletris-block-bg--2: #808080;
   // next dock block preview

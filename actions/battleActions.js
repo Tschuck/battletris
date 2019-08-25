@@ -17,7 +17,10 @@ module.exports = class Rooms extends Action {
       },
       key: {
         required: true,
-      }
+      },
+      keyPressed: {
+        required: false,
+      },
     };
   }
 
@@ -27,7 +30,7 @@ module.exports = class Rooms extends Action {
     if (battle) {
       try {
         // run user action
-        battle.userAction(data.params.connectionId, data.params.key);
+        battle.userAction(data.params.connectionId, data.params.key, data.params.keyPressed);
 
         // return last battle update, so the user gets updated directly
         data.response.battle = battle.getUserStateIncrement(false);

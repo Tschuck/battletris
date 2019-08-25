@@ -8,6 +8,8 @@ import {
   wsClient,
 } from './actionheroWrapper';
 
+// only allow the following themes
+const supportedThemes = [ 'dark' ];
 let classes;
 
 /**
@@ -101,7 +103,12 @@ async function leaveRoom(room: string) {
  *
  * @param      {string}  theme   The theme
  */
-function setTheme(theme = window.localStorage['battletris-theme'] || 'light') {
+function setTheme(theme = window.localStorage['battletris-theme'] || 'dark') {
+  // only allow known themes
+  if (supportedThemes.indexOf(theme) === -1) {
+    theme = 'dark';
+  }
+
   // overwrite body classes
   document.body.className = `battletris battletris-${ theme }`;
 

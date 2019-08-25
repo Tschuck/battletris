@@ -23,16 +23,18 @@ export default {
     "battle": "Battle",
     "controls": {
       "activate-ability": "Activate ability",
+      "choose-target": "Choose your target",
       "down": "Move down",
       "left": "Move left",
+      "next-taget": "Next target",
       "right": "Move right",
       "space": "Space",
       "space-desc": "Drop down",
       "tab": "Tab",
       "title": "Controls",
       "turn": "Turn",
-      "use-ability": "Choose your target",
-      "use-ability-self": "Choose yourself as target"
+      "target-yourself": "Target yourself",
+      "tab-pressed": "Tab pressed"
     },
     "duration": "Duration",
     "fps": "FPS",
@@ -40,6 +42,7 @@ export default {
     "leave": "Leave",
     "level": "Level",
     "mana": "Mana",
+    "my-target": "My Target ({name})",
     "next-block": "Next Block",
     "performance": "Performance",
     "ping": "Ping",
@@ -49,6 +52,7 @@ export default {
     "starting": "Battle starts...",
     "status": "Status",
     "stop": "Stop",
+    "targets-me": "({name}) attacks me",
     "user-name": "User Name",
     "user-number": "User Number",
     "user-status": {
@@ -230,7 +234,7 @@ export default {
   "user": "User {name}",
   "welcome": "Welcome to Battletris, a multiplayer block stacking game. You are currently in the tavern, a place where everyone can hang around to search for opponents. Checkup the Battlefields and join a match.",
   "whats-battletris": "Whats Battletris?",
-  "whats-battletris-long": "<b class=\"d-block\">What is Battletris?</b>Battletris is a multiplayer block stacking game with up to 6 players.<br><br><b class=\"d-block\">Tavern</b>In the beginning you will find yourself in the \"Tavern\", a kind of lobby where players can find each other and join different battles. Once you have decided on a Battlefield, you can join it with the small icon (<i class=\"mdi mdi-login-variant\"></i>) in the upper right corner.<br><br><b class=\"d-block\">Battle Control</b>Once you have joined a Battlefield, you can see the battle controls on the left and the overview of the different players on the right. If a battle is already running, you can simply watch the action. As soon as no battle has started and there is still free space available, you can join the battle at the bottom of the Battle Controls. After you are joined and ready, use the \"Start Battle\" button to start the battle. As soon as all joined Warriors have started the battle, start a 10 second timer after the actual game starts.<br><br><b class=\"d-block\">This is how to play</b>I hope everyone knows the game principle of good old Tetris. The goal is to stack the opponent's Battlefield with blocks up to the top, so that the opponent is eliminated from the battle. The last player with free spaces wins the battle.<br>With the arrow keys (<i class=\"mdi mdi-arrow-left\"></i>, <i class=\"mdi mdi-arrow-right\"></i>) the active block can be changed to the right and to the left. The arrow up key (<i class=\"mdi mdi-arrow-up\"></i>) rotates the active tile. With the arrow down key (<i class=\"mdi mdi-arrow-down\"></i>) you can move the block down faster.<br>By pressing the space bar the active block is docked directly to the existing Battlefield, so you save a lot of time.<br><br><b class=\"d-block\">Abilities</b>At the beginning, each player selects a class that grants him special abilities like \"Add line\" or \"Remove line\". During the battles an ability can be activated on the target user with the \"q, w, e, r\". At first, each player is targeting his self. With the number keys 1 - 6 the enemy target can be switched to the specific user. With the tab key, you will target directly yourself. Each ability requires mana to be activated, which you get by dissolving rows. The more rows you dissolve at once, the more mana you will receive.<br><br><b class=\"d-block\">Targets</b>Besides to the abilities their is one more game mechanic. As soon as you resolve rows, the armor of the target will be damaged. If the armor is fully locked down, a row will be attached to the bottom of the targets Battlefield. By targeting yourself and resolving rows, your armor will be regerenrated, so you can block heavy attacks. By resolving more than one row at the same time, this effect will be event stronger!",
+  "whats-battletris-long": "<b class=\"d-block\">What is Battletris?</b>Battletris is a multiplayer block stacking game with up to 6 players.<br><br><b class=\"d-block\">Tavern</b>In the beginning you will find yourself in the \"Tavern\", a kind of lobby where players can find each other and join different battles. Once you have decided on a Battlefield, you can join it with the small icon (<i class=\"mdi mdi-login-variant\"></i>) in the upper right corner.<br><br><b class=\"d-block\">Battle Control</b>Once you have joined a Battlefield, you can see the battle controls on the left and the overview of the different players on the right. If a battle is already running, you can simply watch the action. As soon as no battle has started and there is still free space available, you can join the battle at the bottom of the Battle Controls. After you are joined and ready, use the \"Start Battle\" button to start the battle. As soon as all joined Warriors have started the battle, start a 10 second timer after the actual game starts.<br><br><b class=\"d-block\">This is how to play</b>I hope everyone knows the game principle of good old Tetris. The goal is to stack the opponent's Battlefield with blocks up to the top, so that the opponent is eliminated from the battle. The last player with free spaces wins the battle.<br>With the arrow keys (<i class=\"mdi mdi-arrow-left\"></i>, <i class=\"mdi mdi-arrow-right\"></i>) the active block can be changed to the right and to the left. The arrow up key (<i class=\"mdi mdi-arrow-up\"></i>) rotates the active tile. With the arrow down key (<i class=\"mdi mdi-arrow-down\"></i>) you can move the block down faster.<br>By pressing the space bar the active block is docked directly to the existing Battlefield, so you save a lot of time.<br><br><b class=\"d-block\">Abilities</b>At the beginning, each player selects a class that grants him special abilities like \"Add line\" or \"Remove line\". During the battles an ability can be activated on the target user with the \"q, w, e, r\". At first, each player is targeting his self. With the number keys 1 - 6 the enemy target can be switched to the specific user or use \"tab\" to select the next player. By pressing the tab key longer than 1 second, you will target directly yourself. Each ability requires mana to be activated, which you get by dissolving rows. The more rows you dissolve at once, the more mana you will receive.<br><br><b class=\"d-block\">Targets</b>Besides to the abilities their is one more game mechanic. As soon as you resolve rows, the armor of the target will be damaged. If the armor is fully locked down, a row will be attached to the bottom of the targets Battlefield. By targeting yourself and resolving rows, your armor will be regerenrated, so you can block heavy attacks. By resolving more than one row at the same time, this effect will be event stronger!",
   "your-class": "Class",
   "your-name": "Name"
 }

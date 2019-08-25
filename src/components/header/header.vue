@@ -131,7 +131,6 @@
             <select id="theme" class="form-control"
               v-model="theme"
               @change="setTheme(theme)">
-              <option value="light">{{ 'themes.light' | translate }}</option>
               <option value="dark">{{ 'themes.dark' | translate }}</option>
             </select>
           </div>

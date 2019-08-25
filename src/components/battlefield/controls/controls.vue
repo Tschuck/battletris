@@ -26,11 +26,15 @@
     </tr>
     <tr>
       <td>1 - 6:<td>
-      <td class="text-right">{{ 'battle.controls.use-ability' | translate }}</td>
+      <td class="text-right">{{ 'battle.controls.choose-target' | translate }}</td>
     </tr>
     <tr>
       <td>{{ 'battle.controls.tab' | translate }}:<td>
-      <td class="text-right">{{ 'battle.controls.use-ability-self' | translate }}</td>
+      <td class="text-right">{{ 'battle.controls.next-taget' | translate }}</td>
+    </tr>
+    <tr>
+      <td>{{ 'battle.controls.tab-pressed' | translate }}:<td>
+      <td class="text-right">{{ 'battle.controls.target-yourself' | translate }}</td>
     </tr>
   </table>
 </template>

@@ -15,7 +15,8 @@
 }
 
 .navbar {
-  min-height: 76px;
+  height: 70px;
+  min-height: 70px;
 
   border-bottom: 1px solid var(--battletris-content-border);
   background-color: var(--battletris-nav-bg);
@@ -36,7 +37,7 @@
   background-color: var(--battletris-card-bg);
 
   &.active-card {
-    box-shadow: 0 0 8px 1px var(--battletris-card-active);
+    border: 2px solid var(--battletris-card-active);
   }
 
   .card-header {

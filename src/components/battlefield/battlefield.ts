@@ -27,7 +27,8 @@ export default class BattleField extends Vue {
    * listeners for ws updates
    */
   listeners: Array<any> = [ ];
-  keyHandler;
+  keyDownHandler;
+  keyUpHandler;
 
   /**
    * Opened room, save it to the variable, else, we cannot handle correct roomLeave
@@ -88,6 +89,7 @@ export default class BattleField extends Vue {
    * Allow key pressing only each 50 milliseconds
    */
   keyTimeout = { };
+  keyPressed = false;
 
   /**
    * fps meter
@@ -132,8 +134,10 @@ export default class BattleField extends Vue {
     ));
 
     // bind key handler
-    this.keyHandler = ((e) => this.handleUserKey(e)).bind(this);
-    window.addEventListener('keydown', this.keyHandler);
+    this.keyDownHandler = ((e) => this.handleUserKey(e)).bind(this);
+    this.keyUpHandler = ((e) => this.keyPressed = false).bind(this);
+    window.addEventListener('keydown', this.keyDownHandler);
+    window.addEventListener('keyup', this.keyUpHandler);
 
     // use this for usually known game loop (is currently not required)
     // this.renderBattleIncrements();
@@ -166,9 +170,11 @@ export default class BattleField extends Vue {
     // stop fps meter
     this.fpsMeter.destroy();
 
+    // leave room and destroy key listeners
     await battletris.leaveRoom(this.room);
     this.listeners.forEach(listener => listener());
-    window.removeEventListener('keydown', this.keyHandler);
+    window.removeEventListener('keydown', this.keyDownHandler);
+    window.removeEventListener('keyup', this.keyUpHandler);
   }
 
   /**
@@ -186,55 +192,43 @@ export default class BattleField extends Vue {
    */
   async handleUserKey($event: any) {
     if (this.battle.status === 'started') {
-      const startDate = Date.now();
+      // only send key press event, when no key press timeout is running
+      if (!this.keyTimeout[$event.keyCode]) {
+        // execute the battle action and directly use the result for the update
+        (async () => {
+          const startDate = Date.now();
+          const update = await battletris.promiseClient.action('battletris/battles-actions', {
+            connectionId: this.connectionId,
+            key: $event.keyCode,
+            keyPressed: this.keyPressed,
+            room: this.room,
+          });
 
-      const update = await battletris.promiseClient.action('battletris/battles-actions', {
-        room: this.room,
-        connectionId: this.connectionId,
-        key: $event.keyCode,
-      });
+          // set key pressed, so when handleUserKey is triggered again, we can detect if the key was
+          // released or not (e.g. for tab pressed events)
+          this.keyPressed = true;
 
-      // estimate response times
-      this.responseTimes.push(Date.now() - startDate);
-      this.responseTimes = this.responseTimes.splice(0, 10);
-      this.estimatedResponseTime = Math.round(
-        this.responseTimes.reduce((previous, current) => current += previous) /
-        this.responseTimes.length
-      );
+          // estimate response times
+          this.responseTimes.unshift(Date.now() - startDate);
+          this.responseTimes = this.responseTimes.splice(0, 10);
+          this.estimatedResponseTime = Math.round(
+            this.responseTimes.reduce((previous, current) => current += previous) /
+            this.responseTimes.length
+          );
 
-      this.handleBattleIncrement(update.battle);
+          this.handleBattleIncrement(update.battle);
+        })();
+
+        // wait 50 milliseconds until sending next key code
+        this.keyTimeout[$event.keyCode] = setTimeout(() => {
+          delete this.keyTimeout[$event.keyCode];
+        }, 30);
+      }
 
       // stop event handling
       $event.stopPropagation();
       $event.preventDefault();
       return false;
-
-
-      // // only send key press event, when no key press timeout is running
-      // if (!this.keyTimeout[$event.keyCode]) {
-      //   // execute the battle action and directly use the result for the update
-      //   (async () => {
-      //     const update = await battletris.promiseClient.action('battletris/battles-actions', {
-      //       room: this.room,
-      //       connectionId: this.connectionId,
-      //       key: $event.keyCode,
-      //     });
-
-      //     this.handleBattleIncrement(update.battle);
-      //   })();
-
-      //   // wait 50 milliseconds until sending next key code
-      //   this.keyTimeout[$event.keyCode] = setTimeout(() => {
-      //     delete this.keyTimeout[$event.keyCode];
-      //   }, 30);
-      // } else {
-      //   console.log('key timeout')
-      // }
-
-      // // stop event handling
-      // $event.stopPropagation();
-      // $event.preventDefault();
-      // return false;
     }
   }
 
