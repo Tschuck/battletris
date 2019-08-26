@@ -34,6 +34,11 @@ export default class Chat extends Vue {
   messages: Array<any> = [ ];
 
   async created() {
+    // load initial room data
+    this.users = (await battletris.promiseClient.action('battletris/rooms', {
+      room: this.room
+    })).room.users;
+
     // watch for user updates
     this.listeners.push(battletris.watch(`${ this.room }/room`, (data) => {
       this.users = data.message.room.users;

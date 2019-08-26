@@ -82,25 +82,29 @@ module.exports = class Battle {
     const connectionId = changed.connectionId;
     const originBlock = origin.activeBlock;
     // check if the action can be performed
-    let collision = mapHandler.checkForCollision(changed.map, activeBlock, origin.activeBlock);
-    switch (collision) {
-      // if the stone movement was invalid, stop it!
-      case 'invalid-y': {
-        // reset activeBlock changes and return
-        changed.activeBlock = origin.activeBlock;
-        return;
-      }
+    let collision = mapHandler.checkForCollision(
+      changed.map,
+      activeBlock,
+      // do not detect docked when the stone was spinned
+      key === 38 ? null : origin.activeBlock,
+    );
+    switch (collision.type) {
       // if it was a spin and it would spin out of the map, move it to the correct position
-      case 'invalid-x': {
+      case 'invalid': {
         if (key === 38) {
-          if (activeBlock.x < 0) {
+          if (collision.y > 20) {
+            // if block was spinned out of the field, reset it
+            changed.activeBlock = origin.activeBlock;
+            debugger;
+            return;
+          } else if (collision.x < 0) {
             activeBlock.x = 0;
-            collision = mapHandler.checkForCollision(changed.map, activeBlock, origin.activeBlock);
-            break;
-          } else if (activeBlock.x + activeBlock.map[0].length >= 9) {
+            mapHandler.checkForCollision(changed.map, activeBlock, origin.activeBlock);
+            return;
+          } else if (collision.x >= 9) {
             activeBlock.x = 10 - activeBlock.map[0].length;
-            collision = mapHandler.checkForCollision(changed.map, activeBlock, origin.activeBlock);
-            break;
+            mapHandler.checkForCollision(changed.map, activeBlock, origin.activeBlock);
+            return;
           } else {
             // reset activeBlock changes and return
             changed.activeBlock = origin.activeBlock;
@@ -118,8 +122,10 @@ module.exports = class Battle {
         for (let y = 0; y < originBlock.map.length; y++) {
           for (let x = 0; x < originBlock.map[y].length; x++) {
             if (originBlock.map[y][x]) {
-              if (originBlock.y + y === 0) {
+              if (originBlock.y + y <= 0) {
                 changed.status = 'lost';
+                // if user has lost, move the block back to render correct status without overlapping
+                changed.activeBlock = originBlock;
                 break;
               } else {
                 changed.map[originBlock.y + y][originBlock.x + x] = {
@@ -146,6 +152,8 @@ module.exports = class Battle {
 
               // one user has won and game has been stopped stop the game
               return this.stop();
+            } else {
+              return;
             }
 
             break;
@@ -173,6 +181,14 @@ module.exports = class Battle {
 
         // set the next block to display for the current user
         this.setNextBlock(connectionId);
+
+        // restart user loop, so the next block does not will move down directly
+        this.setTimeout(
+          connectionId,
+          'userLoop',
+          () => this.userLoop(connectionId),
+          this.users[connectionId].userSpeed
+        );
 
         break;
       }
@@ -458,25 +474,35 @@ module.exports = class Battle {
   /**
    * Returns the newly generated next active block for a specific user.
    */
-  setNextBlock(connectionId) {
+  setNextBlock(connectionId, block) {
     const currUser = this.users[connectionId];
 
-    // increase block index
-    currUser.blockIndex++;
+    // if block was directly passed, use it
+    if (block) {
+      currUser.activeBlock = block;
+    } else {
+      // increase block index
+      currUser.blockIndex++;
 
-    // generate new blocks
-    if (!this.blocks[currUser.blockIndex]) {
-      this.blocks.push(Battle.generateRandomBlock());
+      // generate new blocks
+      if (!this.blocks[currUser.blockIndex]) {
+        this.blocks.push(Battle.generateRandomBlock());
+      }
+
+      // generate next block
+      if (!this.blocks[currUser.blockIndex + 1]) {
+        this.blocks.push(Battle.generateRandomBlock());
+      }
+
+      // set active block
+      currUser.activeBlock = _.cloneDeep(this.blocks[currUser.blockIndex]);
+      currUser.nextBlock = _.cloneDeep(this.blocks[currUser.blockIndex + 1]);
     }
 
-    // generate next block
-    if (!this.blocks[currUser.blockIndex + 1]) {
-      this.blocks.push(Battle.generateRandomBlock());
-    }
-
-    // set active block
-    currUser.activeBlock = _.cloneDeep(this.blocks[currUser.blockIndex]);
-    currUser.nextBlock = _.cloneDeep(this.blocks[currUser.blockIndex + 1]);
+    // reduce block y - 1 to run a faked user action, that simulates the activeBlock fade in => we
+    // can directly detect user lost
+    currUser.activeBlock.y--;
+    this.userAction(connectionId, 40);
   }
 
   /**
@@ -721,6 +747,9 @@ module.exports = class Battle {
               key = 49;
             }
           }
+
+          // allow feedback
+          knownKey = true;
         }
 
         // user has changed his target, check if the target for the specific index exists and change

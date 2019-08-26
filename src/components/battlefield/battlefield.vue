@@ -7,7 +7,7 @@
         :users="roomDetails.users">
       </battletris-header>
       <div class="d-flex w-100 h-100">
-        <div class="p-1 d-flex flex-column" style="min-width: 350px; width: 350px;">
+        <div class="p-1 d-flex flex-column" style="min-width: 350px; width: 350px; max-height: 100%">
           <b-nav tabs>
             <b-nav-item :active="leftPanelIndex === 0" @click="leftPanelIndex = 0">
               {{ 'battle.battle' | translate }}
@@ -143,7 +143,12 @@
             </template>
           </div>
 
-          <battletris-chat :room="room" v-if="leftPanelIndex === 1"></battletris-chat>
+          <battletris-chat
+            :style="{
+              'display': leftPanelIndex === 1 ? 'flex' : 'none'
+            }"
+            :room="room">
+          </battletris-chat>
         </div>
 
         <div class="p-1">

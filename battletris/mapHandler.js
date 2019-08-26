@@ -7,10 +7,10 @@ const _ = require('lodash');
  * @param      {Array<Array<any>>}  map            map definition (20x10)
  * @param      {Array<Array<any>>}  activeBlock    active block map
  * @param      {Array<Array<any>>}  originalBlock  block before it was moved
- * @return     {(boolean|string)}   false for no collision, invalid for collision, docked for docked
- *                                  to another stone
+ * @return     {(boolean|any)}      false for no collision / object with x / y and collision type ({
+ *                                  type: invalid / docked, x: 0, y: 0 })
  */
-function checkForCollision(map, activeBlock, originalBlock) {
+function checkForCollision(map, activeBlock, originalBlock, onlyType = false) {
   // disabled docking when x hash changed, it would dock stones on horizontal blocks
   const detectDocking = !originalBlock ||
     (
@@ -23,34 +23,46 @@ function checkForCollision(map, activeBlock, originalBlock) {
     for (let x = 0; x < activeBlock.map[y].length; x++) {
       // skip empty blocks
       if (activeBlock.map[y][x]) {
+        /**
+         * Returns a collision object with details about position and the type
+         *
+         * @param      {string}         type    collision type ()
+         * @return     {string|Object}  if onlyType only string type, else collison object.
+         */
+        const returnCollision = (type) => {
+          // if only type is needed, return only this, else return collision object.
+          return onlyType ? type : {
+            type,
+            x: x + activeBlock.x,
+            y: y + activeBlock.y,
+          };
+        }
+
+        
+        if (
+          // user has reached the ground
+          (y + activeBlock.y > 20) ||
+          (// active block is moved out of the left screen
+          x + activeBlock.x < 0) ||
+          // active block is moved out of the right screen
+          (x + activeBlock.x > 9)
+        ) {
+          return returnCollision('invalid');
+        }
+
         // only detect docking when y was moved, but not the x axes
         if (detectDocking) {
-          // user have spinned a stone directly on the ground
-          if (y + activeBlock.y > 20) {
-            return 'invalid-y';
           // user has reached the ground
-          } else if (y + activeBlock.y === 20) {
-            return 'docked';
-          }
-
-          // check for y collision, the block will be attached on top
-          if (map[activeBlock.y + y] && map[activeBlock.y + y][activeBlock.x + x]) {
-            return 'docked';
+          if (y + activeBlock.y === 20) {
+            return returnCollision('docked');
+            // check for y collision, the block will be attached on top
+          } else if (map[activeBlock.y + y] && map[activeBlock.y + y][activeBlock.x + x]) {
+            return returnCollision('docked');
           }
         } else {
           if (map[activeBlock.y + y] && map[activeBlock.y + y][activeBlock.x + x]) {
-            return 'invalid-y';
+            return returnCollision('invalid');
           }
-        }
-
-        // active block is moved out of the left screen
-        if (x + activeBlock.x < 0) {
-          return 'invalid-x';
-        }
-
-        // active block is moved out of the right screen
-        if (x + activeBlock.x > 9) {
-          return 'invalid-x';
         }
       }
     }
@@ -99,7 +111,7 @@ function getDockPreview(map, activeBlock) {
   // move block down until it reached a dock point
   while (!docked) {
     blockCopy.y++;
-    docked = checkForCollision(map, blockCopy) === 'docked';
+    docked = checkForCollision(map, blockCopy, null, true) === 'docked';
   }
 
   // reduce blockCopy y value by one, so the last previous position without any collision

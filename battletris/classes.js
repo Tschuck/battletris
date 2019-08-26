@@ -125,7 +125,7 @@ module.exports = {
     {
       costs: 80,
       execute: (battle, executor, target) => {
-        target.activeBlock = {
+        battle.setNextBlock(target.connectionId, {
           map: [
             [ 0, 0, 1, 0, 1, 0, 0, ],
             [ 0, 1, 0, 1, 0, 1, 0, ],
@@ -135,7 +135,7 @@ module.exports = {
           type: -2,
           x: 1,
           y: 0,
-        };
+        });
       },
     },
   ],
