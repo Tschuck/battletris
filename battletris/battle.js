@@ -23,7 +23,7 @@ module.exports = class Battle {
    * @return     {any}  block definition
    */
   static generateRandomBlock() {
-    const type = Math.floor(Math.random() * 6);
+    const type = Math.floor(Math.random() * 7);
 
     return {
       map: _.cloneDeep(blocks[type][0]),
@@ -456,6 +456,13 @@ module.exports = class Battle {
 
       // remove user from runtime
       delete this.users[connectionId];
+
+      // remove targets from this user and let the users target themself
+      Object.keys(this.users).forEach(userId => {
+        if (this.users[userId].targetId === connectionId) {
+          this.users[userId].targetId = userId;
+        }
+      })
     }
 
     // if all users have left the game, stop it
