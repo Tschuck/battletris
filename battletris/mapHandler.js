@@ -135,6 +135,19 @@ function generateEmptyRows(count) {
 }
 
 /**
+ * Returns a empty map with an count of rows
+ *
+ * @param      {number}  count   count of rows
+ */
+function getEmptyMap(count = 20, map = [ ]) {
+  for (let y = map.length - 1; y < 20; y++) {
+    map.push([...Array(10)]);
+  }
+
+  return map;
+}
+
+/**
  * Takes some rows and make random clear within the rows until clearCount is reached
  *
  * @param      {Arra<Array<any>>}   rows        array of rows
@@ -161,4 +174,5 @@ module.exports = {
   generateEmptyRows,
   generateRandomClears,
   getDockPreview,
+  getEmptyMap,
 };

@@ -3,6 +3,7 @@ const blocks = require('./blocks');
 const classes = require('./classes');
 const mapHandler = require('./mapHandler');
 const Mutex = require('async-mutex').Mutex;
+const numberToBlocks = require('./numberToBlocks');
 const { api, } = require('actionhero');
 
 // get current node env
@@ -401,12 +402,6 @@ module.exports = class Battle {
    * @param      {any}     [user={}]     the previous user structure, to keep old states
    */
   join(connectionId, user = { }) {
-    const map = [ ];
-
-    for (let y = 0; y < 20; y++) {
-      map.push([...Array(10)]);
-    }
-
     // when armor gets damaged to zero, the add line ability is called
     user.armor = 100;
     // block turn (press up)
@@ -420,7 +415,7 @@ module.exports = class Battle {
     // current speed level
     user.level = 1;
     // users full map
-    user.map = map;
+    user.map = mapHandler.getEmptyMap();
     // amount of mana
     user.mana = 0;
     // cleared rows
@@ -559,12 +554,18 @@ module.exports = class Battle {
         clearInterval(this.gameLoopInterval);
 
         // start auomated user actions
-        Object.keys(this.users).forEach(connectionId => this.setTimeout(
-          connectionId,
-          'userLoop',
-          () => this.userLoop(connectionId),
-          this.users[connectionId].userSpeed
-        ));
+        Object.keys(this.users).forEach(connectionId => {
+          // reset counter map
+          this.users[connectionId].map = mapHandler.getEmptyMap(20);
+
+          // start the user loop
+          this.setTimeout(
+            connectionId,
+            'userLoop',
+            () => this.userLoop(connectionId),
+            this.users[connectionId].userSpeed
+          );
+        });
 
         // start the game, count time and send latest updates every X seconds
         this.gameLoopInterval = setInterval(
@@ -577,19 +578,27 @@ module.exports = class Battle {
         this.userStates = _.cloneDeep(this.users);
 
         // update the counter within the UI
-        await api.chatRoom.broadcast({}, this.roomName, {
-          type: 'battle-increment',
+        api.chatRoom.broadcast({}, this.roomName, {
+          type: 'battle',
           battle: this.getJSON(),
         });
       } else {
+        // set starting count as initial map
+        Object.keys(this.users).forEach(connectionId =>
+          this.users[connectionId].map = numberToBlocks(this.startCounter)
+        );
+
         // update the counter within the UI
-        await api.chatRoom.broadcast({}, this.roomName, {
+        const battle = this.getUserStateIncrement();
+        battle.startCounter = this.startCounter;
+        battle.status = this.status;
+        api.chatRoom.broadcast({}, this.roomName, {
+          battle,
+          date: Date.now(),
+          startCounter: this.startCounter,
+          status: this.status,
           type: 'battle-increment',
-          battle: {
-            startCounter: this.startCounter,
-            status: this.status,
-          }
-        });
+        });  
       }
     }, 1000);
   }

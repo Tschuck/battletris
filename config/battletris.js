@@ -9,7 +9,7 @@ exports['default'] = {
       // amount of battlefields
       battlefields: 20,
       // seconds until the game starts, after all users has accepted
-      startCounter: env === 'production' ? 10 : 1,
+      startCounter: env === 'production' ? 9 : 1,
       // run game loop every Xms
       gameLoopSpeed: 500,
       // "user speed", moves blocks down, ...

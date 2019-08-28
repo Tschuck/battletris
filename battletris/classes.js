@@ -127,13 +127,13 @@ module.exports = {
       execute: (battle, executor, target) => {
         battle.setNextBlock(target.connectionId, {
           map: [
-            [ 0, 0, 1, 0, 1, 0, 0, ],
-            [ 0, 1, 0, 1, 0, 1, 0, ],
-            [ 1, 0, 0, 0, 0, 0, 1, ],
+            [ 1, 1, 1, 0, 1, 0, 1, 0, ],
+            [ 1, 0, 1, 0, 1, 0, 1, 1, ],
+            [ 1, 1, 1, 0, 1, 1, 1, 0, ],
           ],
           rotation: -1,
           type: -2,
-          x: 1,
+          x: 0,
           y: 0,
         });
       },
