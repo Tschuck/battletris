@@ -14,7 +14,7 @@ exports['default'] = {
       gameLoopSpeed: 500,
       // "user speed", moves blocks down, ...
       userSpeed: 1100,
-      // increase speed after Xms
+      // increase speed after X ms
       increaseInterval: 30 * 1000,
       // reduce the speed timeout with the amount of ms
       increaseSteps: 50,

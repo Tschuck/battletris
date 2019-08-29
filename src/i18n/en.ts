@@ -135,7 +135,7 @@ export default {
         "title": "Shovel"
       },
       "ability1": {
-        "desc": "In infinite boredom, the Unkwon has optimized his skills with the Slingshot to shoot a whole series of stones at the bottom of a Battlefield.",
+        "desc": "In infinite boredom, the Unkown has optimized his skills with the Slingshot to shoot a whole series of stones at the bottom of a Battlefield.",
         "title": "Slingshot"
       },
       "ability2": {
@@ -143,10 +143,10 @@ export default {
         "title": "Spinning Top"
       },
       "ability3": {
-        "desc": "The unknown met a juggler on his journey and perfected his hat game. Transforms the block into a jester hat.",
-        "title": "Jester's Game"
+        "desc": "The unknown is just so damn friendly and invites his target for a donut and fresh coffee.",
+        "title": "Breakfast"
       },
-      "desc": "A traveller from a distant land, looking for his destination. Ows general abilities without a special orientation.",
+      "desc": "A traveller from a distant land, looking for his destination. Has general abilities without a special orientation.",
       "title": "The unknown"
     },
     "warlord": {

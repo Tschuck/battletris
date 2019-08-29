@@ -13,7 +13,7 @@
 3. Abl. - medium costs (~ 40 - 70)
 4. Abl. - high costs (~ 70 - 100)
 
-### The Unkwon
+### The Unknwon
 - clear line
 - add line
 - Auto Spin active stone (Spinning top)
