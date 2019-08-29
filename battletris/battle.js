@@ -17,7 +17,7 @@ const abilityKeys = [
   82, // r
 ];
 
-module.exports = class Battle {
+class Battle {
   /**
    * Returns a new random block
    *
@@ -188,11 +188,51 @@ module.exports = class Battle {
           connectionId,
           'userLoop',
           () => this.userLoop(connectionId),
-          this.users[connectionId].userSpeed
+          this.getUserSpeed(connectionId),
         );
 
         break;
       }
+    }
+  }
+
+  /**
+   * Check all effects that are applied to the current user and check if a special hook was applied
+   * to this ability. Returns an array of each effect hook results. If the result is empty, or true,
+   * the original function will be called. Returning false, will not call the original function.
+   * within the hook function, the input args can be adjusted and will be applied to the original
+   * function.
+   *
+   * @param      {string}    hookName  function name that should be hooked (userAction, ...)
+   * @param      {Array}     args      function args that were passed to the original function
+   *                                   (first param must be a connectionId)x
+   * @param      {Function}  callback  original function
+   */
+  effectAbilityHook(hookName, args, callback) {
+    const connectionId = args[0];
+    const user = this.users[connectionId];
+
+    // if correct connectionId is applied, check for effects
+    if (user) {
+      // check for running effects with beforeUserAction hook
+      const results = user.effects.map(effect => {
+        if (classes[effect.className] &&
+            classes[effect.className][effect.abilityIndex] &&
+            classes[effect.className][effect.abilityIndex][hookName]) {
+          /// execute the ability
+          const ability = classes[effect.className][effect.abilityIndex];
+          // execute the hook, args can be adjusted
+          return ability[hookName].call(ability, this, args);
+        }
+      });
+
+      // check if the hook should be breaked
+      const break = results.filter(result => result === false);
+      if (break.length === 0) {
+        return callback.apply(this, args);
+      }
+    } else {
+      return callback.apply(this, args);
     }
   }
 
@@ -225,6 +265,8 @@ module.exports = class Battle {
       effect.className = executor.className;
       effect.abilityIndex = abilityIndex;
       effect.stack = 1;
+      // fill undefined timeout
+      effect.timeout = typeof effect.timeout === 'undefined' ? effect.duration : effect.timeout;
       // push it to the target effects
       target.effects.push(effect);
     }
@@ -239,7 +281,7 @@ module.exports = class Battle {
         effect.stack = Math.round(effect.duration / ability.duration);
 
         // run the ability
-        ability.execute.call(ability, this, executor, target, payload);
+        ability.execute && ability.execute.call(ability, this, executor, target, payload);
 
         // start next the next call
         this.setTimeout(target.connectionId, effectId, runEffect, effect.timeout);
@@ -306,9 +348,11 @@ module.exports = class Battle {
       if (ability.effect) {
         this.effectLoop(executor, this.users[targetId], abilityIndex, payload);
       } else {
-        // execute ability directly, if no effect should be applied
-        ability.execute.call(ability, this, executor, this.users[targetId], payload);
-        this.sendBattleIncrement();
+        if (ability.execute) {
+          // execute ability directly, if no effect should be applied
+          ability.execute.call(ability, this, executor, this.users[targetId], payload);
+          this.sendBattleIncrement();
+        }
       }
     }
   }
@@ -340,6 +384,18 @@ module.exports = class Battle {
   gameLoop() {
     // set general data
     this.duration = Date.now() - this.startTime;
+  }
+
+  /**
+   * Get the currents user speed. Can also be hooked using the 'getUserSpeed' hook
+   *
+   * @param      {Array}   args    arguments including connectionIOd
+   * @return     {number}  The users speed
+   */
+  getUserSpeed(...args) {
+    return this.effectAbilityHook('getUserSpeed', args, (connectionId) => {
+      return this.users[connectionId].userSpeed;
+    })
   }
 
   /**
@@ -563,7 +619,7 @@ module.exports = class Battle {
             connectionId,
             'userLoop',
             () => this.userLoop(connectionId),
-            this.users[connectionId].userSpeed
+            this.getUserSpeed(connectionId),
           );
         });
 
@@ -683,140 +739,149 @@ module.exports = class Battle {
   }
 
   /**
-   * Handles a user action
+   * Handles a user action wrapped into a effect ability hook call, so abilities will be able to
+   * adjust the userAction logic.
    *
-   * @param      {string}   connectionId  users connection id
-   * @param      {number}   key           number key
+   * @param      {Array}    args    arguments of the userAction function (have a look at the
+   *                                callback function of the effectAbilityHook)
    * @return     {Promise}  void
    */
-  userAction(connectionId, key, keyPressed = false) {
-    // cancel action when a wrong connection id was passed or the user has already lost
-    if (!this.users[connectionId] || this.users[connectionId].status === 'lost') {
-      return;
-    }
-
-    // fast access for current user
-    const currUser = this.users[connectionId];
-    let activeBlock = currUser.activeBlock;
-    // backup current user, so we can roll back latest changes
-    const currUserOrigin = _.cloneDeep(currUser);
-    // save original user objects as backups, so collision detection can retract last actions
-    let collisionUsers = {
-      [ connectionId ]: currUserOrigin
-    };
-
-    switch (key) {
-      // left
-      case 37: {
-        activeBlock.x--;
-        break;
+  userAction(...args) {
+    /**
+     * Executes the user action after ability effects were applied.
+     * 
+     * @param      {string}  connectionId  users connection id
+     * @param      {number}  key           number key
+     */
+    return this.effectAbilityHook('userAction', args, (connectionId, key, keyPressed = false) => {
+      // cancel action when a wrong connection id was passed or the user has already lost
+      if (!this.users[connectionId] || this.users[connectionId].status === 'lost') {
+        return;
       }
-      // up
-      case 38: {
-        // if it's not a 4x4 block, turn it
-        // the rotation will be -1 for some abilities, so disable turning
-        if (activeBlock.type !== 3 && activeBlock.rotation !== -1) {
-          activeBlock.rotation = activeBlock.rotation === 3 ? 0 : activeBlock.rotation + 1;
-          activeBlock.map = blocks[activeBlock.type][activeBlock.rotation];
+
+      // fast access for current user
+      const currUser = this.users[connectionId];
+      let activeBlock = currUser.activeBlock;
+      // backup current user, so we can roll back latest changes
+      const currUserOrigin = _.cloneDeep(currUser);
+      // save original user objects as backups, so collision detection can retract last actions
+      let collisionUsers = {
+        [ connectionId ]: currUserOrigin
+      };
+
+      switch (key) {
+        // left
+        case 37: {
+          activeBlock.x--;
+          break;
         }
-        break;
-      }
-      // right
-      case 39: {
-        activeBlock.x++;
-        break;
-      }
-      // down
-      case 40: {
-        activeBlock.y++;
-        break;
-      }
-      // press space
-      case 32: {
-        // move the original block to the next dock position
-        currUserOrigin.activeBlock = mapHandler.getDockPreview(currUser.map, activeBlock);
-        // assign the new original block to the current currUser active block position, so the
-        // collision logic will render this block as docked
-        currUser.activeBlock = activeBlock = _.cloneDeep(currUserOrigin.activeBlock);
-        // after this, increase the y position by one, so a collision will be generated
-        activeBlock.y++;
-        break;
-      }
-      default: {
-        let knownKey = false;
-        const userKeys = Object.keys(this.users);
+        // up
+        case 38: {
+          // if it's not a 4x4 block, turn it
+          // the rotation will be -1 for some abilities, so disable turning
+          if (activeBlock.type !== 3 && activeBlock.rotation !== -1) {
+            activeBlock.rotation = activeBlock.rotation === 3 ? 0 : activeBlock.rotation + 1;
+            activeBlock.map = blocks[activeBlock.type][activeBlock.rotation];
+          }
+          break;
+        }
+        // right
+        case 39: {
+          activeBlock.x++;
+          break;
+        }
+        // down
+        case 40: {
+          activeBlock.y++;
+          break;
+        }
+        // press space
+        case 32: {
+          // move the original block to the next dock position
+          currUserOrigin.activeBlock = mapHandler.getDockPreview(currUser.map, activeBlock);
+          // assign the new original block to the current currUser active block position, so the
+          // collision logic will render this block as docked
+          currUser.activeBlock = activeBlock = _.cloneDeep(currUserOrigin.activeBlock);
+          // after this, increase the y position by one, so a collision will be generated
+          activeBlock.y++;
+          break;
+        }
+        default: {
+          let knownKey = false;
+          const userKeys = Object.keys(this.users);
 
-        // if 'tab' was pressed, switch to next user
-        if (key === 9) {
-          // directly target yourself, when tab key was pressed longer
-          if (keyPressed) {
-            key = userKeys.indexOf(connectionId) + 49;
-          } else {
-            // select next target
-            const targetIndex = userKeys.indexOf(currUser.targetId) + 1;
-
-            // target next user
-            if (userKeys.length > targetIndex) {
-              key = targetIndex + 49;
-            // start by the first user again
+          // if 'tab' was pressed, switch to next user
+          if (key === 9) {
+            // directly target yourself, when tab key was pressed longer
+            if (keyPressed) {
+              key = userKeys.indexOf(connectionId) + 49;
             } else {
-              key = 49;
+              // select next target
+              const targetIndex = userKeys.indexOf(currUser.targetId) + 1;
+
+              // target next user
+              if (userKeys.length > targetIndex) {
+                key = targetIndex + 49;
+              // start by the first user again
+              } else {
+                key = 49;
+              }
+            }
+
+            // allow feedback
+            knownKey = true;
+          }
+
+          // user has changed his target, check if the target for the specific index exists and change
+          // it (use 1 to 6 for a better keyboard experience) (keyCode 48 equals to zero)
+          if (key > 48 && key < 55) {
+            const targetId = Object.keys(this.users)[key - 49];
+            if (targetId) {
+              currUser.targetId = targetId;
+              // send update, but disable collision detection
+              delete collisionUsers[connectionId];
+              knownKey = true;
             }
           }
 
-          // allow feedback
-          knownKey = true;
-        }
+          // execute ability, when available
+          const abilityIndex = abilityKeys.indexOf(key);
+          if (abilityIndex !== -1 && classes[currUser.className][abilityIndex]) {
+            knownKey = true;
 
-        // user has changed his target, check if the target for the specific index exists and change
-        // it (use 1 to 6 for a better keyboard experience) (keyCode 48 equals to zero)
-        if (key > 48 && key < 55) {
-          const targetId = Object.keys(this.users)[key - 49];
-          if (targetId) {
-            currUser.targetId = targetId;
-            // send update, but disable collision detection
-            delete collisionUsers[connectionId];
+            // enforce collision check for the target user
+            if (!collisionUsers[currUser.targetId]) {
+              collisionUsers[currUser.targetId] = _.cloneDeep(this.users[currUser.targetId]);
+            }
+
+            // run the users action
+            this.executeAbility(
+              connectionId,
+              currUser.targetId,
+              abilityIndex
+            );
+
             knownKey = true;
           }
-        }
 
-        // execute ability, when available
-        const abilityIndex = abilityKeys.indexOf(key);
-        if (abilityIndex !== -1 && classes[currUser.className][abilityIndex]) {
-          knownKey = true;
-
-          // enforce collision check for the target user
-          if (!collisionUsers[currUser.targetId]) {
-            collisionUsers[currUser.targetId] = _.cloneDeep(this.users[currUser.targetId]);
+          // just return on invalid input
+          if (!knownKey) {
+            return;
           }
-
-          // run the users action
-          this.executeAbility(
-            connectionId,
-            currUser.targetId,
-            abilityIndex
-          );
-
-          knownKey = true;
-        }
-
-        // just return on invalid input
-        if (!knownKey) {
-          return;
         }
       }
-    }
 
-    // check collisions for all corresponding users
-    Object.keys(collisionUsers).forEach(collisionUserId =>
-      this.collisionDetection(
-        collisionUsers[collisionUserId],
-        this.users[collisionUserId],
-        // TODO: also check spin for other players, when a ablity exists, that turns blocks from
-        // other players?
-        collisionUserId === connectionId ? key : false
-      )
-    );
+      // check collisions for all corresponding users
+      Object.keys(collisionUsers).forEach(collisionUserId =>
+        this.collisionDetection(
+          collisionUsers[collisionUserId],
+          this.users[collisionUserId],
+          // TODO: also check spin for other players, when a ablity exists, that turns blocks from
+          // other players?
+          collisionUserId === connectionId ? key : false
+        )
+      );
+    });
   }
 
   /**
@@ -845,7 +910,13 @@ module.exports = class Battle {
       // send latest data to battle room
       this.sendBattleIncrement();
       // trigger next automated user action
-      this.setTimeout(connectionId, 'userLoop', () => this.userLoop(connectionId), user.userSpeed);
+      this.setTimeout(
+        connectionId,
+        'userLoop',
+        () => this.userLoop(connectionId), this.getUserSpeed(connectionId)
+      );
     }
   }
 }
+
+module.exports = Battle;

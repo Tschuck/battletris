@@ -135,7 +135,7 @@ export default {
         "title": "Shovel"
       },
       "ability1": {
-        "desc": "In infinite boredom, the Unkown has optimized his skills with the Slingshot to shoot a whole series of stones at the bottom of a Battlefield.",
+        "desc": "In infinite boredom, the Unknown has optimized his skills with the Slingshot to shoot a whole series of stones at the bottom of a Battlefield.",
         "title": "Slingshot"
       },
       "ability2": {

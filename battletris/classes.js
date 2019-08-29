@@ -1,27 +1,46 @@
 const mapHandler = require('./mapHandler');
 
-// {
-//   // mana costs
-//   costs: 0,
-//   // effect will start a loop, that is called in the timeout interval until the duration is reached
-//   effect: {
-//     // effect duration in ms, after this time, the effect will be removed
-//     duration: 5 * 1000,
-//     // ability will be locked for X ms after activation
-//     cooldown: 10 * 1000,
-//     // timeout until the execute function is called again
-//     timeout: 175,
-//     // direct => run the execute function directly
-//     // delayed => run the execute function after first timeout
-//     type: 'delayed',
-//   },
-//   // function that is called to activate the ability
-//   ///  - will called once, when effect is empty
-//   //   - will called multiple times, when effect is available
-//   execute: (battle, executor, target, payload) => {
-//     ...
-//   }
-// }
+const sampleAbility = {
+  // mana costs
+  costs: 0,
+  // effect will start a loop, that is called in the timeout interval until the duration is reached
+  effect: {
+    // effect duration in ms, after this time, the effect will be removed
+    duration: 5 * 1000,
+    // ability will be locked for X ms after activation
+    cooldown: 10 * 1000,
+    // timeout until the execute function is called again (can be undefined, so the timeout will be duration)
+    timeout: 175,
+    // direct => run the execute function directly
+    // delayed => run the execute function after first timeout
+    type: 'delayed',
+  },
+  // function that is called to activate the ability
+  ///  - will called once, when effect is empty
+  //   - will called multiple times, when effect is available
+  execute: (battle, executor, target, payload) => {
+    // do what you want
+  },
+  // Will be exeucted by retrieving the users speed
+  getUserSpeed: (battle, args) => {
+    const [ connectionId, ] = args;
+    return battle.users[connectionId].userSpeed + 100;
+  },
+  // User action hook that will be runned before a userAction is runned. Args can be adjusted
+  // (original userAction params = connectionId, key, keyPressed)
+  userAction: (battle, args) => {
+    const [ connectionId, key, keyPressed ] = args;
+    
+    // adjust pressed key
+    args[1] = 40;
+    
+    // adjust connection
+    args[0] = '....'
+    
+    // return cancel the user Action, return true / undefined to run the user action
+    return true / false;
+  },
+}
 
 /**
  * Depending on how many rows were solved, one of the first 4 abilities of the battletris class will
