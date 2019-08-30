@@ -129,9 +129,13 @@ class Battle {
                 changed.activeBlock = originBlock;
                 break;
               } else {
-                changed.map[originBlock.y + y][originBlock.x + x] = {
-                  type: originBlock.type,
-                };
+                if (changed.map[originBlock.y + y]) {
+                  changed.map[originBlock.y + y][originBlock.x + x] = {
+                    type: originBlock.type,
+                  };
+                } else {
+                  api.log('Maeeeeeeeeeeeep', 'error');
+                }
               }
             }
           }
@@ -393,8 +397,12 @@ class Battle {
    * @return     {number}  The users speed
    */
   getUserSpeed(...args) {
-    return this.effectAbilityHook('getUserSpeed', args, (connectionId) => {
-      return this.users[connectionId].userSpeed;
+    /**
+     * returns the user speed, can also be overwritten by applying speed as second parameter.
+     */
+    return this.effectAbilityHook('getUserSpeed', args, (connectionId, speed) => {
+      console.log(this.users[connectionId].userSpeed)
+      return typeof speed === 'undefined' ? this.users[connectionId].userSpeed : speed;
     })
   }
 
@@ -936,7 +944,8 @@ class Battle {
       this.setTimeout(
         connectionId,
         'userLoop',
-        () => this.userLoop(connectionId), this.getUserSpeed(connectionId)
+        () => this.userLoop(connectionId),
+        this.getUserSpeed(connectionId)
       );
     }
   }

@@ -166,35 +166,6 @@ module.exports = {
     },
   ],
   rouge: [
-    // ability hook tests
-    // {
-    //   costs: 0,
-    //   effect: {
-    //     duration: 10 * 1000,
-    //     timeout: 175,
-    //   },
-    //   userAction: (battle, args) => {
-    //     const [ connectionId, key, keyPressed ] = args;
-
-    //     return false;
-    //   },
-    // },
-    // {
-    //   costs: 0,
-    //   effect: {
-    //     duration: 10 * 1000,
-    //     timeout: 175,
-    //   },
-    //   userAction: (battle, args) => {
-    //     const [ connectionId, key, keyPressed ] = args;
-
-    //     if (key === 37) {
-    //       args[1] = 39;
-    //     } else if (args[1] === 39) {
-    //       args[1] = 37;
-    //     }
-    //   },
-    // }
   ],
   warlord: [
   ],
@@ -202,4 +173,60 @@ module.exports = {
   ],
   wizard: [
   ],
+  testClass: [
+    // ability hook tests
+    // reverse keys
+    {
+      costs: 30,
+      effect: {
+        duration: 10 * 1000,
+        delayed: true,
+      },
+      userAction: (battle, args) => {
+        const [ connectionId, key, keyPressed ] = args;
+
+        if (key === 37) {
+          args[1] = 39;
+        } else if (args[1] === 39) {
+          args[1] = 37;
+        }
+      },
+    },
+    // increase speed
+    {
+      costs: 50,
+      effect: {
+        duration: 10 * 1000,
+        delayed: true,
+      },
+      getUserSpeed: (battle, args) => {
+        args.push(200);
+      },
+    },
+    // stop automated block moving
+    {
+      costs: 50,
+      effect: {
+        duration: 10 * 1000,
+        delayed: true,
+      },
+      moveBlockDown: (battle, args) => {
+        const [ connectionId,  ] = args;
+
+        return false;
+      },
+    },
+    // cancel user action
+    {
+      costs: 80,
+      effect: {
+        duration: 10 * 1000,
+      },
+      userAction: (battle, args) => {
+        const [ connectionId, key, keyPressed ] = args;
+
+        return false;
+      },
+    },
+  ]
 };

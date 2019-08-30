@@ -10,8 +10,8 @@ exports['default'] = {
       battlefields: 20,
       // seconds until the game starts, after all users has accepted
       startCounter: env === 'production' ? 9 : 1,
-      // run game loop every Xms
-      gameLoopSpeed: 500,
+      // run game loop every X ms
+      gameLoopSpeed: 1000,
       // "user speed", moves blocks down, ...
       userSpeed: 1100,
       // increase speed after X ms
