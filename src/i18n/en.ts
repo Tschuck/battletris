@@ -149,6 +149,26 @@ export default {
       "desc": "A traveller from a distant land, looking for his destination. Has general abilities without a special orientation.",
       "title": "The unknown"
     },
+    "sorcerer": {
+      "ability0": {
+        "desc": "By applying a massive amount of gravity you cause the target's block to immediately drop.",
+        "title": "Gravity Charge"
+      },
+      "ability1": {
+        "desc": "Confuse the target by distorting the space around them, reversing their controls for 15 seconds.",
+        "title": "Spatial Distortion"
+      },
+      "ability2": {
+        "desc": "Speed up the target's block drop speed by amplifying the flow of time for 15 seconds.",
+        "title": "Temporal Rift"
+      },
+      "ability3": {
+        "desc": "By rending spacetime asunder you stop the target's time and freeze its controls solid for 10 seconds.",
+        "title": "Spacetime Rupture"
+      },
+      "desc": "A powerful magician harnessing the power of space and time to defeat his foes.",
+      "title": "The Sorcerer"
+    },
     "warlord": {
       "ability0": {
         "desc": "unknown",

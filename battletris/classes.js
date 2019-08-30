@@ -165,6 +165,68 @@ module.exports = {
       },
     },
   ],
+  sorcerer: [
+    // drop current block
+    {
+      costs: 30,
+      execute: (battle, executor, target) => {
+        battle.userAction(target.connectionId, 32);
+      }
+    },
+    // reverse controls
+    {
+      costs: 50,
+      effect: {
+        duration: 15 * 1000,
+      },
+      userAction: (battle, args) => {
+        const [ connectionId, key, keyPressed ] = args;
+        
+        // adjust pressed key
+        switch (args[1]) {
+          case 37: {
+            args[1] = 39;
+            break;
+          }
+          case 39: {
+            args[1] = 37;
+            break;
+          }
+          case 38: {
+            args[1] = 40;
+            break;
+          }
+          case 40: {
+            args[1] = 38;
+            break;
+          }
+        }
+        return true;
+      },
+    },
+    // increase drop speed
+    {
+      costs: 70,
+      effect: {
+        duration: 15 * 1000,
+      },
+      getUserSpeed: (battle, args) => {
+        const [ connectionId, key, keyPressed ] = args;
+        args.push(battle.users[connectionId].userSpeed / 2)
+      },
+    },
+    // prevent target controls
+    {
+      costs: 90,
+      effect: {
+        duration: 10 * 1000,
+      },
+      userAction: (battle, args) => {
+        args[1] = 'none'; // invalid input, defaults to nothing --> 'frozen controls'
+        return true;
+      },
+    },
+  ],
   rouge: [
   ],
   warlord: [
