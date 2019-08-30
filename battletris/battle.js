@@ -227,8 +227,8 @@ class Battle {
       });
 
       // check if the hook should be breaked
-      const break = results.filter(result => result === false);
-      if (break.length === 0) {
+      const cancelled = results.filter(result => result === false);
+      if (cancelled.length === 0) {
         return callback.apply(this, args);
       }
     } else {
@@ -530,6 +530,29 @@ class Battle {
   }
 
   /**
+   * Seperated function from the userAction for moving a block down, without the user action hook.
+   *
+   * @param      {Array}   args    function arguments (connectionId)
+   */
+  moveBlockDown(...args) {
+    /**
+     * Executes the user action after ability effects were applied.
+     *
+     * @param      {string}  connectionId  users connection id
+     */
+    return this.effectAbilityHook('moveBlockDown', args, (connectionId) => {
+      // backup existing user, before moving block down
+      const originalUser = _.cloneDeep(this.users[connectionId]);
+
+      // move block down
+      this.users[connectionId].activeBlock.y++;
+
+      // move stone down
+      this.collisionDetection(this.users[connectionId], originalUser);
+    });
+  }
+
+  /**
    * Returns the newly generated next active block for a specific user.
    */
   setNextBlock(connectionId, block) {
@@ -560,7 +583,7 @@ class Battle {
     // reduce block y - 1 to run a faked user action, that simulates the activeBlock fade in => we
     // can directly detect user lost
     currUser.activeBlock.y--;
-    this.userAction(connectionId, 40);
+    this.moveBlockDown(connectionId);
   }
 
   /**
@@ -905,8 +928,8 @@ class Battle {
     if (this.status === 'started' &&
         user.status !== 'lost' &&
         user.status !== 'won') {
-      // move stone down
-      this.userAction(connectionId, 40);
+      // move block down
+      this.moveBlockDown(connectionId);
       // send latest data to battle room
       this.sendBattleIncrement();
       // trigger next automated user action

@@ -26,6 +26,13 @@ const sampleAbility = {
     const [ connectionId, ] = args;
     return battle.users[connectionId].userSpeed + 100;
   },
+  // Will be executed, when the block of a user is technically moved down (not userAction)
+  moveBlockDown: (battle, args) => {
+    const [ connectionId, ] = args;
+
+    // cancel block down
+    return false;
+  },
   // User action hook that will be runned before a userAction is runned. Args can be adjusted
   // (original userAction params = connectionId, key, keyPressed)
   userAction: (battle, args) => {
@@ -159,6 +166,35 @@ module.exports = {
     },
   ],
   rouge: [
+    // ability hook tests
+    // {
+    //   costs: 0,
+    //   effect: {
+    //     duration: 10 * 1000,
+    //     timeout: 175,
+    //   },
+    //   userAction: (battle, args) => {
+    //     const [ connectionId, key, keyPressed ] = args;
+
+    //     return false;
+    //   },
+    // },
+    // {
+    //   costs: 0,
+    //   effect: {
+    //     duration: 10 * 1000,
+    //     timeout: 175,
+    //   },
+    //   userAction: (battle, args) => {
+    //     const [ connectionId, key, keyPressed ] = args;
+
+    //     if (key === 37) {
+    //       args[1] = 39;
+    //     } else if (args[1] === 39) {
+    //       args[1] = 37;
+    //     }
+    //   },
+    // }
   ],
   warlord: [
   ],
