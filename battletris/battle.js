@@ -349,7 +349,7 @@ class Battle {
       }
 
       // start the effect loop
-      if (ability.effect) {
+      if (ability.effect && ability.effect.duration) {
         this.effectLoop(executor, this.users[targetId], abilityIndex, payload);
       } else {
         if (ability.execute) {
@@ -401,7 +401,6 @@ class Battle {
      * returns the user speed, can also be overwritten by applying speed as second parameter.
      */
     return this.effectAbilityHook('getUserSpeed', args, (connectionId, speed) => {
-      console.log(this.users[connectionId].userSpeed)
       return typeof speed === 'undefined' ? this.users[connectionId].userSpeed : speed;
     })
   }
@@ -556,7 +555,7 @@ class Battle {
       this.users[connectionId].activeBlock.y++;
 
       // move stone down
-      this.collisionDetection(this.users[connectionId], originalUser);
+      this.collisionDetection(originalUser, this.users[connectionId]);
     });
   }
 

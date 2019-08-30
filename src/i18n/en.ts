@@ -129,24 +129,6 @@ export default {
       "desc": "A rouge acts in the shadows and uses deceitful attacks to try to throw the enemy off course.<br>Possesses abilities to blind and stun enemies.",
       "title": "Rouge"
     },
-    "testClass": {
-      "ability0": {
-        "desc": "",
-        "title": "reverse keys"
-      },
-      "ability1": {
-        "desc": "",
-        "title": "increase speed"
-      },
-      "ability2": {
-        "desc": "",
-        "title": "stop automated block moving"
-      },
-      "ability3": {
-        "desc": "",
-        "title": "cancel user action"
-      }
-    },
     "unknown": {
       "ability0": {
         "desc": "Uses a simple shovel, that he found under a bridge, to remove a row at the bottom a Battlefield.",
