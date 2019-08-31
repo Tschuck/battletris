@@ -165,11 +165,110 @@ module.exports = {
       },
     },
   ],
+  sorcerer: [
+    // drop current block
+    {
+      costs: 30,
+      execute: (battle, executor, target) => {
+        battle.userAction(target.connectionId, 32);
+      }
+    },
+    // reverse controls
+    {
+      costs: 50,
+      effect: {
+        duration: 15 * 1000,
+      },
+      userAction: (battle, args) => {
+        const [ connectionId, key, keyPressed ] = args;
+        
+        // adjust pressed key
+        switch (args[1]) {
+          case 37: {
+            args[1] = 39;
+            break;
+          }
+          case 39: {
+            args[1] = 37;
+            break;
+          }
+          case 38: {
+            args[1] = 40;
+            break;
+          }
+          case 40: {
+            args[1] = 38;
+            break;
+          }
+        }
+        return true;
+      },
+    },
+    // increase drop speed
+    {
+      costs: 70,
+      effect: {
+        duration: 15 * 1000,
+      },
+      getUserSpeed: (battle, args) => {
+        const [ connectionId, key, keyPressed ] = args;
+        args.push(battle.users[connectionId].userSpeed / 2)
+      },
+    },
+    // prevent target controls
+    {
+      costs: 90,
+      effect: {
+        duration: 10 * 1000,
+      },
+      userAction: (battle, args) => {
+        args[1] = 'none'; // invalid input, defaults to nothing --> 'frozen controls'
+        return true;
+      },
+    },
+  ],
+  warrior: [
+    // use own block, replace target block with yours, skip to your next block
+    {
+      costs: 10,
+      execute: (battle, executor, target) => {
+        target.activeBlock.map = executor.activeBlock.map;
+        target.activeBlock.type = executor.activeBlock.type;
+        executor.activeBlock = executor.nextBlock;
+        battle.setNextBlock(executor.connectionId)
+      }
+    },
+    // smash 2x2 square randomly, this may or may not help your enemy...
+    {
+      costs: 30,
+      execute: (battle, executor, target) => {
+        target.map = mapHandler.generateRandomAreaClear([[1, 1], [1, 1]], target.map);
+      }
+    },
+    // gravity effect, fill gaps if block is above
+    {
+      costs: 80,
+      execute: (battle, executor, target) => {
+        target.map = mapHandler.flattenMap(target.map);
+      }
+    },
+    // slash diagonally from top left to bottom right corner
+    {
+      costs: 100,
+      execute: (battle, executor, target) => {
+        let xIndex = 0;
+        target.map.forEach((y, yIndex) => {
+          if (!(yIndex % 2) && yIndex) {
+            xIndex++;
+          }
+          target.map[yIndex][xIndex] = undefined;
+        })
+      }
+    },
+  ],
   rouge: [
   ],
   warlord: [
-  ],
-  warrior: [
   ],
   wizard: [
   ],
