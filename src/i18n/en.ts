@@ -191,20 +191,20 @@ export default {
     },
     "warrior": {
       "ability0": {
-        "desc": "unknown",
-        "title": "unknown"
+        "desc": "Throw your current block at a target of your choice, replacing that target's block with yours.",
+        "title": "Block throw"
       },
       "ability1": {
-        "desc": "unknown",
-        "title": "unknown"
+        "desc": "Throw all your weight (it's a lot!) into a punch, crushing a random 2x2 square on the board.",
+        "title": "Punch"
       },
       "ability2": {
-        "desc": "unknown",
-        "title": "unknown"
+        "desc": "Fiercely stomp on the ground causing blocks with gaps beneath to drop.",
+        "title": "Earthquake"
       },
       "ability3": {
-        "desc": "unknown",
-        "title": "unknown"
+        "desc": "Execute a full power slash with your beloved sword, cutting a diagonal line on your target's board.",
+        "title": "Mighty Slash"
       },
       "desc": "An offensive fighter who attacks the enemy with direct attacks and his powerful muscle power. Harnesses abilities to hurt others and trigger entire earthquakes.",
       "title": "Warrior"

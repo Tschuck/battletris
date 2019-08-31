@@ -227,11 +227,48 @@ module.exports = {
       },
     },
   ],
+  warrior: [
+    // use own block, replace target block with yours, skip to your next block
+    {
+      costs: 10,
+      execute: (battle, executor, target) => {
+        target.activeBlock.map = executor.activeBlock.map;
+        target.activeBlock.type = executor.activeBlock.type;
+        executor.activeBlock = executor.nextBlock;
+        battle.setNextBlock(executor.connectionId)
+      }
+    },
+    // smash 2x2 square randomly, this may or may not help your enemy...
+    {
+      costs: 30,
+      execute: (battle, executor, target) => {
+        target.map = mapHandler.generateRandomAreaClear([[1, 1], [1, 1]], target.map);
+      }
+    },
+    // gravity effect, fill gaps if block is above
+    {
+      costs: 80,
+      execute: (battle, executor, target) => {
+        target.map = mapHandler.flattenMap(target.map);
+      }
+    },
+    // slash diagonally from top left to bottom right corner
+    {
+      costs: 100,
+      execute: (battle, executor, target) => {
+        let xIndex = 0;
+        target.map.forEach((y, yIndex) => {
+          if (!(yIndex % 2) && yIndex) {
+            xIndex++;
+          }
+          target.map[yIndex][xIndex] = undefined;
+        })
+      }
+    },
+  ],
   rouge: [
   ],
   warlord: [
-  ],
-  warrior: [
   ],
   wizard: [
   ],
