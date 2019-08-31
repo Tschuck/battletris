@@ -402,7 +402,7 @@ class Battle {
      */
     return this.effectAbilityHook('getUserSpeed', args, (connectionId, speed) => {
       return typeof speed === 'undefined' ? this.users[connectionId].userSpeed : speed;
-    })
+    });
   }
 
   /**

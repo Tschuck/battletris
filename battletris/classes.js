@@ -24,7 +24,7 @@ const sampleAbility = {
   // Will be exeucted by retrieving the users speed
   getUserSpeed: (battle, args) => {
     const [ connectionId, ] = args;
-    return battle.users[connectionId].userSpeed + 100;
+    args.push(battle.users[connectionId].userSpeed + 100);
   },
   // Will be executed, when the block of a user is technically moved down (not userAction)
   moveBlockDown: (battle, args) => {
