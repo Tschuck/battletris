@@ -140,7 +140,7 @@ function generateEmptyRows(count) {
  * @param      {number}  count   count of rows
  */
 function getEmptyMap(count = 20, map = [ ]) {
-  for (let y = map.length - 1; y < 20; y++) {
+  for (let y = map.length; y < count; y++) {
     map.push([...Array(10)]);
   }
 

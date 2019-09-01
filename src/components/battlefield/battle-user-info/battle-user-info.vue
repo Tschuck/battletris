@@ -50,8 +50,8 @@
               'background-color': userId === opponentId ? 'var(--battletris-self-target)' : 'var(--battletris-armor-bg)'
             }"
             v-b-tooltip.hover
-            :title="$t('battle.targets-me', { name: roomDetails.users[userId].name })">
-            {{ Object.keys(battle.users).indexOf(userId) + 1 }}
+            :title="$t('battle.targets-me', { name: roomDetails.users[opponentId].name })">
+            {{ Object.keys(battle.users).indexOf(opponentId) + 1 }}
           </small>
         </div>
         <battletris-resource-bar
