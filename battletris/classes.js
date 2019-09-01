@@ -245,16 +245,9 @@ module.exports = {
         target.map = mapHandler.generateRandomAreaClear([[1, 1], [1, 1]], target.map);
       }
     },
-    // gravity effect, fill gaps if block is above
-    {
-      costs: 80,
-      execute: (battle, executor, target) => {
-        target.map = mapHandler.flattenMap(target.map);
-      }
-    },
     // slash diagonally from top left to bottom right corner
     {
-      costs: 100,
+      costs: 80,
       execute: (battle, executor, target) => {
         let xIndex = 0;
         target.map.forEach((y, yIndex) => {
@@ -263,6 +256,13 @@ module.exports = {
           }
           target.map[yIndex][xIndex] = undefined;
         })
+      }
+    },
+    // gravity effect, fill gaps if block is above
+    {
+      costs: 100,
+      execute: (battle, executor, target) => {
+        target.map = mapHandler.flattenMap(target.map);
       }
     },
   ],
