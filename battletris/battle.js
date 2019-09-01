@@ -391,7 +391,7 @@ class Battle {
 
     // TODO: TEMPORARY FIX! some times users gets out of sync, resend latest data to all users each
     // 10 seconds
-    if ((Math.parse(this.duration) % (10 * 1000) === 0)) {
+    if ((parseInt(this.duration) % (10 * 1000) === 0)) {
       api.chatRoom.broadcast({}, this.roomName, {
         battle: this.getJSON(),  
         date: Date.now(),
