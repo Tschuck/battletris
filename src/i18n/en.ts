@@ -191,7 +191,7 @@ export default {
     },
     "warrior": {
       "ability0": {
-        "desc": "Throw your current block at a target of your choice, replacing that target's block with yours.",
+        "desc": "Throw your current block at a target of your choice, replacing that target's block with yours. If your current block is special, consume 40 extra mana to throw it.",
         "title": "Block throw"
       },
       "ability1": {

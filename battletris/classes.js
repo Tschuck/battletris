@@ -168,7 +168,7 @@ module.exports = {
   sorcerer: [
     // drop current block
     {
-      costs: 30,
+      costs: 35,
       execute: (battle, executor, target) => {
         battle.userAction(target.connectionId, 32);
       }
@@ -206,7 +206,7 @@ module.exports = {
     },
     // increase drop speed
     {
-      costs: 70,
+      costs: 60,
       effect: {
         duration: 15 * 1000,
       },
@@ -217,7 +217,7 @@ module.exports = {
     },
     // prevent target controls
     {
-      costs: 90,
+      costs: 80,
       effect: {
         duration: 10 * 1000,
       },
@@ -232,6 +232,14 @@ module.exports = {
     {
       costs: 10,
       execute: (battle, executor, target) => {
+        if (executor.activeBlock.type < 0) {
+          if (false /*executor.mana < 40*/) {
+            executor.mana += 10;
+            return;
+          } else {
+            executor.mana -= 40;
+          }
+        }
         target.activeBlock.map = executor.activeBlock.map;
         target.activeBlock.type = executor.activeBlock.type;
         executor.activeBlock = executor.nextBlock;
@@ -240,14 +248,14 @@ module.exports = {
     },
     // smash 2x2 square randomly, this may or may not help your enemy...
     {
-      costs: 30,
+      costs: 25,
       execute: (battle, executor, target) => {
         target.map = mapHandler.generateRandomAreaClear([[1, 1], [1, 1]], target.map);
       }
     },
     // slash diagonally from top left to bottom right corner
     {
-      costs: 80,
+      costs: 75,
       execute: (battle, executor, target) => {
         let xIndex = 0;
         target.map.forEach((y, yIndex) => {
