@@ -191,7 +191,7 @@ export default {
     },
     "warrior": {
       "ability0": {
-        "desc": "Throw your current block at a target of your choice, replacing that target's block with yours.",
+        "desc": "Throw your current block at a target of your choice, replacing that target's block with yours. If your current block is special, consume 40 extra mana to throw it.",
         "title": "Block throw"
       },
       "ability1": {
@@ -199,12 +199,12 @@ export default {
         "title": "Punch"
       },
       "ability2": {
-        "desc": "Fiercely stomp on the ground causing blocks with gaps beneath to drop.",
-        "title": "Earthquake"
-      },
-      "ability3": {
         "desc": "Execute a full power slash with your beloved sword, cutting a diagonal line on your target's board.",
         "title": "Mighty Slash"
+      },
+      "ability3": {
+        "desc": "Fiercely stomp on the ground causing blocks with gaps beneath to drop.",
+        "title": "Earthquake"
       },
       "desc": "An offensive fighter who attacks the enemy with direct attacks and his powerful muscle power. Harnesses abilities to hurt others and trigger entire earthquakes.",
       "title": "Warrior"
