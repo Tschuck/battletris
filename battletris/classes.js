@@ -65,17 +65,17 @@ const getBattletrisArmorFunc = (type, clearedRows) => {
     },
   };
 
-  // 10 * 1 = 10 x (1 x 1) = 10
-  // 10 * 2 = 20 x (1 x 2) = 40
-  // 10 * 3 = 30 x (1 x 3) = 90
-  // 10 * 4 = 40 x (1 x 4) = 120
+  // 20 * 1 = 20 x (1 x 1) = 20
+  // 20 * 2 = 40 x (1 x 2) = 80
+  // 20 * 3 = 60 x (1 x 3) = 180
+  // 20 * 4 = 80 x (1 x 4) = 320
   //   => also divide the damage with times, the execute function is called
-  const damage = (15 * clearedRows * clearedRows) / (ability.effect.duration / 1000);
+  const damage = (20 * clearedRows * clearedRows) / (ability.effect.duration / 1000);
 
-  // 4 * 1 = 4 x (1 x 1) = 4
-  // 4 * 2 = 8 x (1 x 2) = 16
-  // 4 * 3 = 12 x (1 x 3) = 36
-  // 4 * 4 = 16 x (1 x 4) = 64
+  // 5 * 1 = 5 x (1 x 1) = 5
+  // 5 * 2 = 10 x (1 x 2) = 10
+  // 5 * 3 = 15 x (1 x 3) = 36
+  // 5 * 4 = 20 x (1 x 5) = 64
   //   => also divide the heal with times, the execute function is called
   const heal = (5 * clearedRows * clearedRows) / (ability.effect.duration / 1000);
 
@@ -149,7 +149,7 @@ module.exports = {
     },
     // replaces the activeBlock of an enemy with an giant block
     {
-      costs: 80,
+      costs: 100,
       execute: (battle, executor, target) => {
         battle.setNextBlock(target.connectionId, {
           map: [
@@ -173,11 +173,22 @@ module.exports = {
         battle.userAction(target.connectionId, 32);
       }
     },
-    // reverse controls
+    // increase drop speed
     {
       costs: 50,
       effect: {
         duration: 15 * 1000,
+      },
+      getUserSpeed: (battle, args) => {
+        const [ connectionId, key, keyPressed ] = args;
+        args.push(battle.users[connectionId].userSpeed / 2)
+      },
+    },
+    // reverse controls
+    {
+      costs: 70,
+      effect: {
+        duration: 10 * 1000,
       },
       userAction: (battle, args) => {
         const [ connectionId, key, keyPressed ] = args;
@@ -202,17 +213,6 @@ module.exports = {
           }
         }
         return true;
-      },
-    },
-    // increase drop speed
-    {
-      costs: 70,
-      effect: {
-        duration: 15 * 1000,
-      },
-      getUserSpeed: (battle, args) => {
-        const [ connectionId, key, keyPressed ] = args;
-        args.push(battle.users[connectionId].userSpeed / 2)
       },
     },
     // prevent target controls
