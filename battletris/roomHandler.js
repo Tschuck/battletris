@@ -61,9 +61,13 @@ async function roomHandler(connectionId, room, type, payload) {
           break
         }
         case 'battle-accept': {
-          battle.users[connectionId].status = 'accepted';
-          // force a map reset
-          battle.join(connectionId, battle.users[connectionId]);
+          if (battle.users[connectionId]) {
+            battle.users[connectionId].status = 'accepted';
+            // force a map reset
+            battle.join(connectionId, battle.users[connectionId]);
+          } else {
+            battle.leave(connectionId);
+          }
           break;
         }
         case 'battle-leave': {

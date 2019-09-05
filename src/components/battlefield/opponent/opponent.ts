@@ -30,6 +30,22 @@ export default class BattletrisOpponent extends Vue {
    */
   connectionId = '';
 
+  /**
+   * Hide the full content to force map rerender on userId change.
+   */
+  rerender = false;
+
+  /**
+   * Watch for userId changes to rerender the battle map.
+   *
+   * @class      Watch (name)
+   */
+  @Watch('userId')
+  onChildChanged(val: string, oldVal: string) {
+    this.rerender = true;
+    this.$nextTick(() => this.rerender = false);
+  }
+
   created() {
     this.connectionId = battletris.wsClient.id;
   }

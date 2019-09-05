@@ -1,11 +1,11 @@
 <template>
   <div class="col-4 p-1 opponent"
-    v-if="userId !== connectionId">
+    v-if="userId !== connectionId && !rerender">
     <div class="card w-100 h-100"
       :class="{
         'active-card': battle.users[connectionId] && battle.users[connectionId].targetId === userId 
       }">
-      <template v-if="userId && battle.users && battle.users[userId]">
+      <template v-if="userId && battle.users && battle.users[userId] && roomDetails.users[userId]">
         <div class="card-header position-relative">
           <div class="opponent-number"
             v-b-tooltip.hover
