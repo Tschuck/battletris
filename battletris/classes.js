@@ -215,17 +215,6 @@ module.exports = {
         return true;
       },
     },
-    // increase drop speed
-    {
-      costs: 60,
-      effect: {
-        duration: 15 * 1000,
-      },
-      getUserSpeed: (battle, args) => {
-        const [ connectionId, key, keyPressed ] = args;
-        args.push(battle.users[connectionId].userSpeed / 2)
-      },
-    },
     // prevent target controls
     {
       costs: 80,
