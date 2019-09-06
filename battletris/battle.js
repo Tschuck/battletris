@@ -87,7 +87,7 @@ class Battle {
       changed.map,
       activeBlock,
       // do not detect docked when the stone was spinned
-      key === 38 ? null : origin.activeBlock,
+      origin.activeBlock,
     );
     switch (collision.type) {
       // if it was a spin and it would spin out of the map, move it to the correct position
@@ -937,8 +937,9 @@ class Battle {
     if (this.duration > (this.config.increaseInterval * user.level)) {
       // increase users level to speedup the game after another increaseInterval
       user.level++;
-      // reduce the user speed
-      user.userSpeed = user.userSpeed - this.config.increaseSteps;
+      // black magic fuckery (max 20 level)
+      user.userSpeed -= Math.log10(user.userSpeed) * (20 - user.level) * (user.level < 10 ? 2 : 1);
+      console.log(`${ user.level } : ${ user.userSpeed }`);
     }
 
     // if user has not the status lost, run the next

@@ -14,7 +14,7 @@ function checkForCollision(map, activeBlock, originalBlock, onlyType = false) {
   // disabled docking when x hash changed, it would dock stones on horizontal blocks
   const detectDocking = !originalBlock ||
     (
-      activeBlock.x === originalBlock.x &&
+      activeBlock.y !== originalBlock.y &&
       _.isEqual(activeBlock.map, originalBlock.map)
     );
 

@@ -16,8 +16,6 @@ exports['default'] = {
       userSpeed: 1100,
       // increase speed after X ms
       increaseInterval: 30 * 1000,
-      // reduce the speed timeout with the amount of ms
-      increaseSteps: 50,
     };
   }
 }

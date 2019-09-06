@@ -181,7 +181,12 @@ module.exports = {
       },
       getUserSpeed: (battle, args) => {
         const [ connectionId, key, keyPressed ] = args;
-        args.push(battle.users[connectionId].userSpeed / 2)
+
+        if (battle.users[connectionId].userSpeed < 300) {
+          args.push(battle.users[connectionId].userSpeed / 2);
+        } else {
+          args.push(200);
+        }
       },
     },
     // reverse controls
@@ -230,7 +235,7 @@ module.exports = {
   warrior: [
     // use own block, replace target block with yours, skip to your next block
     {
-      costs: 10,
+      costs: 25,
       execute: (battle, executor, target) => {
         if (executor.activeBlock.type < 0) {
           if (executor.mana < 40) {
