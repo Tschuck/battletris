@@ -7,7 +7,7 @@ const winston = require('winston')
 // - https://github.com/winstonjs/winston
 // - https://github.com/winstonjs/winston/blob/master/docs/transports.md
 
-function buildConsoleLogger (level = 'info') {
+function buildConsoleLogger (level = process.env.NODE_ENV === 'production' ? 'error' : 'info') {
   return function (api) {
     return winston.createLogger({
       format: winston.format.combine(

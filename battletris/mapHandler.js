@@ -108,8 +108,12 @@ function getDockPreview(map, activeBlock) {
   const blockCopy = JSON.parse(JSON.stringify(activeBlock));
   let docked;
 
+  // TEMPORARY FIX: remove when wall spinning is fixed
+  let loops = 0;
+
   // move block down until it reached a dock point
-  while (!docked) {
+  while (!docked && loops < 20) {
+    loops++;
     blockCopy.y++;
     docked = checkForCollision(map, blockCopy, null, true) === 'docked';
   }

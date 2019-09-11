@@ -216,7 +216,7 @@ export default class BattleField extends Vue {
             this.responseTimes.length
           );
 
-          this.handleBattleIncrement(update.battle);
+          this.handleBattleIncrement(update.battle, update.date);
         })();
 
         // wait 50 milliseconds until sending next key code
@@ -295,6 +295,7 @@ export default class BattleField extends Vue {
           if (this.battleMaps[connectionId] &&
               this.battleMaps[connectionId].$refs &&
               this.battle.users[connectionId]) {
+            console.log(JSON.stringify(this.battle.users[connectionId].activeBlock))
             // clear previous map
             this.battleMaps[connectionId].clearBlockMap();
 

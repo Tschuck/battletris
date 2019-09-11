@@ -2,7 +2,6 @@ const _ = require('lodash');
 const blocks = require('./blocks');
 const classes = require('./classes');
 const mapHandler = require('./mapHandler');
-const Mutex = require('async-mutex').Mutex;
 const numberToBlocks = require('./numberToBlocks');
 const { api, } = require('actionhero');
 
@@ -291,7 +290,7 @@ class Battle {
         this.setTimeout(target.connectionId, effectId, runEffect, effect.timeout);
       }
 
-      this.sendBattleIncrement();
+      this.triggerBattleIncrement();
     };
 
       // start the effect loop
@@ -344,7 +343,7 @@ class Battle {
         // unlock the cooldown after X milliseconds
         this.setTimeout(executorId, `cooldown.${ abilityIndex }`, () => {
           delete executor.cooldowns[abilityIndex];
-          this.sendBattleIncrement();
+          this.triggerBattleIncrement();
         }, ability.cooldown);
       }
 
@@ -355,7 +354,7 @@ class Battle {
         if (ability.execute) {
           // execute ability directly, if no effect should be applied
           ability.execute.call(ability, this, executor, this.users[targetId], payload);
-          this.sendBattleIncrement();
+          this.triggerBattleIncrement();
         }
       }
     }
@@ -388,16 +387,6 @@ class Battle {
   gameLoop() {
     // set general data
     this.duration = Date.now() - this.startTime;
-
-    // TODO: TEMPORARY FIX! some times users gets out of sync, resend latest data to all users each
-    // 10 seconds
-    if ((parseInt(this.duration) % (10 * 1000) === 0)) {
-      api.chatRoom.broadcast({}, this.roomName, {
-        battle: this.getJSON(),  
-        date: Date.now(),
-        type: 'battle-increment',
-      });
-    }
   }
 
   /**
@@ -420,22 +409,18 @@ class Battle {
    *
    * @param      {string}   connectionId                 connection id of the user, for that the
    *                                                     last battle update should be returned
-   * @param      {boolean}  [updateUserState=true]  automatic update last user status to the
-   *                                                     latest state
    * @return     {Object}   status, duration, users.
    */
-  getUserStateIncrement(updateUserState = true) {
+  getUserStateIncrement(connectionId) {
     const increment = {
       status: this.status,
       duration: this.duration,
-      users: this.getDifference(this.users, this.userStates),
+      users: this.getDifference(this.users, this.userStates[connectionId]),
     };
 
     // save latest version of the users status, so each user has his own update stack that can
     // be send directly after an action
-    if (updateUserState) {
-      this.userStates = _.cloneDeep(this.users);
-    }
+    this.userStates[connectionId] = _.cloneDeep(this.users);
 
     return increment;
   }
@@ -604,22 +589,47 @@ class Battle {
   }
 
   /**
+   * Sends the latest battle increment to a specific user.
+   *
+   * @param      {string}  connectionId  connection id to send the increment to
+   * @param      {aby}     payload       additional payload to send
+   */
+  sendBattleIncrement(connectionId, payload = { }) {
+    if (api.connections.connections[connectionId]) {
+      // generate payload and merge it with the payload
+      const message = {
+        message: _.merge(payload, {
+          battle: this.getUserStateIncrement(connectionId),
+          connection: { id: connectionId, room: this.roomName },
+          date: Date.now(),
+          type: 'battle-increment',
+        }),
+        context: 'user',
+        from: connectionId,
+        room: this.roomName,
+        sentAt: Date.now(),
+      };
+
+      // send the message
+      api.connections.connections[connectionId].sendMessage(message, 'say');
+    }
+  }
+
+  /**
    * Send latest changes to the battlefield
    */
-  sendBattleIncrement() {
-    // wait until battle-increment timeout is solved
-    if (this.timeouts[`battle-increment`]) {
-      return;
-    }
+  triggerBattleIncrement() {
+    Object.keys(this.users).forEach(userKey => {
+      const timeoutKey = `battle-increment-${ userKey }`;
 
-    // send battle-increment only each 100ms
-    this.setTimeout('', 'battle-increment', () => {
-      api.chatRoom.broadcast({}, this.roomName, {
-        battle: this.getUserStateIncrement(),
-        date: Date.now(),
-        type: 'battle-increment',
-      });
-    }, 100);
+      // wait until battle-increment timeout is solved
+      if (this.timeouts[timeoutKey]) {
+        return;
+      }
+
+      // send battle-increment only each 100ms
+      this.setTimeout('', timeoutKey, () => this.sendBattleIncrement(userKey), 100);
+    });
   }
 
   /**
@@ -671,7 +681,9 @@ class Battle {
 
         // used to handle increment user battle states, only a diff will be sent to the user after
         // an user action or an userLoop turn
-        this.userStates = _.cloneDeep(this.users);
+        Object.keys(this.users).forEach(userId => {
+          this.userStates[userId] = _.cloneDeep(this.users);
+        });
 
         // update the counter within the UI
         api.chatRoom.broadcast({}, this.roomName, {
@@ -680,21 +692,17 @@ class Battle {
         });
       } else {
         // set starting count as initial map
-        Object.keys(this.users).forEach(connectionId =>
-          this.users[connectionId].map = numberToBlocks(this.startCounter)
-        );
+        Object.keys(this.users).forEach(connectionId => {
+          this.users[connectionId].map = numberToBlocks(this.startCounter);
 
-        // update the counter within the UI
-        const battle = this.getUserStateIncrement();
-        battle.startCounter = this.startCounter;
-        battle.status = this.status;
-        api.chatRoom.broadcast({}, this.roomName, {
-          battle,
-          date: Date.now(),
-          startCounter: this.startCounter,
-          status: this.status,
-          type: 'battle-increment',
-        });  
+          // update the counter within the UI
+          this.sendBattleIncrement(connectionId, {
+            battle: {
+              startCounter: this.startCounter,
+              status: this.status,
+            },
+          });
+        });
       }
     }, 1000);
   }
@@ -937,9 +945,10 @@ class Battle {
     if (this.duration > (this.config.increaseInterval * user.level)) {
       // increase users level to speedup the game after another increaseInterval
       user.level++;
-      // black magic fuckery (max 20 level)
+      // black magic fuckery (1100 => 978 => 865 => 759 => 661 => 571 => 488 => 413 => 345 => 284 =>
+      // 230 => 206 => 186 => 167 => 152 => 139 => 128 => 120 => 113 => 109 => 107 => 107 => 109 =>
+      // 113 => 119 => 128 => 138 => 151 => 166 => 184)
       user.userSpeed -= Math.log10(user.userSpeed) * (20 - user.level) * (user.level < 10 ? 2 : 1);
-      console.log(`${ user.level } : ${ user.userSpeed }`);
     }
 
     // if user has not the status lost, run the next
@@ -949,7 +958,7 @@ class Battle {
       // move block down
       this.moveBlockDown(connectionId);
       // send latest data to battle room
-      this.sendBattleIncrement();
+      this.triggerBattleIncrement();
       // trigger next automated user action
       this.setTimeout(
         connectionId,
