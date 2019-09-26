@@ -40,5 +40,3 @@ new Vue({
   store,
   render: (h) => h(Main)
 }).$mount('#app');
-
-

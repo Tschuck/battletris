@@ -387,6 +387,15 @@ class Battle {
   gameLoop() {
     // set general data
     this.duration = Date.now() - this.startTime;
+
+    // send latest battle status to spectators
+    const roomDetail = api.battletris.rooms[this.roomName];
+    Object.keys(roomDetail.users).forEach(connectionId => {
+      // never update a battle user, they will update them self using the user loop
+      if (!this.users[connectionId]) {
+        this.sendBattleIncrement(connectionId);
+      }
+    })
   }
 
   /**
@@ -415,8 +424,13 @@ class Battle {
     const increment = {
       status: this.status,
       duration: this.duration,
-      users: this.getDifference(this.users, this.userStates[connectionId]),
     };
+
+    if (!this.userStates[connectionId]) {
+      increment.users = _.cloneDeep(this.users);
+    } else {
+      increment.users = this.getDifference(this.users, this.userStates[connectionId]);
+    }
 
     // save latest version of the users status, so each user has his own update stack that can
     // be send directly after an action
@@ -601,7 +615,6 @@ class Battle {
         message: _.merge(payload, {
           battle: this.getUserStateIncrement(connectionId),
           connection: { id: connectionId, room: this.roomName },
-          date: Date.now(),
           type: 'battle-increment',
         }),
         context: 'user',
@@ -619,8 +632,8 @@ class Battle {
    * Send latest changes to the battlefield
    */
   triggerBattleIncrement() {
-    Object.keys(this.users).forEach(userKey => {
-      const timeoutKey = `battle-increment-${ userKey }`;
+    Object.keys(this.users).forEach(connectionId => {
+      const timeoutKey = `battle-increment-${ connectionId }`;
 
       // wait until battle-increment timeout is solved
       if (this.timeouts[timeoutKey]) {
@@ -628,7 +641,7 @@ class Battle {
       }
 
       // send battle-increment only each 100ms
-      this.setTimeout('', timeoutKey, () => this.sendBattleIncrement(userKey), 100);
+      this.setTimeout('', timeoutKey, () => this.sendBattleIncrement(connectionId), 1000);
     });
   }
 

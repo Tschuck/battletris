@@ -38,10 +38,6 @@
                   <b>{{ `battle.performance` | translate }}:</b>
                   <span class="mx-auto"></span>
                   <div class="d-flex">
-                    <div class="fps-meter mr-1"
-                      v-b-tooltip.hover
-                      :title="$t('battle.fps')"></div>
-                    <span class="mx-1">|</span>
                     <div
                       v-b-tooltip.hover
                       :title="$t('battle.ping')">
