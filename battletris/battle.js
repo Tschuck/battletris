@@ -641,7 +641,8 @@ class Battle {
       }
 
       // send battle-increment only each 100ms
-      this.setTimeout('', timeoutKey, () => this.sendBattleIncrement(connectionId), 1000);
+      this.setTimeout('',timeoutKey, () => this.sendBattleIncrement(connectionId),
+        this.config.incrementUpdateTimeout);
     });
   }
 

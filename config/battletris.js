@@ -11,11 +11,13 @@ exports['default'] = {
       // seconds until the game starts, after all users has accepted
       startCounter: env === 'production' ? 9 : 1,
       // update spectators every x ms
-      gameLoopSpeed: 500,
+      gameLoopSpeed: 100,
       // "user speed", moves blocks down, ...
       userSpeed: 1100,
       // increase speed after X ms
       increaseInterval: 30 * 1000,
+      // ms after user actions are published to other players
+      incrementUpdateTimeout: 30,
     };
   }
 }
