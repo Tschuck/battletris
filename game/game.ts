@@ -1,32 +1,20 @@
-import process from 'process';
+import processHandler from './processHandler';
+import GameDataInterface from './GameDataInterface';
 
 export default class Game {
-  name: string;
+  data: GameDataInterface;
 
-  data = {};
+  constructor() { }
 
-  constructor() {
-    // this.name = name;
+  /**
+   * Take initial information of the game from parent process.
+   */
+  initialize({ name }) {
+    this.data = { name };
+    processHandler.sendToParent('initialized', this.data);
   }
 
-  init() {
-    console.log(process);
-    // this.server.log.info(`[GAME] initialized: ${this.name}`);
-    process.send('haeeyyteeee')
-    process.on('message', message => {
-      console.log('message from parent:', message);
-    });
+  keypress(key: string) {
+    processHandler.log('info', `key pressed: ${key}`);
   }
-
-  start() {
-    // this.server.log.info(`[GAME] started: ${this.name}`);
-  }
-
-  stop() {
-    // this.server.log.info(`[GAME] stopped: ${this.name}`);
-  }
-
-  delete() {
-    // this.server.log.info(`[GAME] deleted: ${this.name}`);
-  }
-};
+}

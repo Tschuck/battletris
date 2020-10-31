@@ -5,16 +5,13 @@ import server from '../server';
 export const createEndpoint = (
   type: string,
   url: string,
-  params: any,
-  payload: any,
+  schemaSpecs: any,
+  opts: any,
   func: (params: any, req: FastifyRequest, reply: FastifyReply) => any,
 ) => {
   const specs: any = {
-    schema: {
-      params,
-      response: { },
-      ...(type === 'get' ? { query: payload } : { body: payload }),
-    },
+    schema: schemaSpecs,
+    ...opts,
   };
 
   server.log.info(`[ACTION] register ${type} => ${url}`);

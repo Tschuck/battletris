@@ -1,7 +1,7 @@
-import server from '../server';
 import { createEndpoint } from './utils';
-import manager from '../manager';
+import manager from '../gameManager';
 
+// ****************************** Game Handling **************************************************//
 createEndpoint(
   'get', '/games',
   {},
@@ -11,14 +11,22 @@ createEndpoint(
 
 createEndpoint(
   'get', '/game/:name',
-  { name: { type: 'string' } },
+  {
+    params: {
+      name: { type: 'string' },
+    },
+  },
   {},
   async ({ name }) => ({ game: manager.games[name] }),
 );
 
 createEndpoint(
   'post', '/game/:name',
-  { name: { type: 'string' } },
+  {
+    params: {
+      name: { type: 'string' },
+    },
+  },
   {},
   async ({ name }) => {
     await manager.create(name);
@@ -28,7 +36,11 @@ createEndpoint(
 
 createEndpoint(
   'delete', '/game/:name',
-  { name: { type: 'string' } },
+  {
+    params: {
+      name: { type: 'string' },
+    },
+  },
   {},
   async ({ name }) => {
     await manager.delete(name);

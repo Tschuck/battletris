@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@types/node": "^14.14.6",
+    "axios": "^0.21.0",
     "fastify": "^3.7.0",
     "fastify-websocket": "^2.0.10",
     "pino-pretty": "^4.3.0",
@@ -16,6 +17,7 @@
   "name": "battletris",
   "scripts": {
     "build": "tsc -p tsconfig.backend.json",
-    "start": "yarn build && node dist/server/index.js"
+    "start": "yarn build && node dist/server/index.js",
+    "test:manual": "yarn build && node dist/test/manual.js"
   }
 }

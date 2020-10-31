@@ -24,7 +24,8 @@
     "node_modules"
   ],
   "include": [
+    "game/**/*.ts",
     "server/**/*.ts",
-    "game/**/*.ts"
+    "test/**/*.ts"
   ]
 }

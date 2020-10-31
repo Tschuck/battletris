@@ -16,5 +16,5 @@ const _ = (name: string, defaultValue: any) => {
 };
 
 export default {
-  port: _('port', 6666),
+  port: _('port', 3000),
 };
