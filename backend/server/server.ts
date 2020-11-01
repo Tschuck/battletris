@@ -1,5 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify';
 import fastifyWS from 'fastify-websocket';
+import fastifyCors from 'fastify-cors';
 
 import gameManager from './gameManager';
 
@@ -19,6 +20,9 @@ server.addHook('onRequest', (req, reply, done) => {
 
 server.addHook('onResponse', (req, reply, done) => done());
 
+server.register(fastifyCors, {
+  origin: '*',
+})
 server.register(fastifyWS, {
   // creates an echo server
   handle: (conn) => conn.pipe(conn),

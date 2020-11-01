@@ -7,13 +7,12 @@ Vue.use(VueRouter);
 const routes: Array<RouteConfig> = [
   {
     path: '/',
-    name: 'Home',
     component: Home,
   },
   {
-    path: '/about',
-    name: 'About',
-    component: () => import('./views/About.vue'),
+    path: '/:gameName',
+    props: true,
+    component: () => import('./views/Game.vue'),
   },
 ];
 

@@ -3,6 +3,7 @@
     "@types/node": "^14.14.6",
     "axios": "^0.21.0",
     "fastify": "^3.7.0",
+    "fastify-cors": "^4.1.0",
     "fastify-websocket": "^2.0.10",
     "pino-pretty": "^4.3.0",
     "uuid": "^8.3.1"
