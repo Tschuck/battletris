@@ -39,6 +39,6 @@ server.get('/ws', { websocket: true }, (connection, req) => {
       server.log.error(`[WS] not parsed: ${message} (${ex})`);
     }
   });
-})
+});
 
 export default server;

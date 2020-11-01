@@ -1,2 +1,4 @@
-dist
-node_modules
+backend/dist
+backend/node_modules
+frontend/dist
+frontend/node_modules
