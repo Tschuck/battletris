@@ -2,7 +2,11 @@
   <div class="home">
     <Loading v-if="loading" />
     <div v-else>
-      {{ game }}
+      <h1>{{ game }}</h1>
+
+      <div v-for="(message, index) in messages" :key="index">
+        {{ message }}
+      </div>
     </div>
   </div>
 </template>
@@ -26,6 +30,7 @@ import config from '../config';
     const loading = ref(true);
     const creating = ref(false);
     const game = ref<any | null>(null);
+    const messages = ref<any[]>([]);
 
     (async () => {
       const { data: { game: gameData } } = await axios.get(
@@ -37,12 +42,12 @@ import config from '../config';
 
     const connection = new WebSocket('ws://localhost:3000/ws');
     connection.onmessage = (event) => {
-      console.log(event.data);
+      messages.value.push(event.data);
     };
 
     document.addEventListener('keypress', (e) => {
       connection.send(JSON.stringify({
-        name: '5a2d1de9-2b7a-4f79-9c2b-ddcc1bd205a5',
+        name: props.gameName,
         type: 'keypress',
         payload: e.code,
       }));
@@ -52,6 +57,7 @@ import config from '../config';
       creating,
       game,
       loading,
+      messages,
     };
   },
 })
