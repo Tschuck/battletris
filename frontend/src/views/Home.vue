@@ -20,7 +20,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { ref } from '@vue/composition-api';
 import axios from 'axios';
 
-import Loading from '@/components/Loading.vue';
+import Loading from '../components/Loading.vue';
 import config from '../config';
 
 @Component({

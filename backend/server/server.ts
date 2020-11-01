@@ -34,6 +34,8 @@ server.register(fastifyWS, {
 
 // add global websocket handler
 server.get('/ws', { websocket: true }, (connection, req) => {
+  console.log(connection);
+  console.log(req);
   connection.socket.on('message', (message: string) => {
     try {
       const { name, type, payload } = JSON.parse(message);
