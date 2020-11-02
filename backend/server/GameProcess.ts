@@ -4,6 +4,7 @@ import path from 'path';
 import server from './server';
 import GameDataInterface from '../game/GameDataInterface';
 import { SocketStream } from 'fastify-websocket';
+import { StreamState } from 'http2';
 
 // file path to use to start a game process
 const gameFilePath = path.resolve('./dist/game/index.js');
@@ -73,6 +74,7 @@ export default class GameProcess {
    * @param payload payload to send
    */
   async broadcastToWs(type: string, payload: any) {
+    this.log('debug', `broadcast [${type}]: ${payload}`);
     await Promise.all(this.wsConnections.map(({ connection }) => {
       connection.socket.send(JSON.stringify({ type, payload }));
     }));
@@ -121,9 +123,9 @@ export default class GameProcess {
    *
    * @param connectionId unsigned cookie connection id
    */
-  removeWsConnection(connectionId: string) {
+  removeWsConnection(connectionId: string, connection: SocketStream) {
     this.wsConnections.splice(this.wsConnections.findIndex(
-      (c) => c.connectionId === connectionId),
+      (c) => c.connectionId === connectionId && c.connection === connection),
       1,
     );
     this.log('debug', `removed connection: ${connectionId}`);

@@ -65,6 +65,6 @@ server.get('/ws', { websocket: true }, (connection) => {
   });
 
   connection.socket.on('close', (message: string) => {
-    gameManager.games[gameName].removeWsConnection(connectionId);
+    gameManager.games[gameName].removeWsConnection(connectionId, connection);
   });
 });
