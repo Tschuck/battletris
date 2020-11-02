@@ -28,7 +28,7 @@
     "typescript": "~3.9.3",
     "vue-template-compiler": "^2.6.11"
   },
-  "name": "frontend2",
+  "name": "battletris",
   "private": true,
   "scripts": {
     "build": "vue-cli-service build",

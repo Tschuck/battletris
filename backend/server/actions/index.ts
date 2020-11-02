@@ -1,1 +1,2 @@
 import './game';
+import './register';
