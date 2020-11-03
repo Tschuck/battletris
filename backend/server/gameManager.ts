@@ -1,9 +1,9 @@
 import errorCodes from './error.codes';
-import GameProcess from './GameProcess';
+import GameHandler from './GameHandler';
 
 class GameManager {
   games: {
-    [key: string]: GameProcess,
+    [key: string]: GameHandler,
   };
 
   constructor() {
@@ -15,7 +15,7 @@ class GameManager {
       throw new Error(errorCodes.GAME_EXISTS);
     }
 
-    this.games[name] = new GameProcess(name);
+    this.games[name] = new GameHandler(name);
     await this.games[name].start();
   }
 

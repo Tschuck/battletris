@@ -8,12 +8,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
-@Component
-export default class HelloWorld extends Vue {
-  @Prop() private msg!: string;
-}
+@Component({
+  props: {
+    msg: { type: String },
+  },
+})
+export default class Home extends Vue {}
 </script>
 
 <style lang="scss">

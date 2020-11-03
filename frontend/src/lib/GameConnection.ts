@@ -53,9 +53,11 @@ export default class GameConnection {
 
     // Open new websocket connection and ensure connectionId.
     this.connection = new WebSocket('ws://localhost:3000/ws');
-    this.connection.onopen = () => this.send('joinUser', {
-      id: connectionId,
+    this.connection.onopen = () => this.send('joinGame', {
+      className: window.localStorage.getItem('battletris-class') || 'unknown',
       gameName: this.gameName,
+      id: connectionId,
+      name: window.localStorage.getItem('battletris-name') || 'unknwwn',
     });
     this.connection.onmessage = (event) => {
       const data = JSON.parse(event.data);

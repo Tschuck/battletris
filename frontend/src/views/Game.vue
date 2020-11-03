@@ -80,5 +80,5 @@ import config from '../config';
     };
   },
 })
-export default class Home extends Vue {}
+export default class Game extends Vue {}
 </script>

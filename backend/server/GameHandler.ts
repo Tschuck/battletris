@@ -1,31 +1,19 @@
 import { ChildProcess, fork } from 'child_process';
 import path from 'path';
+import { SocketStream } from 'fastify-websocket';
 
+import WsConnection from './WsConnection';
 import server from './server';
 import GameDataInterface from '../game/GameDataInterface';
-import { SocketStream } from 'fastify-websocket';
-import { StreamState } from 'http2';
 
 // file path to use to start a game process
 const gameFilePath = path.resolve('./dist/game/index.js');
 
-interface UserConnection {
-  /**
-   * unsigned cookie connectionId
-   */
-  connectionId: string;
-
-  /**
-   * Opened websocket connection
-   */
-  connection: SocketStream;
-}
-
-export default class GameProcess {
+export default class GameHandler {
   /**
    * Open wsConnections
    */
-  wsConnections: UserConnection[];
+  wsConnections: WsConnection[];
 
   /**
    * Current game data
@@ -56,15 +44,11 @@ export default class GameProcess {
   /**
    * Add connection to the game process. (used for message broadcasting)
    *
-   * @param connectionId unsigned cookie connection id
-   * @param connection current open websocket connection
+   * @param connection websocket connection class instance
    */
-  addWsConnection(connectionId: string, connection: SocketStream) {
-    this.log('debug', `added connection: ${connectionId}`);
-    this.wsConnections.push({
-      connection,
-      connectionId,
-    });
+  addWsConnection(connection: WsConnection) {
+    this.log('debug', `added connection: ${connection.connectionId}`);
+    this.wsConnections.push(connection);
   }
 
   /**
@@ -75,9 +59,9 @@ export default class GameProcess {
    */
   async broadcastToWs(type: string, payload: any) {
     this.log('debug', `broadcast [${type}]: ${payload}`);
-    await Promise.all(this.wsConnections.map(({ connection }) => {
-      connection.socket.send(JSON.stringify({ type, payload }));
-    }));
+    await Promise.all(this.wsConnections.map(
+      (connection) => connection.send(type, payload),
+    ));
   }
 
   /**
@@ -121,14 +105,11 @@ export default class GameProcess {
   /**
    * Remove connection from the game process.
    *
-   * @param connectionId unsigned cookie connection id
+   * @param connection websocket connection class instance
    */
-  removeWsConnection(connectionId: string, connection: SocketStream) {
-    this.wsConnections.splice(this.wsConnections.findIndex(
-      (c) => c.connectionId === connectionId && c.connection === connection),
-      1,
-    );
-    this.log('debug', `removed connection: ${connectionId}`);
+  removeWsConnection(connection: WsConnection) {
+    this.wsConnections.splice(this.wsConnections.findIndex((c) => c === connection), 1);
+    this.log('debug', `removed connection: ${connection.connectionId}`);
   }
 
   /**
