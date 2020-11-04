@@ -1,5 +1,6 @@
 backend/dist
 backend/node_modules
+db
 frontend/dist
 frontend/node_modules
 node_modules

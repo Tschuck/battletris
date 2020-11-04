@@ -7,7 +7,7 @@
     "fastify-cookie": "^4.1.0",
     "fastify-cors": "^4.1.0",
     "fastify-websocket": "^2.0.10",
-    "lowdb": "^1.0.0",
+    "fs-extra": "^9.0.1",
     "pino-pretty": "^4.3.0",
     "promise-parallel-throttle": "^3.3.0",
     "uuid": "^8.3.1"

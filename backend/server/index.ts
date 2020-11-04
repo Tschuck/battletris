@@ -1,5 +1,6 @@
 import * as Throttle from 'promise-parallel-throttle';
 
+import { loadDbs } from './dbManager';
 import config from './config';
 import server from './server';
 
@@ -10,7 +11,11 @@ import './plugins';
 import './actions';
 import gameManager from './gameManager';
 
+
 const start = async () => {
+  // load database jsons beforw
+  await loadDbs();
+
   // create initial, predefined actions
   const gameArr = Array.from(Array(config.defaultGameCount).keys());
   await Throttle.all(gameArr.map((_, i) => async () => {

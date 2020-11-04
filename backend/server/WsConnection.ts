@@ -1,5 +1,4 @@
 import { SocketStream } from "fastify-websocket";
-import fastifyWS from 'fastify-websocket';
 import cookieSignature from 'cookie-signature';
 
 import gameManager from './gameManager';
