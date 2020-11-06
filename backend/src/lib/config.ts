@@ -1,6 +1,6 @@
 import path from 'path';
 
-import server from './server';
+import server from '../server';
 
 const prefix = 'BATTLETRIS_';
 const _ = (name: string, defaultValue: any) => {
@@ -19,8 +19,8 @@ const _ = (name: string, defaultValue: any) => {
 
 export default {
   cookieSecret: _('COOKIE_SECRET', '6f5af457-b1b6-444d-8488-2d1241d0ad5f'),
-  dbPath: _('DB_PATH', path.resolve('../db')),
-  defaultGameCount: _('DEFAULT_GAME_COUNT', 10),
+  dbPath: _('DB_PATH', path.resolve('../.db.sqlite')),
+  defaultGameCount: _('DEFAULT_GAME_COUNT', 5),
   frontendUrl: _('FRONTEND_URL', 'http://localhost:8080'),
   port: _('PORT', 3000),
 };

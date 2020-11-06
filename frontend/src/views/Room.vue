@@ -2,7 +2,7 @@
   <div class="home">
     <Loading v-if="loading" />
     <div v-else>
-      <h1>{{ game }}</h1>
+      <h1>{{ room }}</h1>
 
       <textarea v-model="newMessage"></textarea>
       <button @click="sendMessage" :disabled="sending">send message</button>
@@ -17,40 +17,36 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { ref } from '@vue/composition-api';
-import axios from 'axios';
 
-import GameConnection from '../lib/GameConnection';
+import RoomConnection from '../lib/RoomConnection';
 import Loading from '../components/Loading.vue';
-import config from '../config';
+import { getRequest } from '../lib/request';
 
 @Component({
   components: {
     Loading,
   },
   props: {
-    gameName: { type: String },
+    roomId: { type: String },
   },
   setup(props) {
     const loading = ref(true);
     const creating = ref(false);
-    const game = ref<any | null>(null);
-    const messages = ref<any[]>([]);
+    const room = ref<any | null>(null);
+    const messages = ref<string[]>([]);
 
-    let conn: GameConnection;
+    let conn: RoomConnection;
     (async () => {
       // connect to the websocket
-      conn = await GameConnection.connect(
-        props.gameName as string,
+      conn = await RoomConnection.connect(
+        props.roomId as string,
         (data) => {
           messages.value.push(data);
         },
       );
 
-      // get general game data
-      const { data: { game: gameData } } = await axios.get(
-        `${config.serverUrl}/game/${props.gameName}`,
-      );
-      game.value = gameData;
+      // get general room data
+      room.value = await getRequest(`room/${props.roomId}`);
       loading.value = false;
 
       // listen for keypress events
@@ -70,7 +66,7 @@ import config from '../config';
 
     return {
       creating,
-      game,
+      room,
       loading,
       messages,
       // for sending chat messages
@@ -80,5 +76,5 @@ import config from '../config';
     };
   },
 })
-export default class Game extends Vue {}
+export default class RoomComponent extends Vue {}
 </script>

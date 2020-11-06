@@ -1,20 +1,14 @@
 import { ChildProcess, fork } from 'child_process';
 import path from 'path';
-import { SocketStream } from 'fastify-websocket';
 
-import WsConnection from './WsConnection';
-import server from './server';
+import WsConnection from '../rooms/WsConnection';
+import server from '../server';
 import GameDataInterface from '../game/GameDataInterface';
 
 // file path to use to start a game process
 const gameFilePath = path.resolve('./dist/game/index.js');
 
 export default class GameHandler {
-  /**
-   * Open wsConnections
-   */
-  wsConnections: WsConnection[];
-
   /**
    * Current game data
    */
@@ -37,31 +31,7 @@ export default class GameHandler {
   initResolve: () => void;
 
   constructor(name: string) {
-    this.wsConnections = [];
     this.name = name;
-  }
-
-  /**
-   * Add connection to the game process. (used for message broadcasting)
-   *
-   * @param connection websocket connection class instance
-   */
-  addWsConnection(connection: WsConnection) {
-    this.log('debug', `added connection: ${connection.connectionId}`);
-    this.wsConnections.push(connection);
-  }
-
-  /**
-   * Send a type and a payload to all registered wsConnections.
-   *
-   * @param type type to send
-   * @param payload payload to send
-   */
-  async broadcastToWs(type: string, payload: any) {
-    this.log('debug', `broadcast [${type}]: ${payload}`);
-    await Promise.all(this.wsConnections.map(
-      (connection) => connection.send(type, payload),
-    ));
   }
 
   /**
@@ -100,16 +70,6 @@ export default class GameHandler {
    */
   log(type: string, message: string) {
     server.log[type](`[${this.process.pid}|${this.name}] ${message}`);
-  }
-
-  /**
-   * Remove connection from the game process.
-   *
-   * @param connection websocket connection class instance
-   */
-  removeWsConnection(connection: WsConnection) {
-    this.wsConnections.splice(this.wsConnections.findIndex((c) => c === connection), 1);
-    this.log('debug', `removed connection: ${connection.connectionId}`);
   }
 
   /**

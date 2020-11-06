@@ -1,9 +1,9 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import cookieSignature from 'cookie-signature';
 
-import ErrorCodes from '../error.codes';
+import ErrorCodes from './error.codes';
 import server from '../server';
-import config from '../config';
+import config from './config';
 
 export const createEndpoint = (
   type: string,

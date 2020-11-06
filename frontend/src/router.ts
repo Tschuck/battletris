@@ -10,9 +10,9 @@ const routes: Array<RouteConfig> = [
     component: Home,
   },
   {
-    path: '/:gameName',
+    path: '/:roomId',
     props: true,
-    component: () => import('./views/Game.vue'),
+    component: () => import('./views/Room.vue'),
   },
 ];
 

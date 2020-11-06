@@ -10,6 +10,8 @@
     "fs-extra": "^9.0.1",
     "pino-pretty": "^4.3.0",
     "promise-parallel-throttle": "^3.3.0",
+    "sqlite3": "^5.0.0",
+    "typeorm": "^0.2.29",
     "uuid": "^8.3.1"
   },
   "devDependencies": {
@@ -22,8 +24,7 @@
   "name": "battletris",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "debug": "yarn build && node --inspect dist/server/index.js",
-    "start": "yarn build && node dist/server/index.js",
-    "test:manual": "yarn build && node dist/test/manual.js"
+    "debug": "yarn build && node --inspect dist/index.js",
+    "start": "yarn build && node dist/index.js"
   }
 }

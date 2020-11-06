@@ -16,17 +16,10 @@ import Loading from './components/Loading.vue';
   components: {
     Loading,
   },
-  setup(props) {
+  setup() {
     const loading = ref(true);
-
-    (async () => {
-      await user.init();
-      loading.value = false;
-    })();
-
-    return {
-      loading,
-    };
+    user.init().then(() => loading.value = false);
+    return { loading };
   },
 })
 export default class Home extends Vue {}

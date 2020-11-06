@@ -1,4 +1,4 @@
-import processHandler from './processHandler';
+import gameProcess from './GameProcess';
 import GameDataInterface from './GameDataInterface';
 
 export default class Game {
@@ -11,10 +11,10 @@ export default class Game {
    */
   initialize({ name }) {
     this.data = { name };
-    processHandler.sendToParent('initialized', this.data);
+    gameProcess.sendToParent('initialized', this.data);
   }
 
   keypress(key: string) {
-    processHandler.log('info', `key pressed: ${key}`);
+    gameProcess.log('info', `key pressed: ${key}`);
   }
 }

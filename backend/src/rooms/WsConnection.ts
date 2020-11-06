@@ -1,29 +1,21 @@
 import { SocketStream } from "fastify-websocket";
 import cookieSignature from 'cookie-signature';
 
-import gameManager from './gameManager';
-import server from './server';
-import config from './config';
-import errorCodes from './error.codes';
-import GameHandler from './GameHandler';
+import roomRegistry from './registry';
+import server from '../server';
+import config from '../lib/config';
+import errorCodes from '../lib/error.codes';
+import RoomHandler from './RoomHandler';
+import { User } from '../db';
 
 interface JoinPayload {
   // signed connection id
   id: string;
-  // class to use
-  className: string;
   // game to join
-  gameName: string;
-  // user name
-  name: string;
+  roomId: string;
 }
 
 export default class WsConnection {
-  /**
-   * selected user class
-   */
-  className: string;
-
   /**
    * Open websocket connection.
    */
@@ -32,22 +24,17 @@ export default class WsConnection {
   /**
    * websocket cookie connection id
    */
-  connectionId: string;
+  userId: string;
 
   /**
-   * Game, where the connection is currently connected to
+   * Connected room.
    */
-  gameName: string;
+  room: RoomHandler;
 
   /**
-   * Opened game.
+   * Connected user
    */
-  game: GameHandler;
-
-  /**
-   * user name
-   */
-  name: string;
+  user: User;
 
   constructor(connection: SocketStream) {
     this.connection = connection;
@@ -61,20 +48,21 @@ export default class WsConnection {
           return;
         }
 
-        if (!this.game) {
+        if (!this.room) {
           throw new Error(errorCodes.CONNECTION_NOT_JOINED);
         }
 
         switch (type) {
           case 'chat': {
-            this.game.broadcastToWs('chat', {
+            this.room.broadcastToWs('chat', {
               message: payload,
-              name: this.name,
+              id: this.user.id,
+              name: this.user.name,
             });
             break;
           }
           default: {
-            this.game.sendToProcess(type, payload);
+            // this.room.sendToProcess(type, payload);
             break;
           }
         }
@@ -85,7 +73,7 @@ export default class WsConnection {
     });
 
     connection.socket.on('close', (message: string) => {
-      this.game?.removeWsConnection(this);
+      this.room?.removeWsConnection(this);
     });
   }
 
@@ -96,31 +84,29 @@ export default class WsConnection {
    */
   async joinGame(payload: JoinPayload) {
     // allow only one join per connection
-    if (this.connectionId) {
+    if (this.userId) {
       throw new Error(errorCodes.CONNECTION_ID_ALREADY_REGISTERED);
     }
 
-    // check if connectionid is correct
-    const signedConnectionId = payload.id;
-    const unsignedConnectionId = await cookieSignature.unsign(
-      signedConnectionId,
+    // check if UserId is correct
+    const signedUserId = payload.id;
+    const unsignedUserId = await cookieSignature.unsign(
+      signedUserId,
       config.cookieSecret,
     );
-    if (!unsignedConnectionId) {
+    if (!unsignedUserId) {
       throw new Error(errorCodes.CONNECTION_ID_INVALID);
     }
-    // set connectionId
-    this.connectionId = unsignedConnectionId;
+    // set UserId
+    this.userId = unsignedUserId;
 
     // register connection in game
-    this.gameName = payload.gameName;
-    this.className = payload.className;
-    this.name = payload.name;
-    this.game = gameManager.games[this.gameName];
-    if (!this.game) {
-      throw new Error(errorCodes.GAME_NOT_EXISTS);
+    this.user = await User.findOne(this.userId);
+    this.room = roomRegistry[payload.roomId];
+    if (!this.room) {
+      throw new Error(errorCodes.ROOM_NOT_STARTED);
     }
-    this.game.addWsConnection(this);
+    this.room.addWsConnection(this);
   }
 
   async send(type: string, payload: any) {

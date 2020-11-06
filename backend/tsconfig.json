@@ -10,7 +10,7 @@
     "preserveConstEnums": true,
     "removeComments": true,
     "resolveJsonModule": true,
-    "rootDir": ".",
+    "rootDir": "./src",
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": false,
@@ -24,8 +24,6 @@
     "node_modules"
   ],
   "include": [
-    "game/**/*.ts",
-    "server/**/*.ts",
-    "test/**/*.ts"
+    "./src/**/*.ts",
   ]
 }

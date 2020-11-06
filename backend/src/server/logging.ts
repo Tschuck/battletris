@@ -1,4 +1,4 @@
-import server from '../server';
+import server from './server';
 
 // use custom request logging
 server.addHook('onRequest', (req, reply, done) => {

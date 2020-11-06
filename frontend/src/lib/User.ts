@@ -1,9 +1,7 @@
-import axios from 'axios';
-
-import config from '../config';
+import { getRequest, postRequest } from './request';
 
 class User {
-  connectionId = '';
+  userId = '';
 
   className = 'unknown';
 
@@ -18,27 +16,18 @@ class User {
     }
 
     // ensure connection id
-    const { data: { id } } = await axios.get(`${config.serverUrl}/register`, {
-      withCredentials: true,
-      params: registerParams,
-    });
+    const { id } = await postRequest('register', registerParams);
     // request user info
-    const { data } = await axios.get(`${config.serverUrl}/user`, { withCredentials: true });
-    this.connectionId = id;
-    this.className = data.className;
-    this.matches = data.matches;
-    this.name = data.name;
+    const user = await getRequest('user');
+    this.userId = id;
+    this.className = user.className;
+    this.matches = user.matches;
+    this.name = user.name;
   }
 
-  async exportConnectionId() {
-    const {
-      data: { id: connectionId },
-    } = await axios.get(`${config.serverUrl}/register`, {
-      withCredentials: true,
-    });
-
+  async export() {
     const dataStr = `data:text/json;charset=utf-8, ${encodeURIComponent(
-      JSON.stringify({ connectionId }),
+      JSON.stringify({ id: this.userId }),
     )}`;
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute('href', dataStr);
@@ -48,18 +37,18 @@ class User {
     downloadAnchorNode.remove();
   }
 
-  async importConnectionId(fileInput: { files: Blob[] }) {
+  async import(fileInput: { files: Blob[] }) {
     const reader = new FileReader();
 
     return new Promise((resole, reject) => {
       reader.onload = async (event) => {
         try {
           const imported = JSON.parse(event?.target?.result as string);
-          if (!imported.connectionId) {
+          if (!imported.userId) {
             throw new Error('invalid json');
           }
 
-          await this.init(imported.connectionId);
+          await this.init(imported.userId);
           resole();
         } catch (ex) {
           reject(ex);

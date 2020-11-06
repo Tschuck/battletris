@@ -1,11 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import cookieSignature from 'cookie-signature';
 
-import config from '../config';
-import { createEndpoint, ensureUserRegistered } from './utils';
-import ErrorCodes from '../error.codes';
-import { dbs, saveDb } from '../dbManager';
-import Namegen from '../utils/namegen';
+import config from '../lib/config';
+import { createEndpoint, ensureUserRegistered } from '../lib/actions.utils';
+import ErrorCodes from '../lib/error.codes';
+import { User } from '../db';
+import Namegen from '../lib/namegen';
 
 const nameGenerator = Namegen.compile("sV i");
 
@@ -13,7 +13,7 @@ const nameGenerator = Namegen.compile("sV i");
  * Use join and leave to reduce data payload during websocket connection data exchange.
  */
 createEndpoint(
-  'get', '/register',
+  'post', '/register',
   {},
   { id: { type: 'string' }},
   async (data, req, reply) => {
@@ -22,9 +22,11 @@ createEndpoint(
       try {
         cookieValue = await reply.unsignCookie(cookieValue);
       } catch (ex) {
-        if (data.battletris_id) {
-          throw new Error(ErrorCodes.CONNECTION_ID_INVALID);
-        }
+        // invalid cookie?
+      }
+      // don't allow invalid login
+      if (!cookieValue && data.battletris_id) {
+        throw new Error(ErrorCodes.CONNECTION_ID_INVALID);
       }
     }
 
@@ -53,16 +55,17 @@ createEndpoint(
     const userId = await ensureUserRegistered(req);
 
     // ensure default user
-    if (!dbs.users[userId]) {
-      dbs.users[userId] = {
+    let user: User = await User.findOne(userId);
+    if (!user) {
+      user = await User.create({
+        id: userId,
         className: 'unknown',
         matches: [],
         name: nameGenerator.toString(),
-      };
-      await saveDb('users');
+      }).save();
     }
 
-    return dbs.users[userId];
+    return user;
   }
 );
 
@@ -76,13 +79,13 @@ createEndpoint(
     const userId = await ensureUserRegistered(req);
 
     // update user name
-    const user = dbs.users[userId] || {};
-    dbs.users[userId] = {
-      className: user.className || 'unknown',
-      matches: user.matches || [],
-      name: data.name || user.name || nameGenerator.toString(),
-    };
+    const user = await User.create({
+      id: userId,
+      className: 'unknown',
+      matches: [],
+      name: nameGenerator.toString(),
+    }).save();
 
-    return dbs.users[userId];
+    return user;
   }
 );

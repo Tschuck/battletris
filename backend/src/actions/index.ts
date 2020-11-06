@@ -1,2 +1,2 @@
-import './game';
+import './room';
 import './user';

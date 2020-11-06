@@ -1,13 +1,7 @@
 import fastifyWS from 'fastify-websocket';
-import cookieSignature from 'cookie-signature';
 
-import gameManager from '../gameManager';
-import server from '../server';
-import config from '../config';
-import errorCodes from '../error.codes';
-import WsConnection from '../WsConnection';
-
-const connectionMap = { };
+import server from './server';
+import WsConnection from '../rooms/WsConnection';
 
 server.register(fastifyWS, {
   // creates an echo server

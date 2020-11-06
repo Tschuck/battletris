@@ -21,7 +21,7 @@
               id="uploadIdRef"
               ref="uploadIdRef"
               type="file"
-              @change="importConnectionId()">
+              @change="importUser()">
               <p class="text-danger" v-if="importError">
                 invalid import
               </p>
@@ -31,7 +31,7 @@
           </div>
 
           want to login again on an other machine?
-          <button :disabled="workingOnBattletrisId" @click="user.exportConnectionId()">
+          <button :disabled="workingOnBattletrisId" @click="user.export()">
             export battletris id
           </button>
         </div>
@@ -45,12 +45,12 @@
           placeholder="username"
           @input="setLocalStorage('battletris-name', name)"
         />
-        <select v-model="selectedGame">
-          <option v-for="gameName in games" :key="gameName" :value="gameName">
-            {{ gameName }}
+        <select v-model="selectedRoom">
+          <option v-for="room in rooms" :key="room.id" :value="room.id">
+            {{ room.name }}
           </option>
         </select>
-        <router-link class="button" :to="`/${selectedGame}`">join</router-link>
+        <router-link class="button" :to="`/${selectedRoom}`">join</router-link>
       </div>
     </div>
   </div>
@@ -59,13 +59,12 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { ref } from '@vue/composition-api';
-import axios from 'axios';
 
-import { disconnectLastConnection } from '../lib/GameConnection';
+import { disconnectLastConnection } from '../lib/RoomConnection';
 import ClassGallery from '../components/ClassGallery.vue';
-import config from '../config';
 import Loading from '../components/Loading.vue';
 import user from '../lib/User';
+import { getRequest } from '../lib/request';
 
 @Component({
   components: {
@@ -75,10 +74,10 @@ import user from '../lib/User';
   setup() {
     const loading = ref(true);
     const creating = ref(false);
-    const games = ref<string[] | null>(null);
+    const rooms = ref<any[] | null>(null);
 
     // user params
-    const selectedGame = ref('');
+    const selectedRoom = ref('');
     const name = ref(user.name);
     const className = ref(user.className || 'unknown');
 
@@ -86,14 +85,11 @@ import user from '../lib/User';
       loading.value = true;
       // disconnect last connection
       disconnectLastConnection();
-      // get game overview
-      const {
-        data: { games: loadedGames },
-      } = await axios.get(`${config.serverUrl}/games`);
-      games.value = Object.keys(loadedGames).map(
-        (key) => loadedGames[key].name,
-      );
-      [selectedGame.value] = games.value;
+      // get room overview
+      rooms.value = await getRequest('rooms');
+      if (rooms.value && rooms.value.length !== 0) {
+        selectedRoom.value = rooms.value[0].id;
+      }
       loading.value = false;
     };
     init();
@@ -105,9 +101,9 @@ import user from '../lib/User';
     const workingOnBattletrisId = ref(false);
     const importError = ref(false);
     const uploadIdRef = ref<{ files: Blob[] }|null>(null);
-    const importConnectionId = async () => {
+    const importUser = async () => {
       loading.value = true;
-      await user.importConnectionId(uploadIdRef.value as { files: Blob[] });
+      await user.import(uploadIdRef.value as { files: Blob[] });
       // use latest user data
       name.value = user.name;
       className.value = user.className;
@@ -117,12 +113,12 @@ import user from '../lib/User';
     return {
       className,
       creating,
-      games,
-      importConnectionId,
+      rooms,
+      importUser,
       importError,
       loading,
       name,
-      selectedGame,
+      selectedRoom,
       setLocalStorage,
       uploadIdRef,
       user,

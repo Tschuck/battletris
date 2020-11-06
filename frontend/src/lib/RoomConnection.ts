@@ -1,9 +1,7 @@
-import axios from 'axios';
-
-import config from '../config';
+import { postRequest } from './request';
 
 // only keep the last connection opened
-let lastConnection: GameConnection|null;
+let lastConnection: RoomConnection|null;
 
 export const disconnectLastConnection = () => {
   if (lastConnection) {
@@ -15,9 +13,9 @@ export const disconnectLastConnection = () => {
 /**
  * Handle websocket connection for a game room.
  */
-export default class GameConnection {
-  static async connect(gameName: string, handler: (data: any) => void) {
-    const connection = new GameConnection(gameName, handler);
+export default class RoomConnection {
+  static async connect(roomId: string, handler: (data: any) => void) {
+    const connection = new RoomConnection(roomId, handler);
     await connection.connect();
     return connection;
   }
@@ -25,7 +23,7 @@ export default class GameConnection {
   /**
    * Connected game name.
    */
-  gameName: string;
+  roomId: string;
 
   /**
    * Open websocket connection.
@@ -37,8 +35,8 @@ export default class GameConnection {
    */
   handler: (data: any) => void;
 
-  constructor(gameName: string, handler: (data: any) => void) {
-    this.gameName = gameName;
+  constructor(roomId: string, handler: (data: any) => void) {
+    this.roomId = roomId;
     this.handler = handler;
   }
 
@@ -46,18 +44,13 @@ export default class GameConnection {
    * Join the game (= subscribe for websocket room) and connect to websocket.
    */
   async connect() {
-    const { data: { id: connectionId } } = await axios.get(
-      `${config.serverUrl}/register`,
-      { withCredentials: true },
-    );
+    const { id } = await postRequest('register');
 
-    // Open new websocket connection and ensure connectionId.
+    // Open new websocket connection and ensure userId
     this.connection = new WebSocket('ws://localhost:3000/ws');
     this.connection.onopen = () => this.send('joinGame', {
-      className: window.localStorage.getItem('battletris-class') || 'unknown',
-      gameName: this.gameName,
-      id: connectionId,
-      name: window.localStorage.getItem('battletris-name') || 'unknwwn',
+      id,
+      roomId: this.roomId,
     });
     this.connection.onmessage = (event) => {
       const data = JSON.parse(event.data);
