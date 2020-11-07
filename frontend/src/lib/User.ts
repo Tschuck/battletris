@@ -44,11 +44,11 @@ class User {
       reader.onload = async (event) => {
         try {
           const imported = JSON.parse(event?.target?.result as string);
-          if (!imported.userId) {
+          if (!imported.id) {
             throw new Error('invalid json');
           }
 
-          await this.init(imported.userId);
+          await this.init(imported.id);
           resole();
         } catch (ex) {
           reject(ex);

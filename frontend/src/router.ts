@@ -1,13 +1,12 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import Home from './views/Home.vue';
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
     path: '/',
-    component: Home,
+    component: () => import('./views/Dashboard.vue'),
   },
   {
     path: '/:roomId',

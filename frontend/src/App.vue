@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col overflow-hidden" style="height: 100vh">
+  <div class="flex flex-col overflow-hidden bg-white" style="height: 100vh">
     <RootNav ref="rootNav" :loading="loading" />
     <div class="flex-grow overflow-auto">
       <Loading v-if="loading" />
