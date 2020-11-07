@@ -94,12 +94,10 @@ import AbilityLogo from './AbilityLogo.vue';
     const classes = ['sorcerer', 'unknown', 'warrior'];
     const abilityIterator = [1, 2, 3, 4];
     const render = ref(false);
-    const isVisible = ref(false);
 
     return {
       abilityIterator,
       classes,
-      isVisible,
       render,
     };
   },

@@ -9,9 +9,10 @@ const routes: Array<RouteConfig> = [
     component: () => import('./views/Dashboard.vue'),
   },
   {
+    component: () => import('./views/Room.vue'),
+    name: 'room',
     path: '/:roomId',
     props: true,
-    component: () => import('./views/Room.vue'),
   },
 ];
 

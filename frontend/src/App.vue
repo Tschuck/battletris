@@ -1,10 +1,22 @@
 <template>
   <div class="flex flex-col overflow-hidden bg-white" style="height: 100vh">
-    <RootNav ref="rootNav" :loading="loading" />
-    <div class="flex-grow overflow-auto">
-      <Loading v-if="loading" />
-      <router-view v-else />
-    </div>
+    <nav
+      class="flex flex-wrap items-center justify-between p-3 bg-gray-900"
+      v-if="loading"
+    >
+      <img width="42" height="42" src="@/assets/battletris.svg" />
+      <span class="ml-6 text-xl font-semibold text-gray-100">{{
+        $t("battletris")
+      }}</span>
+      <div class="flex-grow" />
+    </nav>
+    <Loading v-if="loading" />
+    <template v-else>
+      <RootNav :loading="loading" />
+      <div class="flex-grow overflow-auto">
+        <router-view />
+      </div>
+    </template>
   </div>
 </template>
 
@@ -13,6 +25,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { ref } from '@vue/composition-api';
 
 import user from './lib/User';
+import roomHandler from './lib/RoomHandler';
 import Loading from './components/Loading.vue';
 import RootNav from './components/RootNav.vue';
 
@@ -23,12 +36,12 @@ import RootNav from './components/RootNav.vue';
   },
   setup() {
     const loading = ref(true);
-    const rootNav = ref<any>(null);
-    user.init().then(() => {
+
+    (async () => {
+      await user.init();
+      await roomHandler.load();
       loading.value = false;
-      // eslint-disable-next-line no-unused-expressions
-      rootNav.value?.ensureUserValues();
-    });
+    })();
 
     return {
       loading,

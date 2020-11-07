@@ -128,7 +128,7 @@
     "join": "Join Battlefield"
   },
   "user-id-handling": {
-    "title": "User export / imoprt",
+    "title": "User export / import",
     "desc": "No match history available? Play a match or login with a exported battletris id.<br><br>Battletris wants to be a secure place for you and don't want to get any security information from you. So no <strong>PASSWORD</strong>, just a passwordless authentication. If you want to use the same user id on a different pc, please export a battletris user file and import it on the other machine.",
     "import": "Import user file",
     "export": "Export user file",
@@ -136,6 +136,11 @@
   },
   "history": {
     "title": "Match History"
+  },
+  "lobby": {
+    "title": "Lobby",
+    "chat-message": "Chat message",
+    "send": "Send"
   },
   "coming-soon": "Coming soon..."
 }

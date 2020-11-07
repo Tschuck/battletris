@@ -104,7 +104,7 @@ import { ref } from '@vue/composition-api';
 import { disconnectLastConnection } from '../lib/RoomConnection';
 import Loading from '../components/Loading.vue';
 import user from '../lib/User';
-import { getRequest } from '../lib/request';
+import roomHandler from '../lib/RoomHandler';
 
 @Component({
   components: {
@@ -125,7 +125,7 @@ import { getRequest } from '../lib/request';
       // disconnect last connection
       disconnectLastConnection();
       // get room overview
-      rooms.value = await getRequest('rooms');
+      rooms.value = roomHandler.rooms;
       if (rooms.value && rooms.value.length !== 0) {
         selectedRoom.value = rooms.value[0].id;
       }
