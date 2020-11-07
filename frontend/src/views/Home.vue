@@ -2,7 +2,13 @@
   <div class="home">
     <Loading v-if="loading" />
     <div v-else>
-      <div>Whats battletris?</div>
+      <div class="max-w-sm p-3 overflow-hidden rounded shadow-lg">
+        <h2 class="mb-2 text-xl font-bold">{{ $t('whats-battletris') }}</h2>
+        <p class="text-sm">{{ $t('welcome') }}</p>
+        <div class="mt-3">
+          <p class="text-sm" v-html="$t('whats-battletris-long')"></p>
+        </div>
+      </div>
 
       <div>
         <div>

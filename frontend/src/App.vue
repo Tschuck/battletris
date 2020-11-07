@@ -1,8 +1,10 @@
 <template>
-  <div>
+  <div class="flex flex-col overflow-hidden" style="height: 100vh">
     <RootNav ref="rootNav" :loading="loading" />
-    <Loading v-if="loading" />
-    <router-view v-else />
+    <div class="flex-grow overflow-auto">
+      <Loading v-if="loading" />
+      <router-view v-else />
+    </div>
   </div>
 </template>
 
