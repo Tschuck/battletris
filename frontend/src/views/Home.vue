@@ -2,11 +2,6 @@
   <div class="home">
     <Loading v-if="loading" />
     <div v-else>
-      <ClassGallery
-        v-model="className"
-        @input="setLocalStorage('battletris-class', className)"
-      />
-
       <div>Whats battletris?</div>
 
       <div>
@@ -61,14 +56,12 @@ import { Component, Vue } from 'vue-property-decorator';
 import { ref } from '@vue/composition-api';
 
 import { disconnectLastConnection } from '../lib/RoomConnection';
-import ClassGallery from '../components/ClassGallery.vue';
 import Loading from '../components/Loading.vue';
 import user from '../lib/User';
 import { getRequest } from '../lib/request';
 
 @Component({
   components: {
-    ClassGallery,
     Loading,
   },
   setup() {

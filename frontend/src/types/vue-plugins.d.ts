@@ -27,4 +27,8 @@ declare module 'vue/types/vue' {
   }
 }
 
+declare module 'vue-treeselect' {
+
+}
+
 export {};
