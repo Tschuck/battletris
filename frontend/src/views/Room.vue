@@ -2,6 +2,7 @@
   <div class="h-full">
     <Loading v-if="loading" />
     <div class="grid h-full grid-cols-4 gap-6" v-else>
+
       <div class="flex flex-col py-3 pl-3 border-r border-gray-300 border-solid" style="max-height: calc(100vh - 66px);">
         <h2 class="pr-3 font-bold">{{ $t("lobby.title") }}</h2>
 
