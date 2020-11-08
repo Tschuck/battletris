@@ -144,7 +144,10 @@
     "send": "Send"
   },
   "game": {
-    "running": "Game is running"
+    "running": "Game is running",
+    "join": "Join",
+    "slot": "Slot",
+    "leave": "Leave"
   },
   "coming-soon": "Coming soon..."
 }

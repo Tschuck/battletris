@@ -4,6 +4,11 @@ import path from 'path';
 import server from '../server';
 import { GameDataInterface, GameStatus } from '../game/helpers/interfaces';
 import GameUser from './GameUser';
+import WsConnection, { WsMessageType } from '../rooms/WsConnection';
+import config from '../lib/config';
+import ErrorCodes from '../lib/error.codes';
+import roomRegistry from '../rooms';
+import RoomHandler from '../rooms/RoomHandler';
 
 // file path to use to start a game process
 const gameFilePath = path.resolve('./dist/game/index.js');
@@ -30,12 +35,59 @@ export default class GameHandler {
    */
   roomId: string;
 
-  constructor(roomId: string, users: { [id: string]: GameUser } = {}) {
+  /**
+   * current rooms
+   */
+  room: RoomHandler;
+
+  constructor(roomId: string, users: GameUser[] = []) {
     this.roomId = roomId;
+    this.room = roomRegistry[roomId];
     this.data = {
       status: GameStatus.STOPPED,
       users: users,
     };
+  }
+
+  async handleWsMessage(
+    connection: WsConnection,
+    type: WsMessageType,
+    payload: any,
+  ) {
+    switch (type) {
+      case WsMessageType.GAME_JOIN: {
+        const { index } = payload;
+
+        if (index > -1 && index > (config.maxGameUsers - 1)) {
+          throw new Error(ErrorCodes.USER_PLACE_NOT_ALLOWED);
+        }
+        if (this.data.users[index]) {
+          throw new Error(ErrorCodes.USER_PLACE_NOT_ALLOWED);
+        }
+
+        this.data.users[index] = new GameUser(connection.userId);
+        await this.room.broadcastToWs(WsMessageType.GAME_USER_UPDATE, {
+          [index]: this.data.users[index],
+        });
+        break;
+      }
+      case WsMessageType.GAME_LEAVE: {
+        const { index } = payload;
+
+        if (!this.data.users[index]) {
+          throw new Error(ErrorCodes.USER_PLACE_EMPTY);
+        }
+        if (this.data.users[index].userId !== connection.userId) {
+          throw new Error(ErrorCodes.CANNOT_KICK_ANOTHER_USER);
+        }
+
+        this.data.users[index] = null;
+        await this.room.broadcastToWs(WsMessageType.GAME_USER_UPDATE, {
+          [index]: null,
+        });
+        break;
+      }
+    }
   }
 
   /**

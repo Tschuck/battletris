@@ -44,6 +44,7 @@ createEndpoint(
     return {
       ...roomEntity,
       connectionCount: userIds.length,
+      game: room.gameBridge.data,
       isMatchRunning: room.gameBridge.data.status === GameStatus.STARTED,
       users: userIdMap,
     };

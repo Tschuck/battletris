@@ -17,7 +17,7 @@ export interface Block {
 }
 
 export interface GameDataInterface {
-  users: { [id: string]: GameUser };
+  users: GameUser[];
 
   status: GameStatus;
 };

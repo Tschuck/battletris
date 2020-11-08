@@ -12,7 +12,7 @@ export default class GameUser {
   // block turn (press up)
   blockIndex: number;
   // connection id
-  connectionId: string;
+  userId: string;
   // locked abilities for a specific time
   cooldowns: string[];
   // buffs / debuffs
@@ -32,13 +32,13 @@ export default class GameUser {
   // target connection id for applying abilities and block resolvles
   targetId: string;
 
-  constructor(connectionId: string) {
+  constructor(userId: string) {
     // when armor gets damaged to zero, the add line ability is called
     this.armor = 100;
     // block turn (press up)
     this.blockIndex = -1;
     // connection id
-    this.connectionId = connectionId;
+    this.userId = userId;
     // locked abilities for a specific time
     this.cooldowns = [ ];
     // buffs / debuffs
@@ -56,7 +56,7 @@ export default class GameUser {
     // users speed
     this.userSpeed = config.userSpeed;
     // target connection id for applying abilities and block resolvles
-    this.targetId = connectionId;
+    this.targetId = userId;
   }
 
   setEmptyMap() {

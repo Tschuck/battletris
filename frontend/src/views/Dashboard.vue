@@ -3,7 +3,7 @@
     <Loading v-if="loading" />
     <div class="grid grid-cols-3 gap-6 p-4" v-else>
       <div class="card">
-        <h2>{{ $t("dashboard.title") }}</h2>
+        <h2 class="header">{{ $t("dashboard.title") }}</h2>
         <p class="content">{{ $t("dashboard.desc") }}</p>
 
         <h3 class="px-3 mt-2 text-sm font-bold">
@@ -34,7 +34,7 @@
 
       <div class="col-span-2">
         <div class="mb-5 card">
-          <h2>{{ $t("user-id-handling.title") }}</h2>
+          <h2 class="header">{{ $t("user-id-handling.title") }}</h2>
 
           <div class="content">
             <p v-html="$t('user-id-handling.desc')" />
@@ -42,14 +42,14 @@
 
           <div class="grid grid-cols-2 mt-5 place-items-center">
             <button
-              class="px-4 py-2 font-bold text-white bg-blue-900 rounded hover:bg-blue-800"
+              class="button"
               @click="user.export()"
               :disabled="workingOnBattletrisId"
             >
               {{ $t("user-id-handling.export") }}
             </button>
             <button
-              class="px-4 py-2 font-bold text-white bg-blue-900 rounded hover:bg-blue-800"
+              class="button"
               @click="uploadIdRef.click()"
               :disabled="workingOnBattletrisId"
             >
@@ -72,7 +72,7 @@
           </div>
         </div>
         <div class="mb-5 card">
-          <h2>{{ $t("room.join") }}</h2>
+          <h2 class="header">{{ $t("room.join") }}</h2>
           <div class="flex flex-row flex-wrap content">
             <router-link
               class="flex-shrink-0 w-40 p-3 mb-2 mr-3 border border-gray-500 rounded min-w-xs hover:shadow-lg"
@@ -88,7 +88,7 @@
           </div>
         </div>
         <div class="card">
-          <h2>{{ $t("history.title") }}</h2>
+          <h2 class="header">{{ $t("history.title") }}</h2>
           <div class="flex flex-row flex-wrap content">
             {{ $t('coming-soon') }}
           </div>
@@ -174,19 +174,3 @@ import roomHandler from '../lib/RoomHandler';
 })
 export default class Home extends Vue {}
 </script>
-
-<style lang="postcss" scoped>
-.card {
-  @apply overflow-hidden rounded;
-
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-
-  h2 {
-    @apply p-3 font-bold text-white bg-gray-900 text-sm;
-  }
-
-  .content {
-    @apply px-3 py-3 text-sm;
-  }
-}
-</style>

@@ -75,7 +75,11 @@ export default class RoomHandler {
     this.log('debug', `removed connection: ${connection.userId}`);
   }
 
-  async handleMessage(connection: WsConnection, type: string, payload: any) {
+  async handleMessage(
+    connection: WsConnection,
+    type: WsMessageType,
+    payload: any,
+  ) {
     switch (type) {
       case WsMessageType.CHAT: {
         this.broadcastToWs(WsMessageType.CHAT, {
@@ -92,8 +96,12 @@ export default class RoomHandler {
         });
         break;
       }
+      case WsMessageType.GAME_JOIN:
+      case WsMessageType.GAME_LEAVE: {
+        await this.gameBridge.handleWsMessage(connection, type, payload);
+      }
       default: {
-        // this.room.sendToProcess(type, payload);
+        console.log(`ws type: "${type}" not implemented`);
         break;
       }
     }

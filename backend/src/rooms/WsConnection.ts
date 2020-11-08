@@ -9,10 +9,15 @@ import RoomHandler from './RoomHandler';
 import { User } from '../db';
 
 export enum WsMessageType {
-  CHAT = 'CHAT',
-  ROOM_JOIN = 'ROOM_JOIN',
-  USER_LEAVE = 'USER_LEAVE',
-  USER_UPDATE = 'USER_UPDATE',
+  ROOM_JOIN = 0,
+  USER_LEAVE = 1,
+  USER_UPDATE = 2,
+  CHAT = 3,
+  GAME_JOIN = 4,
+  GAME_LEAVE = 5,
+  GAME_START = 6,
+  GAME_UPDATE = 7,
+  GAME_USER_UPDATE = 8,
 }
 
 interface JoinPayload {

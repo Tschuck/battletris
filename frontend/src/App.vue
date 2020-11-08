@@ -55,4 +55,26 @@ export default class Home extends Vue {}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.button {
+  @apply px-4 py-2 font-bold text-white bg-blue-900 rounded;
+
+  &:hover {
+    @apply bg-blue-800;
+  }
+}
+
+.card {
+  @apply overflow-hidden rounded;
+
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+
+  .header {
+    @apply p-3 font-bold text-white bg-gray-900 text-sm;
+  }
+
+  .content {
+    @apply px-3 py-3 text-sm;
+  }
+}
 </style>
