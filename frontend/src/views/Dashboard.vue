@@ -82,7 +82,7 @@
               :to="`/${selectedRoom}`"
             >
               <h3 class="text-xs font-bold">{{ room.name }}</h3>
-              <i class="text-xs">{{ room.connectionCount }} {{ $t('room.joined') }}</i>
+              <i class="text-xs">{{ room.connectionCount }} {{ $t('room.users-joined') }}</i>
               <i class="text-xs" v-if="room.isMatchRunning">{{ $t('game.running') }}</i>
             </router-link>
           </div>

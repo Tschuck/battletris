@@ -5,6 +5,12 @@
   >
     <h2 class="pr-3 font-bold">{{ $t("lobby.title") }}</h2>
 
+    <div class="p-1 mt-3 mr-3 overflow-y-auto border border-gray-600">
+      <span v-for="(name, index) in usersInLobby" :key="index">
+        <span class="text-sm">{{ index !== 0 ? ',' : '' }} {{ name }}</span>
+      </span>
+    </div>
+
     <div class="flex-grow pr-3 overflow-y-auto">
       <div v-for="(message, index) in chat" :key="index" class="mt-3">
         <p class="text-sm">{{ message.message }}</p>
@@ -36,20 +42,43 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { onUnmounted, ref } from '@vue/composition-api';
+
 import { getCurrentConnection, WsMessageType } from '../lib/RoomConnection';
+import user from '../lib/User';
 
 @Component({
-  setup({ room }) {
-    const chat = ref<string[]>([]);
+  setup(_, { root }) {
+    const chat = ref<any[]>([]);
     const conn = getCurrentConnection();
+    const usersInLobby = ref<string[]>([]);
+
+    const setUsersInLobby = () => {
+      usersInLobby.value = Object
+        .keys(conn?.room?.users || {})
+        .map((userId) => conn?.room?.users[userId].name) as string[];
+    };
+    setUsersInLobby();
+
     if (conn) {
       const msgSubscriber = conn.onMessage((type: WsMessageType, payload: any) => {
-        if (type === WsMessageType.CHAT) {
-          const d = new Date();
-          chat.value.unshift({
-            ...payload,
-            date: `${d.getHours()}:${d.getMinutes()}.${d.getSeconds()}`,
-          });
+        const d = new Date();
+        const timeString = `${d.getHours()}:${d.getMinutes()}.${d.getSeconds()}`;
+        switch (type) {
+          case WsMessageType.CHAT: {
+            chat.value.unshift({
+              ...payload,
+              date: timeString,
+            });
+            break;
+          }
+          case WsMessageType.ROOM_JOIN: {
+            setUsersInLobby();
+            break;
+          }
+          case WsMessageType.ROOM_LEAVE: {
+            setUsersInLobby();
+            break;
+          }
         }
       });
 
@@ -75,6 +104,7 @@ import { getCurrentConnection, WsMessageType } from '../lib/RoomConnection';
       newMessage,
       sending,
       sendMessage,
+      usersInLobby,
     };
   },
 })

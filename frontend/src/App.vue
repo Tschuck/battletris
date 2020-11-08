@@ -64,6 +64,14 @@ export default class Home extends Vue {}
   }
 }
 
+.button-outline {
+  @apply px-4 py-2 font-bold text-blue-900 border border-blue-900 rounded;
+
+  &:hover {
+    @apply bg-blue-800 text-white;
+  }
+}
+
 .card {
   @apply overflow-hidden rounded;
 

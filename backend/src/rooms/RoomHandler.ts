@@ -69,9 +69,14 @@ export default class RoomHandler {
    *
    * @param connection websocket connection class instance
    */
-  removeWsConnection(connection: WsConnection) {
+  async removeWsConnection(connection: WsConnection) {
     this.wsConnections.splice(this.wsConnections.findIndex((c) => c === connection), 1);
-    this.broadcastToWs(WsMessageType.USER_LEAVE, { userId: connection.userId });
+    await this.gameBridge.handleWsMessage(
+      connection,
+      WsMessageType.GAME_LEAVE,
+      { userId: connection.userId },
+    );
+    await this.broadcastToWs(WsMessageType.ROOM_LEAVE, { userId: connection.userId });
     this.log('debug', `removed connection: ${connection.userId}`);
   }
 
@@ -96,9 +101,13 @@ export default class RoomHandler {
         });
         break;
       }
-      case WsMessageType.GAME_JOIN:
+      case WsMessageType.GAME_JOIN: {
+        await this.gameBridge.handleWsMessage(connection, type, payload);
+        break;
+      }
       case WsMessageType.GAME_LEAVE: {
         await this.gameBridge.handleWsMessage(connection, type, payload);
+        break;
       }
       default: {
         console.log(`ws type: "${type}" not implemented`);

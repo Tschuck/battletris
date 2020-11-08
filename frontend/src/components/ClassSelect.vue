@@ -71,6 +71,7 @@
         </div>
       </div>
     </transition>
+    <div class="backdrop" v-if="isVisible" @click="isVisible = false" />
   </div>
 </template>
 
@@ -112,9 +113,21 @@ export default class ClassGallery extends Vue {}
   z-index: 10;
   transition: 0.4s ease-out right;
 
+  @apply bg-gray-100;
+
   &.is-visible {
     right: 1px;
   }
+}
+
+.backdrop {
+  top: 66px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  background-color: rgb(26 33 44 / 0.5);
+  z-index: 9;
 }
 
 .right-swipe-enter-active, .right-swipe-leave-active {

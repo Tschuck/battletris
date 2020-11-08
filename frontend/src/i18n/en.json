@@ -100,6 +100,7 @@
       "title": "Warrior"
     }
   },
+  "coming-soon": "Coming soon...",
   "dashboard": {
     "abilities": {
       "desc": "At the beginning, each player selects a class that grants him special abilities like \"Add line\" or \"Remove line\". During the battles an ability can be activated on the target user with the \"q, w, e, r\". At first, each player is targeting his self. With the number keys 1 - 6 the enemy target can be switched to the specific user or use \"tab\" to select the next player. By pressing the tab key longer than 1 second, you will target directly yourself. Each ability requires mana to be activated, which you get by dissolving rows. The more rows you dissolve at once, the more mana you will receive.",
@@ -124,30 +125,33 @@
     },
     "title": "Whats Battletris?"
   },
-  "room": {
-    "join": "Join Battlefield",
-    "joined": "Users joined"
-  },
-  "user-id-handling": {
-    "title": "User export / import",
-    "desc": "No match history available? Play a match or login with a exported battletris id.<br><br>Battletris wants to be a secure place for you and don't want to get any security information from you. So no <strong>PASSWORD</strong>, just a passwordless authentication. If you want to use the same user id on a different pc, please export a battletris user file and import it on the other machine.",
-    "import": "Import user file",
-    "export": "Export user file",
-    "import-invalid": "Not a battletris user id file."
+  "game": {
+    "join": "Join",
+    "leave": "Leave",
+    "not-joined": "No one joined...",
+    "running": "Game is running",
+    "slot": "Slot",
+    "start": "Start"
   },
   "history": {
     "title": "Match History"
   },
   "lobby": {
-    "title": "Lobby",
     "chat-message": "Chat message",
-    "send": "Send"
+    "send": "Send",
+    "title": "Lobby"
   },
-  "game": {
-    "running": "Game is running",
-    "join": "Join",
-    "slot": "Slot",
-    "leave": "Leave"
+  "room": {
+    "join": "Join Battlefield",
+    "user-joined": "Joined room",
+    "user-leave": "Left room",
+    "users-joined": "Users joined"
   },
-  "coming-soon": "Coming soon..."
+  "user-id-handling": {
+    "desc": "No match history available? Play a match or login with a exported battletris id.<br><br>Battletris wants to be a secure place for you and don't want to get any security information from you. So no <strong>PASSWORD</strong>, just a passwordless authentication. If you want to use the same user id on a different pc, please export a battletris user file and import it on the other machine.",
+    "export": "Export user file",
+    "import": "Import user file",
+    "import-invalid": "Not a battletris user id file.",
+    "title": "User export / import"
+  }
 }

@@ -16,9 +16,11 @@ module.exports = {
     'class-methods-use-this': 'off',
     'consistent-return': 'off',
     'max-len': 'off',
+    'prefer-destructuring': 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-return-assign': 'off',
+    'default-case': 'off',
     'typescript-eslint/no-explicit-any': 'off',
   },
 };

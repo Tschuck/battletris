@@ -20,7 +20,7 @@ class User {
     const { id } = await postRequest('register', registerParams);
     // request user info
     const user = await getRequest('user');
-    this.userId = id;
+    this.userId = id.split('.')[0];
     this.className = user.className;
     this.matches = user.matches;
     this.name = user.name;

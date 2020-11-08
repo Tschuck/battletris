@@ -58,7 +58,7 @@ export default class GameHandler {
       case WsMessageType.GAME_JOIN: {
         const { index } = payload;
 
-        if (index > -1 && index > (config.maxGameUsers - 1)) {
+        if (index < 0 || index > (config.maxGameUsers - 1)) {
           throw new Error(ErrorCodes.USER_PLACE_NOT_ALLOWED);
         }
         if (this.data.users[index]) {
@@ -72,19 +72,22 @@ export default class GameHandler {
         break;
       }
       case WsMessageType.GAME_LEAVE: {
-        const { index } = payload;
+        const index = this.data.users.findIndex(
+          (gameUser) => gameUser?.userId === connection.userId,
+        );
+        if (index !== -1) {
+          if (!this.data.users[index]) {
+            throw new Error(ErrorCodes.USER_PLACE_EMPTY);
+          }
+          if (this.data.users[index].userId !== connection.userId) {
+            throw new Error(ErrorCodes.CANNOT_KICK_ANOTHER_USER);
+          }
 
-        if (!this.data.users[index]) {
-          throw new Error(ErrorCodes.USER_PLACE_EMPTY);
+          this.data.users[index] = null;
+          await this.room.broadcastToWs(WsMessageType.GAME_USER_UPDATE, {
+            [index]: null,
+          });
         }
-        if (this.data.users[index].userId !== connection.userId) {
-          throw new Error(ErrorCodes.CANNOT_KICK_ANOTHER_USER);
-        }
-
-        this.data.users[index] = null;
-        await this.room.broadcastToWs(WsMessageType.GAME_USER_UPDATE, {
-          [index]: null,
-        });
         break;
       }
     }

@@ -10,7 +10,7 @@ import { User } from '../db';
 
 export enum WsMessageType {
   ROOM_JOIN = 0,
-  USER_LEAVE = 1,
+  ROOM_LEAVE = 1,
   USER_UPDATE = 2,
   CHAT = 3,
   GAME_JOIN = 4,
