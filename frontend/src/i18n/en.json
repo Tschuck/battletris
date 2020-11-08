@@ -125,7 +125,8 @@
     "title": "Whats Battletris?"
   },
   "room": {
-    "join": "Join Battlefield"
+    "join": "Join Battlefield",
+    "joined": "Users joined"
   },
   "user-id-handling": {
     "title": "User export / import",
@@ -141,6 +142,9 @@
     "title": "Lobby",
     "chat-message": "Chat message",
     "send": "Send"
+  },
+  "game": {
+    "running": "Game is running"
   },
   "coming-soon": "Coming soon..."
 }

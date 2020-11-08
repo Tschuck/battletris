@@ -8,6 +8,13 @@ import errorCodes from '../lib/error.codes';
 import RoomHandler from './RoomHandler';
 import { User } from '../db';
 
+export enum WsMessageType {
+  CHAT = 'CHAT',
+  ROOM_JOIN = 'ROOM_JOIN',
+  USER_LEAVE = 'USER_LEAVE',
+  USER_UPDATE = 'USER_UPDATE',
+}
+
 interface JoinPayload {
   // signed connection id
   id: string;
@@ -31,11 +38,6 @@ export default class WsConnection {
    */
   room: RoomHandler;
 
-  /**
-   * Connected user
-   */
-  user: User;
-
   constructor(connection: SocketStream) {
     this.connection = connection;
 
@@ -43,8 +45,8 @@ export default class WsConnection {
       try {
         const { type, payload } = JSON.parse(message);
 
-        if (type === 'joinGame') {
-          this.joinGame(payload);
+        if (type === WsMessageType.ROOM_JOIN) {
+          await this.joinRoom(payload);
           return;
         }
 
@@ -52,20 +54,7 @@ export default class WsConnection {
           throw new Error(errorCodes.CONNECTION_NOT_JOINED);
         }
 
-        switch (type) {
-          case 'chat': {
-            this.room.broadcastToWs('chat', {
-              message: payload,
-              id: this.user.id,
-              name: this.user.name,
-            });
-            break;
-          }
-          default: {
-            // this.room.sendToProcess(type, payload);
-            break;
-          }
-        }
+        this.room.handleMessage(this, type, payload);
       } catch (ex) {
         connection.socket.send(JSON.stringify({ type: 'error', error: ex.message }));
         server.log.error(`[WS] not parsed: ${message} (${ex})`);
@@ -78,11 +67,11 @@ export default class WsConnection {
   }
 
   /**
-   * Websocket does not support onOpen payload, so we need to do this within a joinGame event.
+   * Websocket does not support onOpen payload, so we need to do this within a joinRoom event.
    *
    * @param payload payload to initialize websocket connection
    */
-  async joinGame(payload: JoinPayload) {
+  async joinRoom(payload: JoinPayload) {
     // allow only one join per connection
     if (this.userId) {
       throw new Error(errorCodes.CONNECTION_ID_ALREADY_REGISTERED);
@@ -101,15 +90,20 @@ export default class WsConnection {
     this.userId = unsignedUserId;
 
     // register connection in game
-    this.user = await User.findOne(this.userId);
+    await User.findOneOrFail(this.userId);
     this.room = roomRegistry[payload.roomId];
     if (!this.room) {
       throw new Error(errorCodes.ROOM_NOT_STARTED);
     }
     this.room.addWsConnection(this);
+    // update the frontends room user map
+    await this.room.broadcastToWs(WsMessageType.ROOM_JOIN, {
+      userId: this.userId,
+      user: await User.findOne(this.userId),
+    });
   }
 
-  async send(type: string, payload: any) {
+  async send(type: WsMessageType, payload: any) {
     await this.connection.socket.send(JSON.stringify({ type, payload }));
   }
 }

@@ -1,4 +1,5 @@
 import { getRequest, postRequest } from './request';
+import { getCurrentConnection, WsMessageType } from './RoomConnection';
 
 class User {
   userId = '';
@@ -23,6 +24,18 @@ class User {
     this.className = user.className;
     this.matches = user.matches;
     this.name = user.name;
+  }
+
+  async update(name: string, className: string) {
+    await postRequest('user', { className, name });
+    this.name = name;
+    this.className = className;
+
+    // update user data also for others
+    const roomConnection = getCurrentConnection();
+    if (roomConnection) {
+      roomConnection.send(WsMessageType.USER_UPDATE, { className, name });
+    }
   }
 
   async export() {

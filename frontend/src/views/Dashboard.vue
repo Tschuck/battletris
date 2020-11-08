@@ -82,7 +82,8 @@
               :to="`/${selectedRoom}`"
             >
               <h3 class="text-xs font-bold">{{ room.name }}</h3>
-              <i class="text-xs"> no one joined</i>
+              <i class="text-xs">{{ room.connectionCount }} {{ $t('room.joined') }}</i>
+              <i class="text-xs" v-if="room.isMatchRunning">{{ $t('game.running') }}</i>
             </router-link>
           </div>
         </div>
@@ -124,6 +125,7 @@ import roomHandler from '../lib/RoomHandler';
       loading.value = true;
       // disconnect last connection
       disconnectLastConnection();
+      await roomHandler.load();
       // get room overview
       rooms.value = roomHandler.rooms;
       if (rooms.value && rooms.value.length !== 0) {

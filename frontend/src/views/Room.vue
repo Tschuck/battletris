@@ -2,20 +2,20 @@
   <div class="h-full">
     <Loading v-if="loading" />
     <div class="grid h-full grid-cols-4 gap-6" v-else>
-      <div class="flex flex-col p-3 border-r border-gray-300 border-solid">
-        <h2 class="font-bold">{{ $t("lobby.title") }}</h2>
+      <div class="flex flex-col py-3 pl-3 border-r border-gray-300 border-solid" style="max-height: calc(100vh - 66px);">
+        <h2 class="pr-3 font-bold">{{ $t("lobby.title") }}</h2>
 
-        <div class="flex-grow">
+        <div class="flex-grow pr-3 overflow-y-auto">
           <div v-for="(message, index) in chat" :key="index" class="mt-3">
             <p class="text-sm">{{ message.message }}</p>
             <div class="flex text-xs italic text-gray-500">
-              <p>{{ message.id }}</p>
+              <p>{{ getUserName(message.id) }}</p>
               <p class="flex-grow" />
               <p>{{ message.date }}</p>
             </div>
           </div>
         </div>
-        <div class="flex">
+        <div class="flex pr-3">
           <input
             class="flex-grow w-full px-3 py-2 mr-3 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             v-model="newMessage"
@@ -40,7 +40,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { ref } from '@vue/composition-api';
 
-import RoomConnection from '../lib/RoomConnection';
+import RoomConnection, { WsMessageType } from '../lib/RoomConnection';
 import Loading from '../components/Loading.vue';
 import { getRequest } from '../lib/request';
 
@@ -59,17 +59,33 @@ import { getRequest } from '../lib/request';
 
     let conn: RoomConnection;
     (async () => {
+      // get general room data
+      room.value = await getRequest(`room/${props.roomId}`);
+
       // connect to the websocket
       conn = await RoomConnection.connect(props.roomId as string, (data) => {
         const { type, payload } = data;
 
+        console.log(data);
         switch (type) {
-          case 'chat': {
+          case WsMessageType.CHAT: {
             const d = new Date();
-            chat.value.push({
+            chat.value.unshift({
               ...payload,
               date: `${d.getHours()}:${d.getMinutes()}.${d.getSeconds()}`,
             });
+            break;
+          }
+          case WsMessageType.ROOM_JOIN: {
+            room.value.users[payload.userId] = payload.user;
+            break;
+          }
+          case WsMessageType.USER_UPDATE: {
+            room.value.users[payload.userId] = payload.user;
+            break;
+          }
+          case WsMessageType.USER_LEAVE: {
+            delete room.value.users[payload.userId];
             break;
           }
           default: {
@@ -78,12 +94,9 @@ import { getRequest } from '../lib/request';
         }
       });
 
-      // get general room data
-      room.value = await getRequest(`room/${props.roomId}`);
-      loading.value = false;
-
       // listen for keypress events
       // document.addEventListener('keypress', (e) => conn.send('keypress', e.code));
+      loading.value = false;
     })();
 
     const newMessage = ref('');
@@ -92,18 +105,20 @@ import { getRequest } from '../lib/request';
       event.preventDefault();
       event.stopPropagation();
       sending.value = true;
-      await conn.send('chat', newMessage.value);
+      await conn.send(WsMessageType.CHAT, newMessage.value);
       newMessage.value = '';
       sending.value = false;
     };
 
+    const getUserName = (id: string) => room.value?.users[id]?.name || id;
+
     return {
-      creating,
-      room,
-      loading,
       chat,
-      // for sending chat chat
+      creating,
+      getUserName,
+      loading,
       newMessage,
+      room,
       sending,
       sendMessage,
     };

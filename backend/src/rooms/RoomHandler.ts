@@ -1,8 +1,9 @@
 import { Room }  from '../db';
+import ErrorCodes from '../lib/error.codes';
+import GameBridge from '../game/GameBridge';
 import roomRegistry  from './registry';
 import server from '../server';
-import WsConnection from './WsConnection';
-import ErrorCodes from '../lib/error.codes';
+import WsConnection, { WsMessageType } from './WsConnection';
 
 export default class RoomHandler {
   /**
@@ -15,12 +16,18 @@ export default class RoomHandler {
    */
   entity : Room;
 
+  /**
+   * game bridge for handling a game process
+   */
+  gameBridge: GameBridge;
+
   constructor(entity: Room) {
     this.entity = entity;
     if (roomRegistry[entity.id]) {
       throw new Error(ErrorCodes.ROOM_STARTED);
     }
     roomRegistry[entity.id] = this;
+    this.gameBridge = new GameBridge(this.entity.id);
     this.log('info', `started "${this.entity.name}"`);
   }
 
@@ -40,7 +47,7 @@ export default class RoomHandler {
    * @param type type to send
    * @param payload payload to send
    */
-  async broadcastToWs(type: string, payload: any) {
+  async broadcastToWs(type: WsMessageType, payload: any) {
     this.log('debug', `broadcast [${type}]: ${payload}`);
     await Promise.all(this.wsConnections.map(
       (connection) => connection.send(type, payload),
@@ -64,6 +71,31 @@ export default class RoomHandler {
    */
   removeWsConnection(connection: WsConnection) {
     this.wsConnections.splice(this.wsConnections.findIndex((c) => c === connection), 1);
+    this.broadcastToWs(WsMessageType.USER_LEAVE, { userId: connection.userId });
     this.log('debug', `removed connection: ${connection.userId}`);
+  }
+
+  async handleMessage(connection: WsConnection, type: string, payload: any) {
+    switch (type) {
+      case WsMessageType.CHAT: {
+        this.broadcastToWs(WsMessageType.CHAT, {
+          message: payload,
+          id: connection.userId,
+        });
+        break;
+      }
+      case WsMessageType.USER_UPDATE: {
+        // TODO: do not update user, when user is in battle
+        this.broadcastToWs(WsMessageType.USER_UPDATE, {
+          userId: connection.userId,
+          user: payload,
+        });
+        break;
+      }
+      default: {
+        // this.room.sendToProcess(type, payload);
+        break;
+      }
+    }
   }
 }

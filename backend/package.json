@@ -8,6 +8,7 @@
     "fastify-cors": "^4.1.0",
     "fastify-websocket": "^2.0.10",
     "fs-extra": "^9.0.1",
+    "lodash": "^4.17.20",
     "pino-pretty": "^4.3.0",
     "promise-parallel-throttle": "^3.3.0",
     "sqlite3": "^5.0.0",

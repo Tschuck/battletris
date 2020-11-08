@@ -1,5 +1,5 @@
 import gameProcess from './GameProcess';
-import GameDataInterface from './GameDataInterface';
+import { GameDataInterface } from './helpers/interfaces';
 
 export default class Game {
   data: GameDataInterface;
@@ -10,7 +10,7 @@ export default class Game {
    * Take initial information of the game from parent process.
    */
   initialize({ name }) {
-    this.data = { name };
+    // this.data = { name };
     gameProcess.sendToParent('initialized', this.data);
   }
 

@@ -22,5 +22,14 @@ export default {
   dbPath: _('DB_PATH', path.resolve('../.db.sqlite')),
   defaultGameCount: _('DEFAULT_GAME_COUNT', 5),
   frontendUrl: _('FRONTEND_URL', 'http://localhost:8080'),
+  maxGameUsers: 6,
   port: _('PORT', 3000),
+  // run game loop every X ms
+  gameLoopSpeed: _('GAME_LOOP_SPEED', 1000),
+  // "user speed", moves blocks down, ...
+  userSpeed: _('USER_SPEED', 1100),
+  // increase speed after X ms
+  increaseInterval: _('INCREASE_INTERVAL', 30 * 1000),
+  // reduce the speed timeout with the amount of ms
+  increaseSteps: _('INCREASE_STEPS', 50),
 };

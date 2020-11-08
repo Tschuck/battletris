@@ -71,9 +71,7 @@ createEndpoint(
 
 createEndpoint(
   'post', '/user',
-  {
-    name: { type: 'string' }
-  },
+  {},
   {},
   async (data, req, reply) => {
     const userId = await ensureUserRegistered(req);
@@ -81,9 +79,9 @@ createEndpoint(
     // update user name
     const user = await User.create({
       id: userId,
-      className: 'unknown',
+      className: data.className,
       matches: [],
-      name: nameGenerator.toString(),
+      name: data.name || nameGenerator.toString(),
     }).save();
 
     return user;

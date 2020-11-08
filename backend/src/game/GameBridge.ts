@@ -1,9 +1,9 @@
 import { ChildProcess, fork } from 'child_process';
 import path from 'path';
 
-import WsConnection from '../rooms/WsConnection';
 import server from '../server';
-import GameDataInterface from '../game/GameDataInterface';
+import { GameDataInterface, GameStatus } from '../game/helpers/interfaces';
+import GameUser from './GameUser';
 
 // file path to use to start a game process
 const gameFilePath = path.resolve('./dist/game/index.js');
@@ -20,18 +20,22 @@ export default class GameHandler {
   process: ChildProcess;
 
   /**
-   * game name
-   */
-  name: string;
-
-  /**
    * Wait for process response
    */
   initPromise: Promise<void>;
   initResolve: () => void;
 
-  constructor(name: string) {
-    this.name = name;
+  /**
+   * Room id for logging
+   */
+  roomId: string;
+
+  constructor(roomId: string, users: { [id: string]: GameUser } = {}) {
+    this.roomId = roomId;
+    this.data = {
+      status: GameStatus.STOPPED,
+      users: users,
+    };
   }
 
   /**
@@ -69,7 +73,7 @@ export default class GameHandler {
    * @param message message to log
    */
   log(type: string, message: string) {
-    server.log[type](`[${this.process.pid}|${this.name}] ${message}`);
+    server.log[type](`[${this.process.pid}|${this.roomId}] ${message}`);
   }
 
   /**
@@ -89,7 +93,7 @@ export default class GameHandler {
     this.process.on('exit', () => this.log('info', 'exited'));
 
     // set the process and send the initial data to the child process
-    this.sendToProcess('initialize', { name: this.name });
+    this.sendToProcess('initialize', { roomId: this.roomId });
 
     // wait until initialized event was fired
     await this.initPromise;
@@ -109,6 +113,6 @@ export default class GameHandler {
    * Stop the process
    */
   stop() {
-    this.process.kill('SIGINT'); // ???
+    this.process.kill('SIGINT');
   }
 }

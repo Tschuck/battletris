@@ -12,6 +12,8 @@ import user from '../lib/User';
   props: {
     isOpen: { type: String },
   },
+  setup() {
+  },
 })
 export default class ClassLogo extends Vue {}
 </script>

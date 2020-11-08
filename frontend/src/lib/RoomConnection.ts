@@ -10,6 +10,15 @@ export const disconnectLastConnection = () => {
   }
 };
 
+export enum WsMessageType {
+  CHAT = 'CHAT',
+  ROOM_JOIN = 'ROOM_JOIN',
+  USER_LEAVE = 'USER_LEAVE',
+  USER_UPDATE = 'USER_UPDATE',
+}
+
+export const getCurrentConnection = (): RoomConnection|null => lastConnection;
+
 /**
  * Handle websocket connection for a game room.
  */
@@ -48,14 +57,14 @@ export default class RoomConnection {
 
     // Open new websocket connection and ensure userId
     this.connection = new WebSocket('ws://localhost:3000/ws');
-    this.connection.onopen = () => this.send('joinGame', {
-      id,
-      roomId: this.roomId,
-    });
     this.connection.onmessage = (event) => {
       const data = JSON.parse(event.data);
       this.handler(data);
     };
+    this.connection.onopen = () => this.send(WsMessageType.ROOM_JOIN, {
+      id,
+      roomId: this.roomId,
+    });
 
     // save last connection and keep only one open (prevent duplicated connection problems!)
     disconnectLastConnection();
@@ -75,7 +84,7 @@ export default class RoomConnection {
    * @param type message type
    * @param payload data to send
    */
-  send(type: string, payload: any) {
+  send(type: WsMessageType, payload: any) {
     this.connection.send(JSON.stringify({
       payload,
       type,
