@@ -22,6 +22,7 @@
       :isVisible="isSelectClass"
       ref="classSelect"
       @input="updateUser"
+      @toggle="isSelectClass = !isSelectClass"
     />
   </div>
 </template>

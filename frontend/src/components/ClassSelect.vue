@@ -71,7 +71,7 @@
         </div>
       </div>
     </transition>
-    <div class="backdrop" v-if="isVisible" @click="isVisible = false" />
+    <div class="backdrop" v-if="isVisible" @click="$emit('toggle')" />
   </div>
 </template>
 
