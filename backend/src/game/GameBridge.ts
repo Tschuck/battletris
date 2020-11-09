@@ -8,7 +8,7 @@ import roomRegistry from '../rooms';
 import RoomHandler from '../rooms/RoomHandler';
 
 // file path to use to start a game process
-const gameFilePath = path.resolve('./dist/game/index.js');
+const gameFilePath = path.resolve('./dist/game/GameProcess.js');
 
 export default class GameHandler {
   /**
@@ -81,13 +81,14 @@ export default class GameHandler {
    * @param message message to log
    */
   log(type: string, message: string) {
-    server.log[type](`[${this.process.pid}|${this.roomId}] ${message}`);
+    server.log[type](`[GAME][${this.process.pid}|${this.roomId}] ${message}`);
   }
 
   /**
    * start the game process, bind message handler and wait for process response.
    */
   async start() {
+    this.data.status = GameStatus.STARTED;
     this.process = fork(gameFilePath, [], {
       // silent: true,
       stdio: [ 'pipe', 'pipe', 'pipe', 'ipc' ]
@@ -101,7 +102,7 @@ export default class GameHandler {
     this.process.on('exit', () => this.log('info', 'exited'));
 
     // set the process and send the initial data to the child process
-    this.sendToProcess('initialize', { roomId: this.roomId });
+    this.sendToProcess('initialize', this.data);
 
     // wait until initialized event was fired
     await this.initPromise;

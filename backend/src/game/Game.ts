@@ -9,8 +9,8 @@ export default class Game {
   /**
    * Take initial information of the game from parent process.
    */
-  initialize({ name }) {
-    // this.data = { name };
+  initialize(data: GameDataInterface) {
+    this.data = data;
     gameProcess.sendToParent('initialized', this.data);
   }
 

@@ -48,8 +48,8 @@ export default class RoomHandler {
    * @param type type to send
    * @param payload payload to send
    */
-  async broadcastToWs(type: WsMessageType, payload: any) {
-    this.log('debug', `broadcast [${type}]: ${payload}`);
+  async broadcastToWs(type: WsMessageType, payload?: any) {
+    this.log('debug', `broadcast [${type}]: ${payload ? JSON.stringify(payload) : ''}`);
     await Promise.all(this.wsConnections.map(
       (connection) => connection.send(type, payload),
     ));
@@ -62,7 +62,7 @@ export default class RoomHandler {
    * @param message message to log
    */
   log(type: string, message: string) {
-    server.log[type](`[${this.entity.id}] ${message}`);
+    server.log[type](`[ROOM][${this.entity.id}] ${message}`);
   }
 
   /**

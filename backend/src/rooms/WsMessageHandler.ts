@@ -1,4 +1,7 @@
+import { cloneDeep } from 'lodash';
+
 import GameUser, { GameUserStatus } from "../game/GameUser";
+import { GameStatus } from '../game/helpers/interfaces';
 import config from "../lib/config";
 import ErrorCodes from "../lib/error.codes";
 import RoomHandler from "./RoomHandler";
@@ -44,6 +47,7 @@ export default async (
 
   // game handler
   const game = room.gameBridge;
+  const beforeData = cloneDeep(room.gameBridge.data);
   // index related messages
   let index = typeof payload?.index === 'undefined'
     ? game.data.users.findIndex((dUser) => dUser?.userId === connection.userId)
@@ -79,9 +83,7 @@ export default async (
       const allStarted = !game.data.users.find(
         (user) => user.status === GameUserStatus.JOINED,
       );
-      if (allStarted) {
-        console.log('START')
-      }
+      game.data.status = GameStatus.STARTED;
 
       break;
     }
@@ -98,4 +100,9 @@ export default async (
   await game.room.broadcastToWs(WsMessageType.GAME_USER_UPDATE, {
     [index]: game.data.users[index],
   });
+
+  if (game.data.status === GameStatus.STARTED) {
+    await game.start();
+    await game.room.broadcastToWs(WsMessageType.GAME_START);
+  }
 };

@@ -6,7 +6,7 @@ import _ from 'lodash';
  * @param  {Object} base   Object to compare with
  * @return {Object}        Return a new object who represent the diff
  */
-export function difference(object, base) {
+export function objDifference(object, base) {
 	function changes(object, base) {
 		return _.transform(object, function(result, value, key) {
 			if (!_.isEqual(value, base[key])) {
