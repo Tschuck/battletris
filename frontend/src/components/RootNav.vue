@@ -1,7 +1,7 @@
 <template>
   <nav class="flex flex-wrap items-center justify-between p-3 bg-gray-900">
     <router-link to="/" class="flex items-center flex-shrink-0 text-white">
-      <img width="42" height="42" src="@/assets/battletris.svg" />
+      <img width="42" height="42" src="@/assets/battletris-light.svg" />
       <span class="ml-6 text-xl font-semibold text-gray-100">{{
         $t("battletris")
       }}</span>

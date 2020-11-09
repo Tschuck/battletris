@@ -1,7 +1,7 @@
 import server from './server';
 import config from './lib/config';
 import { startDb, Room } from './db';
-import ensureDefaultFrooms from './rooms/rooms.default';
+import ensureDefaultFrooms from './lib/rooms.default';
 
 // register plugins
 import './server/plugins';

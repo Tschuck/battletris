@@ -7,18 +7,7 @@ import config from '../lib/config';
 import errorCodes from '../lib/error.codes';
 import RoomHandler from './RoomHandler';
 import { User } from '../db';
-
-export enum WsMessageType {
-  ROOM_JOIN = 0,
-  ROOM_LEAVE = 1,
-  USER_UPDATE = 2,
-  CHAT = 3,
-  GAME_JOIN = 4,
-  GAME_LEAVE = 5,
-  GAME_START = 6,
-  GAME_UPDATE = 7,
-  GAME_USER_UPDATE = 8,
-}
+import handleMessage, { WsMessageType } from "./WsMessageHandler";
 
 interface JoinPayload {
   // signed connection id
@@ -59,7 +48,7 @@ export default class WsConnection {
           throw new Error(errorCodes.CONNECTION_NOT_JOINED);
         }
 
-        this.room.handleMessage(this, type, payload);
+        await handleMessage(this.room, this, type, payload);
       } catch (ex) {
         connection.socket.send(JSON.stringify({ type: 'error', error: ex.message }));
         server.log.error(`[WS] not parsed: ${message} (${ex})`);

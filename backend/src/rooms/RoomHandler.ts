@@ -3,7 +3,8 @@ import ErrorCodes from '../lib/error.codes';
 import GameBridge from '../game/GameBridge';
 import roomRegistry  from './registry';
 import server from '../server';
-import WsConnection, { WsMessageType } from './WsConnection';
+import WsConnection from './WsConnection';
+import handleWsMessage, { WsMessageType } from './WsMessageHandler';
 
 export default class RoomHandler {
   /**
@@ -71,48 +72,13 @@ export default class RoomHandler {
    */
   async removeWsConnection(connection: WsConnection) {
     this.wsConnections.splice(this.wsConnections.findIndex((c) => c === connection), 1);
-    await this.gameBridge.handleWsMessage(
+    await handleWsMessage(
+      this,
       connection,
       WsMessageType.GAME_LEAVE,
       { userId: connection.userId },
     );
     await this.broadcastToWs(WsMessageType.ROOM_LEAVE, { userId: connection.userId });
     this.log('debug', `removed connection: ${connection.userId}`);
-  }
-
-  async handleMessage(
-    connection: WsConnection,
-    type: WsMessageType,
-    payload: any,
-  ) {
-    switch (type) {
-      case WsMessageType.CHAT: {
-        this.broadcastToWs(WsMessageType.CHAT, {
-          message: payload,
-          id: connection.userId,
-        });
-        break;
-      }
-      case WsMessageType.USER_UPDATE: {
-        // TODO: do not update user, when user is in battle
-        this.broadcastToWs(WsMessageType.USER_UPDATE, {
-          userId: connection.userId,
-          user: payload,
-        });
-        break;
-      }
-      case WsMessageType.GAME_JOIN: {
-        await this.gameBridge.handleWsMessage(connection, type, payload);
-        break;
-      }
-      case WsMessageType.GAME_LEAVE: {
-        await this.gameBridge.handleWsMessage(connection, type, payload);
-        break;
-      }
-      default: {
-        console.log(`ws type: "${type}" not implemented`);
-        break;
-      }
-    }
   }
 }

@@ -31,8 +31,9 @@ export enum WsMessageType {
   GAME_JOIN = 4,
   GAME_LEAVE = 5,
   GAME_START = 6,
-  GAME_UPDATE = 7,
-  GAME_USER_UPDATE = 8,
+  GAME_STOP = 7,
+  GAME_UPDATE = 8,
+  GAME_USER_UPDATE = 9,
 }
 
 export const getCurrentConnection = (): RoomConnection|null => lastConnection;

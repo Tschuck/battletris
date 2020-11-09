@@ -131,7 +131,8 @@
     "not-joined": "No one joined...",
     "running": "Game is running",
     "slot": "Slot",
-    "start": "Start"
+    "start": "Start",
+    "stop": "Stop"
   },
   "history": {
     "title": "Match History"

@@ -43,8 +43,11 @@
           {{ $t("game.leave") }}
         </button>
         <div class="flex-grow" />
-        <button class="button" @click="start(index)">
+        <button class="button" @click="start(index)" v-if="regUser.status === 'JOINED'">
           {{ $t("game.start") }}
+        </button>
+        <button class="button" @click="stop(index)" v-if="regUser.status === 'ACCEPTED'">
+          {{ $t("game.stop") }}
         </button>
       </div>
     </div>
@@ -82,7 +85,10 @@ import RoomConnection, {
     const updateGameUsers = () => {
       gameUsers.value = userPlaces.map((index) => {
         if (game.users[index]) {
-          return conn?.room?.users[game.users[index].userId];
+          return {
+            ...conn?.room?.users[game.users[index].userId],
+            ...game.users[index],
+          };
         }
         return null;
       });
@@ -91,7 +97,9 @@ import RoomConnection, {
     updateGameUsers();
 
     const join = (index: number) => conn?.send(WsMessageType.GAME_JOIN, { index });
-    const leave = (index: number) => conn?.send(WsMessageType.GAME_LEAVE, { index });
+    const leave = () => conn?.send(WsMessageType.GAME_LEAVE);
+    const start = () => conn?.send(WsMessageType.GAME_START);
+    const stop = () => conn?.send(WsMessageType.GAME_STOP);
     const msgSubscriber = conn?.onMessage(
       async (type: number, payload: any) => {
         switch (type) {
@@ -118,6 +126,8 @@ import RoomConnection, {
       join,
       leave,
       loading,
+      start,
+      stop,
       userPlaces,
     };
   },
