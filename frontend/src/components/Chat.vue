@@ -60,7 +60,7 @@ import { getCurrentConnection } from '../lib/RoomConnection';
     setUsersInLobby();
 
     if (conn) {
-      const msgSubscriber = conn.onMessage((type: WsMessageType, payload: any) => {
+      conn.onMessage((type: WsMessageType, payload: any) => {
         const d = new Date();
         const timeString = `${d.getHours()}:${d.getMinutes()}.${d.getSeconds()}`;
         switch (type) {
@@ -80,10 +80,7 @@ import { getCurrentConnection } from '../lib/RoomConnection';
             break;
           }
         }
-      });
-
-      // stop listening
-      onUnmounted(() => msgSubscriber());
+      }, onUnmounted);
     }
 
     const newMessage = ref('');

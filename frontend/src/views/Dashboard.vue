@@ -1,7 +1,6 @@
 <template>
-  <div class="home">
-    <Loading v-if="loading" />
-    <div class="grid grid-cols-3 gap-6 p-4" v-else>
+  <ViewWrapper :loading="loading">
+    <div class="grid grid-cols-3 gap-6 p-4">
       <div class="card">
         <h2 class="header">{{ $t("dashboard.title") }}</h2>
         <p class="content">{{ $t("dashboard.desc") }}</p>
@@ -79,7 +78,7 @@
               v-for="room in rooms"
               :key="room.id"
               :value="room.id"
-              :to="`/${selectedRoom}`"
+              :to="`/${room.id}`"
             >
               <h3 class="text-xs font-bold">{{ room.name }}</h3>
               <i class="text-xs">{{ room.connectionCount }} {{ $t('room.users-joined') }}</i>
@@ -95,7 +94,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </ViewWrapper>
 </template>
 
 <script lang="ts">
@@ -104,12 +103,14 @@ import { ref } from '@vue/composition-api';
 
 import { disconnectLastConnection } from '../lib/RoomConnection';
 import Loading from '../components/Loading.vue';
-import user from '../lib/User';
 import roomHandler from '../lib/RoomHandler';
+import ViewWrapper from '../components/ViewWrapper.vue';
+import user from '../lib/User';
 
 @Component({
   components: {
     Loading,
+    ViewWrapper,
   },
   setup() {
     const loading = ref(true);
@@ -117,7 +118,6 @@ import roomHandler from '../lib/RoomHandler';
     const rooms = ref<any[] | null>(null);
 
     // user params
-    const selectedRoom = ref('');
     const name = ref(user.name);
     const className = ref(user.className || 'unknown');
 
@@ -128,9 +128,6 @@ import roomHandler from '../lib/RoomHandler';
       await roomHandler.load();
       // get room overview
       rooms.value = Object.keys(roomHandler.rooms).map((key) => roomHandler.rooms[key]);
-      if (rooms.value && rooms.value.length !== 0) {
-        selectedRoom.value = rooms.value[0].id;
-      }
       loading.value = false;
     };
     init();
@@ -164,7 +161,6 @@ import roomHandler from '../lib/RoomHandler';
       importError,
       loading,
       name,
-      selectedRoom,
       setLocalStorage,
       uploadIdRef,
       user,

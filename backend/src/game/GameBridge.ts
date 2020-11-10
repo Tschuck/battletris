@@ -36,7 +36,10 @@ export default class GameHandler {
    */
   room: RoomHandler;
 
-  constructor(roomId: string, users: GameUser[] = []) {
+  constructor(
+    roomId: string,
+    users: GameUser[] = [null,null,null,null,null,null],
+  ) {
     this.roomId = roomId;
     this.room = roomRegistry[roomId];
     this.data = {

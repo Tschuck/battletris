@@ -1,5 +1,4 @@
 import { ErrorCodes, GameStatus, WsMessageType } from '@battletris/shared';
-import { cloneDeep } from 'lodash';
 import GameUser, { GameUserStatus } from '../game/GameUser';
 import config from '../lib/config';
 import RoomHandler from './RoomHandler';
@@ -18,7 +17,7 @@ export default async (
         message: payload,
         id: connection.userId,
       });
-      break;
+      return;
     }
     case WsMessageType.USER_UPDATE: {
       // TODO: do not update user, when user is in battle
@@ -26,13 +25,12 @@ export default async (
         userId: connection.userId,
         user: payload,
       });
-      break;
+      return;
     }
   }
 
   // game handler
   const game = room.gameBridge;
-  const beforeData = cloneDeep(room.gameBridge.data);
   // index related messages
   let index = typeof payload?.index === 'undefined'
     ? game.data.users.findIndex((dUser) => dUser?.id === connection.userId)

@@ -1,5 +1,8 @@
-import { WsMessageType, RoomWithDataInterface } from '@battletris/shared';
+import { EnrichtedGameUserInterface, RoomWithDataInterface, WsMessageType } from '@battletris/shared';
+import { merge } from 'lodash';
 import { getRequest, postRequest } from './request';
+// eslint-disable-next-line import/no-cycle
+import currUser from './User';
 
 // only keep the last connection opened
 let lastConnection: RoomConnection|null;
@@ -42,6 +45,11 @@ export default class RoomConnection {
    */
   room: RoomWithDataInterface|null = null;
 
+  /**
+   * Users index in the current game.
+   */
+  activeIndex = -1;
+
   constructor(roomId: string) {
     this.roomId = roomId;
     this.handlers = [];
@@ -77,6 +85,13 @@ export default class RoomConnection {
           }
           case WsMessageType.ROOM_LEAVE: {
             delete this.room.users[payload.userId];
+            break;
+          }
+          case WsMessageType.GAME_USER_UPDATE: {
+            this.room.game.users = merge(this.room.game.users, payload);
+            this.activeIndex = this.room.game.users.findIndex(
+              (regUser) => currUser.id.startsWith(regUser?.id),
+            );
             break;
           }
           default: {
@@ -119,9 +134,16 @@ export default class RoomConnection {
    *
    * @param handler function that is called on an incoming message
    */
-  onMessage(handler: (type: WsMessageType, data: any) => void): () => void {
+  onMessage(
+    handler: (type: WsMessageType, data: any) => void,
+    onUnmounted?: Function,
+  ) {
     this.handlers.push(handler);
-
-    return () => this.handlers.splice(this.handlers.indexOf(handler), 1);
+    if (onUnmounted) {
+      // remove listeners on unmount
+      onUnmounted(() => {
+        this.handlers.splice(this.handlers.indexOf(handler), 1);
+      });
+    }
   }
 }

@@ -1,4 +1,5 @@
-import GameUserStatus from "../enums/GameUserStatus";
+import GameUserStatus from '../enums/GameUserStatus';
+import User from './User';
 
 export default interface GameUser {
   // when armor gets damaged to zero, the add line ability is called
@@ -26,3 +27,5 @@ export default interface GameUser {
   // target connection id for applying abilities and block resolvles
   targetId: string;
 }
+
+export interface EnrichtedGameUser extends User, GameUser { }

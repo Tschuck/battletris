@@ -11,12 +11,7 @@
       <div class="flex-grow" />
     </nav>
     <Loading v-if="loading" />
-    <template v-else>
-      <RootNav :loading="loading" />
-      <div class="flex-grow overflow-auto">
-        <router-view />
-      </div>
-    </template>
+    <router-view v-else />
   </div>
 </template>
 
@@ -27,12 +22,10 @@ import { ref } from '@vue/composition-api';
 import user from './lib/User';
 import roomHandler from './lib/RoomHandler';
 import Loading from './components/Loading.vue';
-import RootNav from './components/RootNav.vue';
 
 @Component({
   components: {
     Loading,
-    RootNav,
   },
   setup() {
     const loading = ref(true);

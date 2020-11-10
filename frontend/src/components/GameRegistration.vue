@@ -11,12 +11,12 @@
         <button
           class="button"
           @click="join(index)"
-          v-if="!regUser && isJoined === -1"
+          v-if="!regUser && activeIndex === -1"
         >
           {{ $t("game.join") }}
         </button>
         <h2
-          v-else-if="!regUser && isJoined !== index"
+          v-else-if="!regUser && activeIndex !== index"
           class="mt-6 font-bold text-center"
         >
           {{ $t("game.not-joined") }}
@@ -27,18 +27,18 @@
             style="height: 160px; width: 160px"
           >
             <ClassLogo
-              :className="regUser.className"
+              :className="getClassName(regUser.id)"
               width="100px"
               height="100px"
               color="#fff"
             />
           </div>
           <h2 class="mt-6 text-xl font-bold text-center">
-            {{ regUser.name }}
+            {{ getUserName(regUser.id) }}
           </h2>
         </div>
       </div>
-      <div class="flex p-3" v-if="isJoined === index">
+      <div class="flex p-3" v-if="activeIndex === index">
         <button class="button-outline" @click="leave(index)">
           {{ $t("game.leave") }}
         </button>
@@ -57,11 +57,10 @@
 <script lang="ts">
 import { onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
-import { merge } from 'lodash';
-import { RoomWithDataInterface, WsMessageType } from '@battletris/shared';
+import { WsMessageType } from '@battletris/shared';
 
+import GameUser from '@battletris/shared/interfaces/GameUser';
 import ClassLogo from './ClassLogo.vue';
-import user from '../lib/User';
 import RoomConnection, { getCurrentConnection } from '../lib/RoomConnection';
 
 @Component({
@@ -73,26 +72,13 @@ import RoomConnection, { getCurrentConnection } from '../lib/RoomConnection';
   },
   setup() {
     const conn: RoomConnection = getCurrentConnection() as RoomConnection;
-    const room = conn.room as RoomWithDataInterface;
-    const game = room.game;
-    const gameUsers = ref<any[]>([]);
+    const gameUsers = ref<GameUser[]>([]);
+    const activeIndex = ref(-1);
     const loading = ref(true);
-    const activeUserId = ref(user.id);
-    const isJoined = ref(-1);
 
-    const userPlaces = [0, 1, 2, 3, 4, 5];
     const updateGameUsers = () => {
-      gameUsers.value = userPlaces.map((index) => {
-        if (game.users[index]) {
-          return {
-            ...room.users[game.users[index].id],
-            ...game.users[index],
-          };
-        }
-        return null;
-      });
-
-      isJoined.value = game.users.findIndex((regUser) => user.id.startsWith(regUser?.id));
+      gameUsers.value = [0, 1, 2, 3, 4, 5].map((index) => conn.room?.game.users[index] as GameUser);
+      activeIndex.value = conn.activeIndex;
     };
     updateGameUsers();
 
@@ -100,37 +86,30 @@ import RoomConnection, { getCurrentConnection } from '../lib/RoomConnection';
     const leave = () => conn.send(WsMessageType.GAME_LEAVE);
     const start = () => conn.send(WsMessageType.GAME_START);
     const stop = () => conn.send(WsMessageType.GAME_STOP);
-    const msgSubscriber = conn.onMessage(
-      async (type: number, payload: any) => {
-        switch (type) {
-          case WsMessageType.USER_UPDATE:
-          case WsMessageType.ROOM_JOIN: {
-            updateGameUsers();
-            break;
-          }
-          case WsMessageType.GAME_USER_UPDATE: {
-            if (game?.users) {
-              game.users = merge(game.users, payload);
-              updateGameUsers();
-            }
-            break;
-          }
+    conn.onMessage(async (type: number) => {
+      switch (type) {
+        case WsMessageType.USER_UPDATE:
+        case WsMessageType.ROOM_JOIN:
+        case WsMessageType.GAME_USER_UPDATE: {
+          updateGameUsers();
+          break;
         }
-      },
-    );
-    // stop listening
-    onUnmounted(() => msgSubscriber && msgSubscriber());
+      }
+    }, onUnmounted);
+
+    const getUserName = (id: string) => conn.room?.users[id].name || id;
+    const getClassName = (id: string) => conn.room?.users[id].className;
 
     return {
-      activeUserId,
+      activeIndex,
       gameUsers,
-      isJoined,
+      getClassName,
+      getUserName,
       join,
       leave,
       loading,
       start,
       stop,
-      userPlaces,
     };
   },
 })
