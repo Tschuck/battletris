@@ -34,7 +34,6 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "./node_modules/@battletris/shared",
   ],
   "exclude": [
     "node_modules"

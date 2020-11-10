@@ -1,10 +1,7 @@
+import { ErrorCodes, GameStatus, WsMessageType } from '@battletris/shared';
 import { cloneDeep } from 'lodash';
-import WsMessageType from '@battletris/shared/WsMessageType';
-
 import GameUser, { GameUserStatus } from '../game/GameUser';
-import { GameStatus } from '../game/helpers/interfaces';
 import config from '../lib/config';
-import ErrorCodes from '../lib/error.codes';
 import RoomHandler from './RoomHandler';
 import WsConnection from './WsConnection';
 
@@ -38,7 +35,7 @@ export default async (
   const beforeData = cloneDeep(room.gameBridge.data);
   // index related messages
   let index = typeof payload?.index === 'undefined'
-    ? game.data.users.findIndex((dUser) => dUser?.userId === connection.userId)
+    ? game.data.users.findIndex((dUser) => dUser?.id === connection.userId)
     : payload.index;
   switch (type) {
     case WsMessageType.GAME_JOIN: {
@@ -57,7 +54,7 @@ export default async (
         if (!game.data.users[index]) {
           throw new Error(ErrorCodes.USER_PLACE_EMPTY);
         }
-        if (game.data.users[index].userId !== connection.userId) {
+        if (game.data.users[index].id !== connection.userId) {
           throw new Error(ErrorCodes.CANNOT_KICK_ANOTHER_USER);
         }
 

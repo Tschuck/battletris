@@ -15,8 +15,9 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { ref } from '@vue/composition-api';
+import { RoomWithDataInterface } from '@battletris/shared';
 
-import RoomConnection, { RoomInterface } from '../lib/RoomConnection';
+import RoomConnection from '../lib/RoomConnection';
 import Loading from '../components/Loading.vue';
 import Chat from '../components/Chat.vue';
 import GameRegistration from '../components/GameRegistration.vue';
@@ -33,7 +34,7 @@ import GameRegistration from '../components/GameRegistration.vue';
   setup(props) {
     const loading = ref(true);
     const creating = ref(false);
-    const room = ref<RoomInterface|null>(null);
+    const room = ref<RoomWithDataInterface|null>(null);
 
     (async () => {
       // connect to the websocket

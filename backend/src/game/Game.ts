@@ -1,5 +1,5 @@
+import { GameDataInterface } from '@battletris/shared';
 import gameProcess from './GameProcess';
-import { GameDataInterface } from './helpers/interfaces';
 
 export default class Game {
   data: GameDataInterface;

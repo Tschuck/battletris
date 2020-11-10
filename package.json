@@ -1,11 +1,8 @@
 {
   "name": "battletris",
   "scripts": {
-    "build:backend": "cd ./backend && yarn build",
-    "build:frontend": "cd ./frontend && yarn build",
     "install:backend": "cd ./backend && yarn",
     "install:frontend": "cd ./frontend && yarn",
-    "start:backend": "cd ./backend && yarn start",
-    "start:frontend": "cd ./frontend && yarn start"
+    "install": "yarn install:shared && yarn install:backend && yarn install:frontend"
   }
 }

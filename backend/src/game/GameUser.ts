@@ -1,3 +1,4 @@
+import { GameUserInterface } from '@battletris/shared';
 import config from '../lib/config';
 import * as mapHelper from './helpers/mapHelper';
 
@@ -6,13 +7,13 @@ export enum GameUserStatus {
   ACCEPTED = 'ACCEPTED',
 }
 
-export default class GameUser {
+export default class GameUser implements GameUserInterface {
   // when armor gets damaged to zero, the add line ability is called
   armor: number;
   // block turn (press up)
   blockIndex: number;
   // connection id
-  userId: string;
+  id: string;
   // locked abilities for a specific time
   cooldowns: string[];
   // buffs / debuffs
@@ -38,7 +39,7 @@ export default class GameUser {
     // block turn (press up)
     this.blockIndex = -1;
     // connection id
-    this.userId = userId;
+    this.id = userId;
     // locked abilities for a specific time
     this.cooldowns = [ ];
     // buffs / debuffs
@@ -57,9 +58,5 @@ export default class GameUser {
     this.userSpeed = config.userSpeed;
     // target connection id for applying abilities and block resolvles
     this.targetId = userId;
-  }
-
-  setEmptyMap() {
-    this.map
   }
 }

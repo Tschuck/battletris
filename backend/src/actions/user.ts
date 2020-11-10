@@ -1,10 +1,9 @@
-import { v4 as uuidv4 } from 'uuid';
+import { Classes, ErrorCodes } from '@battletris/shared';
 import cookieSignature from 'cookie-signature';
-
-import config from '../lib/config';
-import { createEndpoint, ensureUserRegistered } from '../lib/actions.utils';
-import ErrorCodes from '../lib/error.codes';
+import { v4 as uuidv4 } from 'uuid';
 import { User } from '../db';
+import { createEndpoint, ensureUserRegistered } from '../lib/actions.utils';
+import config from '../lib/config';
 import Namegen from '../lib/namegen';
 
 const nameGenerator = Namegen.compile("sV i");
@@ -59,7 +58,7 @@ createEndpoint(
     if (!user) {
       user = await User.create({
         id: userId,
-        className: 'unknown',
+        className: Classes.UNKNOWN,
         matches: [],
         name: nameGenerator.toString(),
       }).save();
@@ -73,7 +72,7 @@ createEndpoint(
   'post', '/user',
   {},
   {},
-  async (data, req, reply) => {
+  async (data, req) => {
     const userId = await ensureUserRegistered(req);
 
     // update user name

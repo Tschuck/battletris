@@ -58,13 +58,11 @@
 import { onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 import { merge } from 'lodash';
+import { RoomWithDataInterface, WsMessageType } from '@battletris/shared';
 
 import ClassLogo from './ClassLogo.vue';
 import user from '../lib/User';
-import RoomConnection, {
-  getCurrentConnection,
-  WsMessageType,
-} from '../lib/RoomConnection';
+import RoomConnection, { getCurrentConnection } from '../lib/RoomConnection';
 
 @Component({
   components: {
@@ -75,10 +73,11 @@ import RoomConnection, {
   },
   setup() {
     const conn: RoomConnection = getCurrentConnection() as RoomConnection;
-    const game = conn?.room?.game;
+    const room = conn.room as RoomWithDataInterface;
+    const game = room.game;
     const gameUsers = ref<any[]>([]);
     const loading = ref(true);
-    const activeUserId = ref(user.userId);
+    const activeUserId = ref(user.id);
     const isJoined = ref(-1);
 
     const userPlaces = [0, 1, 2, 3, 4, 5];
@@ -86,21 +85,22 @@ import RoomConnection, {
       gameUsers.value = userPlaces.map((index) => {
         if (game.users[index]) {
           return {
-            ...conn?.room?.users[game.users[index].userId],
+            ...room.users[game.users[index].id],
             ...game.users[index],
           };
         }
         return null;
       });
-      isJoined.value = game.users.findIndex((regUser: any) => user.userId.startsWith(regUser?.userId));
+
+      isJoined.value = game.users.findIndex((regUser) => user.id.startsWith(regUser?.id));
     };
     updateGameUsers();
 
-    const join = (index: number) => conn?.send(WsMessageType.GAME_JOIN, { index });
-    const leave = () => conn?.send(WsMessageType.GAME_LEAVE);
-    const start = () => conn?.send(WsMessageType.GAME_START);
-    const stop = () => conn?.send(WsMessageType.GAME_STOP);
-    const msgSubscriber = conn?.onMessage(
+    const join = (index: number) => conn.send(WsMessageType.GAME_JOIN, { index });
+    const leave = () => conn.send(WsMessageType.GAME_LEAVE);
+    const start = () => conn.send(WsMessageType.GAME_START);
+    const stop = () => conn.send(WsMessageType.GAME_STOP);
+    const msgSubscriber = conn.onMessage(
       async (type: number, payload: any) => {
         switch (type) {
           case WsMessageType.USER_UPDATE:
@@ -109,12 +109,14 @@ import RoomConnection, {
             break;
           }
           case WsMessageType.GAME_USER_UPDATE: {
-            game.users = merge(game.users, payload);
-            updateGameUsers();
+            if (game?.users) {
+              game.users = merge(game.users, payload);
+              updateGameUsers();
+            }
             break;
           }
         }
-      }
+      },
     );
     // stop listening
     onUnmounted(() => msgSubscriber && msgSubscriber());

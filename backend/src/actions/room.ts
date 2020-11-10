@@ -1,6 +1,6 @@
+import { GameStatus, RoomWithDataInterface } from '@battletris/shared';
 import { In } from 'typeorm';
 import { User } from '../db';
-import { GameStatus } from '../game/helpers/interfaces';
 import { createEndpoint } from '../lib/actions.utils';
 import registry from '../rooms';
 
@@ -10,16 +10,20 @@ createEndpoint(
   {},
   {},
   async () => {
-    return Object.keys(registry).map((key) => {
+    const rooms = {};
+
+    Object.keys(registry).map((key) => {
       const room = registry[key];
       const { entity } = room;
 
-      return {
+      rooms[key] = {
         ...entity,
         connectionCount: room.wsConnections.length,
         isMatchRunning: room.gameBridge.data.status === GameStatus.STARTED,
       };
     });
+
+    return rooms;
   },
 );
 
@@ -47,6 +51,6 @@ createEndpoint(
       game: room.gameBridge.data,
       isMatchRunning: room.gameBridge.data.status === GameStatus.STARTED,
       users: userIdMap,
-    };
+    } as RoomWithDataInterface;
   },
 );

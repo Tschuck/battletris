@@ -42,7 +42,7 @@
   "scripts": {
     "build": "vue-cli-service build --modern",
     "lint": "vue-cli-service lint",
-    "postinstall": "cd ../shared && yarn link && cd ../backend && yarn link @battletris/shared",
+    "postinstall": "cd ../shared && yarn link && cd ../frontend && yarn link @battletris/shared",
     "start": "vue-cli-service serve --modern"
   },
   "version": "0.1.0"

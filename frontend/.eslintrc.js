@@ -22,5 +22,7 @@ module.exports = {
     'no-return-assign': 'off',
     'default-case': 'off',
     'typescript-eslint/no-explicit-any': 'off',
+    'import/no-extraneous-dependencies': 'off',
+    '@typescript-eslint/no-use-before-define': 'off'
   },
 };

@@ -42,12 +42,12 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { onUnmounted, ref } from '@vue/composition-api';
+import { WsMessageType } from '@battletris/shared';
 
-import { getCurrentConnection, WsMessageType } from '../lib/RoomConnection';
-import user from '../lib/User';
+import { getCurrentConnection } from '../lib/RoomConnection';
 
 @Component({
-  setup(_, { root }) {
+  setup() {
     const chat = ref<any[]>([]);
     const conn = getCurrentConnection();
     const usersInLobby = ref<string[]>([]);

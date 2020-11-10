@@ -1,8 +1,9 @@
+import { UserInterface, WsMessageType } from '@battletris/shared';
 import { getRequest, postRequest } from './request';
-import { getCurrentConnection, WsMessageType } from './RoomConnection';
+import { getCurrentConnection } from './RoomConnection';
 
-class User {
-  userId = '';
+class User implements UserInterface {
+  id = '';
 
   className = 'unknown';
 
@@ -20,7 +21,7 @@ class User {
     const { id } = await postRequest('register', registerParams);
     // request user info
     const user = await getRequest('user');
-    this.userId = id.split('.')[0];
+    this.id = id.split('.')[0];
     this.className = user.className;
     this.matches = user.matches;
     this.name = user.name;
@@ -40,7 +41,7 @@ class User {
 
   async export() {
     const dataStr = `data:text/json;charset=utf-8, ${encodeURIComponent(
-      JSON.stringify({ id: this.userId }),
+      JSON.stringify({ id: this.id }),
     )}`;
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute('href', dataStr);

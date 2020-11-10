@@ -1,11 +1,10 @@
+import { GameDataInterface, GameStatus } from '@battletris/shared';
 import { ChildProcess, fork } from 'child_process';
 import path from 'path';
-
-import server from '../server';
-import { GameDataInterface, GameStatus } from '../game/helpers/interfaces';
-import GameUser from './GameUser';
 import roomRegistry from '../rooms';
 import RoomHandler from '../rooms/RoomHandler';
+import server from '../server';
+import GameUser from './GameUser';
 
 // file path to use to start a game process
 const gameFilePath = path.resolve('./dist/game/GameProcess.js');

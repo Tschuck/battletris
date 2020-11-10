@@ -22,7 +22,7 @@ const start = async () => {
   // start server
   server.listen(config.port, (err) => {
     if (err) {
-      server.log.error(err);
+      server.log.error(err.message);
       process.exit(1);
     }
   });

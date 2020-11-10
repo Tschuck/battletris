@@ -1,13 +1,8 @@
+import { RoomWithDataInterface } from '@battletris/shared';
 import { getRequest } from './request';
 
-interface Room {
-  name: string;
-
-  id: string;
-}
-
 export class RoomHandler {
-  rooms: Room[] = [];
+  rooms: { [id: string]: RoomWithDataInterface } = {};
 
   async load() {
     this.rooms = await getRequest('rooms');

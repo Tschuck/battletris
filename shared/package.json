@@ -1,3 +1,11 @@
 {
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "3",
+    "eslint": "^7.0.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-config-airbnb-typescript": "^7.2.1",
+    "typescript": "^3.9.6"
+  },
+  "main": "./index.ts",
   "name": "@battletris/shared"
 }

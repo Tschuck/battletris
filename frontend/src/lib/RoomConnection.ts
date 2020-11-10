@@ -1,7 +1,10 @@
+import { WsMessageType, RoomWithDataInterface } from '@battletris/shared';
 import { getRequest, postRequest } from './request';
 
 // only keep the last connection opened
 let lastConnection: RoomConnection|null;
+
+export const getCurrentConnection = (): RoomConnection|null => lastConnection;
 
 export const disconnectLastConnection = () => {
   if (lastConnection) {
@@ -9,35 +12,6 @@ export const disconnectLastConnection = () => {
     lastConnection = null;
   }
 };
-
-export interface RoomInterface {
-  name: string;
-  users: {
-    [id: string]: {
-      className: string;
-      name: string;
-    };
-  };
-  game: any;
-  isMatchRunning?: boolean;
-  connectionCount?: boolean;
-}
-
-export enum WsMessageType {
-  ROOM_JOIN = 0,
-  ROOM_LEAVE = 1,
-  USER_UPDATE = 2,
-  CHAT = 3,
-  GAME_JOIN = 4,
-  GAME_LEAVE = 5,
-  GAME_START = 6,
-  GAME_STOP = 7,
-  GAME_UPDATE = 8,
-  GAME_USER_UPDATE = 9,
-}
-
-export const getCurrentConnection = (): RoomConnection|null => lastConnection;
-
 /**
  * Handle websocket connection for a game room.
  */
@@ -66,7 +40,7 @@ export default class RoomConnection {
   /**
    * Room endpoint result
    */
-  room: RoomInterface|null = null;
+  room: RoomWithDataInterface|null = null;
 
   constructor(roomId: string) {
     this.roomId = roomId;

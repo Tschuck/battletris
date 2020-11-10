@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 /**
  * @file A fantasy name generator library.
  * @version 1.0.0

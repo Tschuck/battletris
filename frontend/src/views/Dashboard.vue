@@ -127,7 +127,7 @@ import roomHandler from '../lib/RoomHandler';
       disconnectLastConnection();
       await roomHandler.load();
       // get room overview
-      rooms.value = roomHandler.rooms;
+      rooms.value = Object.keys(roomHandler.rooms).map((key) => roomHandler.rooms[key]);
       if (rooms.value && rooms.value.length !== 0) {
         selectedRoom.value = rooms.value[0].id;
       }

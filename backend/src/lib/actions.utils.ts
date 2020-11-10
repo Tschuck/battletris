@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import cookieSignature from 'cookie-signature';
+import { ErrorCodes } from '@battletris/shared';
 
-import ErrorCodes from './error.codes';
 import server from '../server';
 import config from './config';
 

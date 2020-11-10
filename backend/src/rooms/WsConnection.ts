@@ -1,11 +1,10 @@
 import { SocketStream } from "fastify-websocket";
 import cookieSignature from 'cookie-signature';
-import WsMessageType from '@battletris/shared/WsMessageType';
+import { ErrorCodes, WsMessageType } from '@battletris/shared';
 
 import roomRegistry from './registry';
 import server from '../server';
 import config from '../lib/config';
-import errorCodes from '../lib/error.codes';
 import RoomHandler from './RoomHandler';
 import { User } from '../db';
 import handleMessage from "./WsMessageHandler";
@@ -46,7 +45,7 @@ export default class WsConnection {
         }
 
         if (!this.room) {
-          throw new Error(errorCodes.CONNECTION_NOT_JOINED);
+          throw new Error(ErrorCodes.CONNECTION_NOT_JOINED);
         }
 
         await handleMessage(this.room, this, type, payload);
@@ -69,7 +68,7 @@ export default class WsConnection {
   async joinRoom(payload: JoinPayload) {
     // allow only one join per connection
     if (this.userId) {
-      throw new Error(errorCodes.CONNECTION_ID_ALREADY_REGISTERED);
+      throw new Error(ErrorCodes.CONNECTION_ID_ALREADY_REGISTERED);
     }
 
     // check if UserId is correct
@@ -79,7 +78,7 @@ export default class WsConnection {
       config.cookieSecret,
     );
     if (!unsignedUserId) {
-      throw new Error(errorCodes.CONNECTION_ID_INVALID);
+      throw new Error(ErrorCodes.CONNECTION_ID_INVALID);
     }
     // set UserId
     this.userId = unsignedUserId;
@@ -88,7 +87,7 @@ export default class WsConnection {
     await User.findOneOrFail(this.userId);
     this.room = roomRegistry[payload.roomId];
     if (!this.room) {
-      throw new Error(errorCodes.ROOM_NOT_STARTED);
+      throw new Error(ErrorCodes.ROOM_NOT_STARTED);
     }
     this.room.addWsConnection(this);
     // update the frontends room user map

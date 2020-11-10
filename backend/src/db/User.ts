@@ -1,3 +1,4 @@
+import { Classes } from '@battletris/shared';
 import { BaseEntity, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import Match from './Match';
 
@@ -9,7 +10,7 @@ export default class User extends BaseEntity {
   @Column()
   name: string;
 
-  @Column({ default: 'unknown' })
+  @Column({ default: Classes.UNKNOWN })
   className: string;
 
   @ManyToMany(() => Match, match => match.users)
