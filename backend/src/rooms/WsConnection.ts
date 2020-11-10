@@ -1,5 +1,6 @@
 import { SocketStream } from "fastify-websocket";
 import cookieSignature from 'cookie-signature';
+import WsMessageType from '@battletris/shared/WsMessageType';
 
 import roomRegistry from './registry';
 import server from '../server';
@@ -7,7 +8,7 @@ import config from '../lib/config';
 import errorCodes from '../lib/error.codes';
 import RoomHandler from './RoomHandler';
 import { User } from '../db';
-import handleMessage, { WsMessageType } from "./WsMessageHandler";
+import handleMessage from "./WsMessageHandler";
 
 interface JoinPayload {
   // signed connection id

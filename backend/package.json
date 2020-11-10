@@ -26,6 +26,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "debug": "yarn build && node --inspect dist/index.js",
-    "start": "yarn build && node dist/index.js"
+    "start": "yarn build && node dist/index.js",
+    "postinstall": "cd ../shared && yarn link && cd ../backend && yarn link @battletris/shared"
   }
 }

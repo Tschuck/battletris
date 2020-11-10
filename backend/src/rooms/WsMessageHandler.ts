@@ -1,24 +1,12 @@
 import { cloneDeep } from 'lodash';
+import WsMessageType from '@battletris/shared/WsMessageType';
 
-import GameUser, { GameUserStatus } from "../game/GameUser";
+import GameUser, { GameUserStatus } from '../game/GameUser';
 import { GameStatus } from '../game/helpers/interfaces';
-import config from "../lib/config";
-import ErrorCodes from "../lib/error.codes";
-import RoomHandler from "./RoomHandler";
-import WsConnection from "./WsConnection";
-
-export enum WsMessageType {
-  ROOM_JOIN = 0,
-  ROOM_LEAVE = 1,
-  USER_UPDATE = 2,
-  CHAT = 3,
-  GAME_JOIN = 4,
-  GAME_LEAVE = 5,
-  GAME_START = 6,
-  GAME_STOP = 7,
-  GAME_UPDATE = 8,
-  GAME_USER_UPDATE = 9,
-}
+import config from '../lib/config';
+import ErrorCodes from '../lib/error.codes';
+import RoomHandler from './RoomHandler';
+import WsConnection from './WsConnection';
 
 export default async (
   room: RoomHandler,
@@ -92,7 +80,7 @@ export default async (
       break;
     }
     default: {
-      console.log(`ws type: "${type}" not implemented`);
+      console.log(`ws type: '${type}' not implemented`);
       return;
     }
   }

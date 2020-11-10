@@ -1,10 +1,12 @@
+import WsMessageType from '@battletris/shared/WsMessageType';
+
 import { Room }  from '../db';
 import ErrorCodes from '../lib/error.codes';
 import GameBridge from '../game/GameBridge';
 import roomRegistry  from './registry';
 import server from '../server';
 import WsConnection from './WsConnection';
-import handleWsMessage, { WsMessageType } from './WsMessageHandler';
+import handleWsMessage from './WsMessageHandler';
 
 export default class RoomHandler {
   /**
