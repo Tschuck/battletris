@@ -102,7 +102,7 @@ export default async (
     );
     if (usersJoined && allAccepted) {
       await game.start();
-      await game.room.broadcastToWs(WsMessageType.GAME_ACCEPT);
+      await game.room.broadcastToWs(WsMessageType.GAME_UPDATE, game.data);
     }
   }
 };

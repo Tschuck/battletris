@@ -1,8 +1,9 @@
 import {
   getStringifiedMessage, parseMessage, RoomWithDataInterface, WsMessageType,
 } from '@battletris/shared';
-import { merge } from 'lodash';
 import { getRequest } from './request';
+// eslint-disable-next-line import/no-cycle
+import roomHandler from './RoomHandler';
 // eslint-disable-next-line import/no-cycle
 import currUser from './User';
 
@@ -75,32 +76,9 @@ export default class RoomConnection {
       roomId: this.roomId,
     });
 
-    // handle user updates and joined / leaved members
-    this.onMessage((type, payload) => {
-      if (this.room) {
-        switch (type) {
-          case WsMessageType.ROOM_JOIN:
-          case WsMessageType.USER_UPDATE: {
-            this.room.users[payload.userId] = payload.user;
-            break;
-          }
-          case WsMessageType.ROOM_LEAVE: {
-            delete this.room.users[payload.userId];
-            break;
-          }
-          case WsMessageType.GAME_USER_UPDATE: {
-            this.room.game.users = merge(this.room.game.users, payload);
-            this.activeIndex = this.room.game.users.findIndex(
-              (regUser) => currUser.id.startsWith(regUser?.id),
-            );
-            break;
-          }
-          default: {
-            console.log(`${type} ws messages not implemented`);
-          }
-        }
-      }
-    });
+    // handle user updates and joined / leaved members => use unshift to ensure, that this is the
+    // first handler
+    this.handlers.unshift((type, payload) => roomHandler.defaultMessageHandler(this, type, payload));
 
     // save last connection and keep only one open (prevent duplicated connection problems!)
     disconnectLastConnection();

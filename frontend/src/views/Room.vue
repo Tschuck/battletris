@@ -4,12 +4,12 @@
       <div class="grid h-full grid-cols-4 gap-6">
         <div
           class="border-r border-gray-300 border-solid"
-          v-if="!room.isMatchRunning || room.activeIndex !== -1"
+          v-if="activeIndex === -1 || !isMatchRunning"
         >
           <Chat />
         </div>
         <div class="col-span-3">
-          <GameRegistration v-if="!room.isMatchRunning" />
+          <GameRegistration v-if="!isMatchRunning" />
           <Game v-else />
         </div>
       </div>
@@ -20,7 +20,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { onUnmounted, ref } from '@vue/composition-api';
-import { RoomWithDataInterface, WsMessageType } from '@battletris/shared';
+import { GameStatus, RoomWithDataInterface, WsMessageType } from '@battletris/shared';
 
 import Chat from '../components/Chat.vue';
 import Game from '../components/Game.vue';
@@ -45,12 +45,16 @@ import ViewWrapper from '../components/ViewWrapper.vue';
     const creating = ref(false);
     const room = ref<RoomWithDataInterface | null>(null);
     const conn = new RoomConnection(props.roomId as string);
+    const isMatchRunning = ref(false);
+    const activeIndex = ref(-1);
 
-    conn.onMessage((type: number) => {
-      if (type === WsMessageType.GAME_ACCEPT && room.value) {
-        room.value.isMatchRunning = true;
+    const handleMessage = (type: WsMessageType) => {
+      if (type === WsMessageType.GAME_UPDATE) {
+        isMatchRunning.value = conn.room?.game.status === GameStatus.STARTED;
+        activeIndex.value = conn.activeIndex;
       }
-    }, onUnmounted);
+    };
+    conn.onMessage((type) => handleMessage(type), onUnmounted);
 
     (async () => {
       await conn.connect();
@@ -59,9 +63,10 @@ import ViewWrapper from '../components/ViewWrapper.vue';
     })();
 
     return {
+      activeIndex,
       creating,
+      isMatchRunning,
       loading,
-      room,
     };
   },
 })

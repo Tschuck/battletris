@@ -45,7 +45,6 @@ import RoomConnection, { getCurrentConnection } from '../lib/RoomConnection';
     const messages = ref<any[]>([]);
 
     conn.onMessage(async (type: number, payload: any) => {
-      console.log(payload);
       messages.value.push(payload);
     }, onUnmounted);
 
