@@ -10,6 +10,7 @@ enum WsMessageType {
   GAME_STOP = 7,
   GAME_UPDATE = 8,
   GAME_USER_UPDATE = 9,
+  TEST = 99,
 }
 
 export default WsMessageType;

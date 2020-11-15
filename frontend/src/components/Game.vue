@@ -1,6 +1,6 @@
 <template>
   <div class="grid h-full grid-cols-3 gap-6 p-6">
-    <div
+    <!-- <div
       class="flex flex-col flex-grow-0 flex-shrink-0 card"
       v-for="(regUser, index) in gameUsers"
       :key="index"
@@ -10,6 +10,14 @@
       <div class="flex items-center justify-center flex-grow content">
         {{regUser.name}}
       </div>
+    </div> -->
+
+    <div
+      class="flex flex-col flex-grow-0 flex-shrink-0 card"
+      v-for="(message, index) in messages"
+      :key="index"
+    >
+      {{ message }}
     </div>
   </div>
 </template>
@@ -34,15 +42,18 @@ import RoomConnection, { getCurrentConnection } from '../lib/RoomConnection';
     const gameUsers = ref<GameUser[]>(conn.room?.game.users as GameUser[]);
     const loading = ref(true);
     const gameUserIndex = ref(conn.activeIndex);
+    const messages = ref<any[]>([]);
 
     conn.onMessage(async (type: number, payload: any) => {
-      console.log(`${type}: ${payload}`);
+      console.log(payload);
+      messages.value.push(payload);
     }, onUnmounted);
 
     return {
       gameUserIndex,
       gameUsers,
       loading,
+      messages,
     };
   },
 })

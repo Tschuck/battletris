@@ -1,5 +1,6 @@
-import { GameDataInterface, GameStatus, getStringifiedMessage, parseMessage, ProcessMessageType } from '@battletris/shared';
+import { GameDataInterface, GameStatus, getStringifiedMessage, parseMessage, ProcessMessageType, WsMessageType } from '@battletris/shared';
 import { ChildProcess, fork } from 'child_process';
+import { existsSync } from 'fs';
 import path from 'path';
 import roomRegistry from '../rooms';
 import RoomHandler from '../rooms/RoomHandler';
@@ -7,7 +8,11 @@ import server from '../server';
 import GameUser from './GameUser';
 
 // file path to use to start a game process
-const gameFilePath = path.resolve('./dist/game/GameProcess.js');
+const gameFilePath = path.resolve('./dist/src/game/GameProcess.js');
+
+if (!existsSync(gameFilePath)) {
+  throw new Error(`GameProcess file not found`);
+}
 
 export default class GameHandler {
   /**
@@ -53,7 +58,7 @@ export default class GameHandler {
    *
    * @param message stringified process message
    */
-  handleProcessMessage(message: string) {
+  async handleProcessMessage(message: string) {
     const { type, payload } = parseMessage(ProcessMessageType, message);
 
     try {
@@ -68,6 +73,11 @@ export default class GameHandler {
           this.log('debug', 'initialized');
           this.data = payload;
           this.initResolve();
+          break;
+        }
+        // forward to user
+        case ProcessMessageType.TEST: {
+          await this.room.broadcastToWs(WsMessageType.TEST, payload);
           break;
         }
         default: {
@@ -105,6 +115,7 @@ export default class GameHandler {
 
     // general message handling
     this.process.on('message', (message: string) => this.handleProcessMessage(message));
+    this.process.on('error', (error) => this.log('error', error.message));
     this.process.on('exit', () => this.log('info', 'exited'));
 
     // set the process and send the initial data to the child process
@@ -120,14 +131,20 @@ export default class GameHandler {
    * @param type message type
    * @param payload payload that should be sent to the process
    */
-  sendToProcess(type: ProcessMessageType, payload: any) {
-    this.process.send(getStringifiedMessage(type, payload));
+  sendToProcess(type: ProcessMessageType, payload?: any) {
+    if (this.process) {
+      this.process.send(getStringifiedMessage(type, payload));
+    } else {
+      this.log('info', `${type} was not sent to process: ${payload}`);
+    }
   }
 
   /**
    * Stop the process
    */
   stop() {
-    this.process.kill('SIGINT');
+    if (this.process) {
+      this.sendToProcess(ProcessMessageType.STOP);
+    }
   }
 }

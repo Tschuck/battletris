@@ -20,8 +20,9 @@ class ProcessHandler {
 
       try {
         // run game function
-        if (this.game[type]) {
-          this.game[type](payload);
+        const funcName = ProcessMessageType[type]?.toLowerCase();
+        if (this.game[funcName]) {
+          this.game[funcName](payload);
         } else {
           this.log('error', `unknown message type: ${ProcessMessageType[type]}`);
         }

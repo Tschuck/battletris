@@ -20,6 +20,12 @@ export default async (
       return;
     }
     case WsMessageType.USER_UPDATE: {
+      const index = room.gameBridge.data.users
+        .findIndex((dUser) => dUser?.id === connection.userId);
+      if (index !== -1 && room.gameBridge.data.status === GameStatus.STARTED) {
+        throw new Error(ErrorCodes.ALREADY_STARTED);
+      }
+
       // TODO: do not update user, when user is in battle
       room.broadcastToWs(WsMessageType.USER_UPDATE, {
         userId: connection.userId,
@@ -31,10 +37,10 @@ export default async (
 
   // game handler
   const game = room.gameBridge;
-  // index related messages
-  let index = typeof payload?.index === 'undefined'
+  const index = typeof payload?.index === 'undefined'
     ? game.data.users.findIndex((dUser) => dUser?.id === connection.userId)
     : payload.index;
+  let startGame;
   switch (type) {
     case WsMessageType.GAME_JOIN: {
       if (index < 0 || index > (config.maxGameUsers - 1)) {
@@ -42,6 +48,9 @@ export default async (
       }
       if (room.gameBridge.data.users[index]) {
         throw new Error(ErrorCodes.USER_PLACE_NOT_ALLOWED);
+      }
+      if (game.data.status === GameStatus.STARTED) {
+        throw new Error(ErrorCodes.ALREADY_STARTED);
       }
 
       game.data.users[index] = new GameUser(connection.userId);
@@ -57,18 +66,21 @@ export default async (
         }
 
         game.data.users[index] = null;
+
+        // check if match should be terminated
+        const isPlaying = game.data.users.find((u) => !!u);
+        if (!isPlaying) {
+          game.stop();
+        }
       }
       break;
     }
     case WsMessageType.GAME_START: {
       game.data.users[index].status = GameUserStatus.ACCEPTED;
       // if all users accepted, start the game
-      const allStarted = !game.data.users.find(
+      startGame = !game.data.users.find(
         (user) => user?.status === GameUserStatus.JOINED,
       );
-      if (allStarted) {
-        game.data.status = GameStatus.STARTED;
-      }
 
       break;
     }
@@ -86,7 +98,7 @@ export default async (
     [index]: game.data.users[index],
   });
 
-  if (game.data.status === GameStatus.STARTED) {
+  if (startGame && game.data.status !== GameStatus.STARTED) {
     await game.start();
     await game.room.broadcastToWs(WsMessageType.GAME_START);
   }
