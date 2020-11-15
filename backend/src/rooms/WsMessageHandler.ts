@@ -40,7 +40,6 @@ export default async (
   const index = typeof payload?.index === 'undefined'
     ? game.data.users.findIndex((dUser) => dUser?.id === connection.userId)
     : payload.index;
-  let startGame;
   switch (type) {
     case WsMessageType.GAME_JOIN: {
       if (index < 0 || index > (config.maxGameUsers - 1)) {
@@ -75,16 +74,12 @@ export default async (
       }
       break;
     }
-    case WsMessageType.GAME_START: {
+    case WsMessageType.GAME_ACCEPT: {
       game.data.users[index].status = GameUserStatus.ACCEPTED;
-      // if all users accepted, start the game
-      startGame = !game.data.users.find(
-        (user) => user?.status === GameUserStatus.JOINED,
-      );
 
       break;
     }
-    case WsMessageType.GAME_STOP: {
+    case WsMessageType.GAME_CANCEL: {
       game.data.users[index].status = GameUserStatus.JOINED;
       break;
     }
@@ -94,12 +89,18 @@ export default async (
     }
   }
 
+  // if all users accepted, start the game
+  // IMPORTANT => check this always, could be possible that someone left the game
+  const startGame = !game.data.users.find(
+    (user) => user?.status === GameUserStatus.JOINED,
+  );
+
   await game.room.broadcastToWs(WsMessageType.GAME_USER_UPDATE, {
     [index]: game.data.users[index],
   });
 
   if (startGame && game.data.status !== GameStatus.STARTED) {
     await game.start();
-    await game.room.broadcastToWs(WsMessageType.GAME_START);
+    await game.room.broadcastToWs(WsMessageType.GAME_ACCEPT);
   }
 };

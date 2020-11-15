@@ -16,9 +16,9 @@ export default class Game {
     gameProcess.sendToParent(ProcessMessageType.INITIALIZE, this.data);
 
     this.gameLoopInterval = setInterval(() => {
-      gameProcess.sendToParent(ProcessMessageType.TEST, {
-        hello: 'from-server'
-      });
+      // gameProcess.sendToParent(ProcessMessageType.TEST, {
+      //   hello: 'from-server'
+      // });
     }, 500);
   }
 

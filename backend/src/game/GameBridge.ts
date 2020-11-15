@@ -5,7 +5,9 @@ import path from 'path';
 import roomRegistry from '../rooms';
 import RoomHandler from '../rooms/RoomHandler';
 import server from '../server';
+import Game from './Game';
 import GameUser from './GameUser';
+import handleProcessMessage from './ProcessMessageHandler';
 
 // file path to use to start a game process
 const gameFilePath = path.resolve('./dist/src/game/GameProcess.js');
@@ -60,34 +62,7 @@ export default class GameHandler {
    */
   async handleProcessMessage(message: string) {
     const { type, payload } = parseMessage(ProcessMessageType, message);
-
-    try {
-      switch (type) {
-        // user interacted with the game
-        case ProcessMessageType.LOG: {
-          this.log(payload.type, payload.message);
-          break;
-        }
-        // resolve the game creation and update the game data
-        case ProcessMessageType.INITIALIZE: {
-          this.log('debug', 'initialized');
-          this.data = payload;
-          this.initResolve();
-          break;
-        }
-        // forward to user
-        case ProcessMessageType.TEST: {
-          await this.room.broadcastToWs(WsMessageType.TEST, payload);
-          break;
-        }
-        default: {
-          this.log('error', `unknown message type: ${ProcessMessageType[type]}`);
-          break;
-        }
-      }
-    } catch (ex) {
-      this.log('error', `[GAME_BRIDGE] not parsed: ${message} (${ex.message})`);
-    }
+    handleProcessMessage(this, type as ProcessMessageType, payload);
   }
 
   /**
@@ -98,6 +73,18 @@ export default class GameHandler {
    */
   log(type: string, message: string) {
     server.log[type](`[GAME][${this.process.pid}|${this.roomId}] ${message}`);
+  }
+
+  /**
+   * Reset all states the game and reset game users.
+   */
+  reset() {
+    this.data.status = GameStatus.STOPPED;
+    this.data.users.forEach((user, index) => {
+      if (user) {
+        this.data.users[index] = new GameUser(user.id);
+      }
+    });
   }
 
   /**

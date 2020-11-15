@@ -84,8 +84,8 @@ import RoomConnection, { getCurrentConnection } from '../lib/RoomConnection';
 
     const join = (index: number) => conn.send(WsMessageType.GAME_JOIN, { index });
     const leave = () => conn.send(WsMessageType.GAME_LEAVE);
-    const start = () => conn.send(WsMessageType.GAME_START);
-    const stop = () => conn.send(WsMessageType.GAME_STOP);
+    const start = () => conn.send(WsMessageType.GAME_ACCEPT);
+    const stop = () => conn.send(WsMessageType.GAME_CANCEL);
     conn.onMessage(async (type: number) => {
       switch (type) {
         case WsMessageType.USER_UPDATE:

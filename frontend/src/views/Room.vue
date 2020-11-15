@@ -47,7 +47,7 @@ import ViewWrapper from '../components/ViewWrapper.vue';
     const conn = new RoomConnection(props.roomId as string);
 
     conn.onMessage((type: number) => {
-      if (type === WsMessageType.GAME_START && room.value) {
+      if (type === WsMessageType.GAME_ACCEPT && room.value) {
         room.value.isMatchRunning = true;
       }
     }, onUnmounted);
