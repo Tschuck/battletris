@@ -89,18 +89,20 @@ export default async (
     }
   }
 
-  // if all users accepted, start the game
-  // IMPORTANT => check this always, could be possible that someone left the game
-  const startGame = !game.data.users.find(
-    (user) => user?.status === GameUserStatus.JOINED,
-  );
-
   await game.room.broadcastToWs(WsMessageType.GAME_USER_UPDATE, {
     [index]: game.data.users[index],
   });
 
-  if (startGame && game.data.status !== GameStatus.STARTED) {
-    await game.start();
-    await game.room.broadcastToWs(WsMessageType.GAME_ACCEPT);
+  if (game.data.status !== GameStatus.STARTED) {
+    // if all users accepted, start the game
+    // IMPORTANT => check this always, could be possible that someone left the game
+    const usersJoined = game.data.users.find((user) => !!user);
+    const allAccepted = !game.data.users.find(
+      (user) => user?.status === GameUserStatus.JOINED,
+    );
+    if (usersJoined && allAccepted) {
+      await game.start();
+      await game.room.broadcastToWs(WsMessageType.GAME_ACCEPT);
+    }
   }
 };

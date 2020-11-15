@@ -22,10 +22,12 @@ export default async (
         game.initResolve();
         break;
       }
-      // forward to user
       case ProcessMessageType.STOPPED: {
         game.reset();
         await game.room.broadcastToWs(WsMessageType.GAME_UPDATE, game.data);
+        await game.room.broadcastToWs(WsMessageType.GAME_STATS, {
+          winner: 'TODO',
+        });
         break;
       }
       default: {

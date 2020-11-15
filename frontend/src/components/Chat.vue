@@ -71,6 +71,13 @@ import { getCurrentConnection } from '../lib/RoomConnection';
             });
             break;
           }
+          case WsMessageType.GAME_STATS: {
+            chat.value.unshift({
+              message: payload,
+              date: timeString,
+            });
+            break;
+          }
           case WsMessageType.ROOM_JOIN: {
             setUsersInLobby();
             break;
