@@ -4,6 +4,8 @@ import { getRequest, postRequest } from './request';
 import { getCurrentConnection } from './RoomConnection';
 
 class User implements UserInterface {
+  authToken = '';
+
   id = '';
 
   className = 'unknown';
@@ -13,16 +15,22 @@ class User implements UserInterface {
   matches: string[] = [];
 
   async init(battletrisId?: string) {
-    const registerParams: { battletris_id?: string } = {};
+    const registerParams: {
+      battletris_id?: string;
+      exportAuthToken: boolean;
+    } = {
+      exportAuthToken: true,
+    };
     if (battletrisId) {
       registerParams.battletris_id = battletrisId;
     }
 
     // ensure connection id
-    const { id } = await postRequest('register', registerParams);
+    const { id, authToken } = await postRequest('register', registerParams);
     // request user info
     const user = await getRequest('user');
-    this.id = id.split('.')[0];
+    this.id = id;
+    this.authToken = authToken;
     this.className = user.className;
     this.matches = user.matches;
     this.name = user.name;
@@ -41,8 +49,12 @@ class User implements UserInterface {
   }
 
   async export() {
+    // request register again and export signed token
+    const { authToken } = await postRequest('register', {
+      exportAuthToken: true,
+    });
     const dataStr = `data:text/json;charset=utf-8, ${encodeURIComponent(
-      JSON.stringify({ id: this.id }),
+      JSON.stringify({ id: authToken }),
     )}`;
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute('href', dataStr);

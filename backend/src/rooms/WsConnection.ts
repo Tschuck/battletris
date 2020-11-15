@@ -1,6 +1,6 @@
 import { SocketStream } from "fastify-websocket";
 import cookieSignature from 'cookie-signature';
-import { ErrorCodes, WsMessageType } from '@battletris/shared';
+import { ErrorCodes, getStringifiedMessage, parseMessage, WsMessageType } from '@battletris/shared';
 
 import roomRegistry from './registry';
 import server from '../server';
@@ -10,8 +10,10 @@ import { User } from '../db';
 import handleMessage from "./WsMessageHandler";
 
 interface JoinPayload {
-  // signed connection id
+  // user id
   id: string;
+  // signed connection id
+  authToken: string;
   // game to join
   roomId: string;
 }
@@ -36,9 +38,9 @@ export default class WsConnection {
     this.connection = connection;
 
     connection.socket.on('message', async (message: string) => {
-      try {
-        const { type, payload } = JSON.parse(message);
+      const { type, payload } = parseMessage(WsMessageType, message);
 
+      try {
         if (type === WsMessageType.ROOM_JOIN) {
           await this.joinRoom(payload);
           return;
@@ -48,10 +50,10 @@ export default class WsConnection {
           throw new Error(ErrorCodes.CONNECTION_NOT_JOINED);
         }
 
-        await handleMessage(this.room, this, type, payload);
+        await handleMessage(this.room, this, type as WsMessageType, payload);
       } catch (ex) {
         connection.socket.send(JSON.stringify({ type: 'error', error: ex.message }));
-        server.log.error(`[WS] not parsed: ${message} (${ex})`);
+        server.log.error('error', `[${WsMessageType[type]}] ${ex.message}`);
       }
     });
 
@@ -72,9 +74,9 @@ export default class WsConnection {
     }
 
     // check if UserId is correct
-    const signedUserId = payload.id;
+    const authToken = payload.authToken;
     const unsignedUserId = await cookieSignature.unsign(
-      signedUserId,
+      authToken,
       config.cookieSecret,
     );
     if (!unsignedUserId) {
@@ -90,7 +92,7 @@ export default class WsConnection {
       throw new Error(ErrorCodes.ROOM_NOT_STARTED);
     }
     this.room.addWsConnection(this);
-    // update the frontends room user map
+    // update the frontend room user map
     await this.room.broadcastToWs(WsMessageType.ROOM_JOIN, {
       userId: this.userId,
       user: await User.findOne(this.userId),
@@ -98,6 +100,6 @@ export default class WsConnection {
   }
 
   async send(type: WsMessageType, payload: any) {
-    await this.connection.socket.send(JSON.stringify({ type, payload }));
+    await this.connection.socket.send(getStringifiedMessage(type, payload));
   }
 }

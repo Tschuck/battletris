@@ -21,9 +21,9 @@ export default {
   cookieSecret: _('COOKIE_SECRET', '6f5af457-b1b6-444d-8488-2d1241d0ad5f'),
   dbPath: _('DB_PATH', path.resolve('../.db.sqlite')),
   defaultGameCount: _('DEFAULT_GAME_COUNT', 5),
-  frontendUrl: _('FRONTEND_URL', 'http://localhost:8080'),
+  frontendUrl: _('FRONTEND_URL', 'http://localhost:1984'),
   maxGameUsers: 6,
-  port: _('PORT', 3000),
+  port: _('PORT', 2020),
   // run game loop every X ms
   gameLoopSpeed: _('GAME_LOOP_SPEED', 1000),
   // "user speed", moves blocks down, ...

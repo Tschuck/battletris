@@ -1,4 +1,4 @@
-import { GameDataInterface, GameStatus } from '@battletris/shared';
+import { GameDataInterface, GameStatus, getStringifiedMessage, parseMessage, ProcessMessageType } from '@battletris/shared';
 import { ChildProcess, fork } from 'child_process';
 import path from 'path';
 import roomRegistry from '../rooms';
@@ -54,25 +54,29 @@ export default class GameHandler {
    * @param message stringified process message
    */
   handleProcessMessage(message: string) {
-    try {
-      const { type, payload } = JSON.parse(message);
+    const { type, payload } = parseMessage(ProcessMessageType, message);
 
+    try {
       switch (type) {
+        // user interacted with the game
+        case ProcessMessageType.LOG: {
+          this.log(payload.type, payload.message);
+          break;
+        }
         // resolve the game creation and update the game data
-        case 'initialized': {
+        case ProcessMessageType.INITIALIZE: {
           this.log('debug', 'initialized');
           this.data = payload;
           this.initResolve();
           break;
         }
-        // user interacted with the game
-        case 'log': {
-          this.log(payload.type, payload.message);
+        default: {
+          this.log('error', `unknown message type: ${ProcessMessageType[type]}`);
           break;
         }
       }
     } catch (ex) {
-      this.log('error', `not parsed: ${message} (${ex.message})`);
+      this.log('error', `[GAME_BRIDGE] not parsed: ${message} (${ex.message})`);
     }
   }
 
@@ -104,7 +108,7 @@ export default class GameHandler {
     this.process.on('exit', () => this.log('info', 'exited'));
 
     // set the process and send the initial data to the child process
-    this.sendToProcess('initialize', this.data);
+    this.sendToProcess(ProcessMessageType.INITIALIZE, this.data);
 
     // wait until initialized event was fired
     await this.initPromise;
@@ -116,8 +120,8 @@ export default class GameHandler {
    * @param type message type
    * @param payload payload that should be sent to the process
    */
-  sendToProcess(type: string, payload: any) {
-    this.process.send(JSON.stringify({ type, payload }));
+  sendToProcess(type: ProcessMessageType, payload: any) {
+    this.process.send(getStringifiedMessage(type, payload));
   }
 
   /**

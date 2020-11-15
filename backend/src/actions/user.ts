@@ -1,9 +1,9 @@
 import { Classes, ErrorCodes } from '@battletris/shared';
 import cookieSignature from 'cookie-signature';
+import config from '../lib/config';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '../db';
 import { createEndpoint, ensureUserRegistered } from '../lib/actions.utils';
-import config from '../lib/config';
 import Namegen from '../lib/namegen';
 
 const nameGenerator = Namegen.compile("sV i");
@@ -14,7 +14,10 @@ const nameGenerator = Namegen.compile("sV i");
 createEndpoint(
   'post', '/register',
   {},
-  { id: { type: 'string' }},
+  {
+    id: { type: 'string' },
+    exportAuthToken: { type: 'string' },
+  },
   async (data, req, reply) => {
     let cookieValue = data.battletris_id || req.cookies.battletris_id;
     if (cookieValue) {
@@ -39,10 +42,13 @@ createEndpoint(
       httpOnly: false,
     });
 
-    // returned signed cookie. So we can ommit cookie parsing in ui
-    return {
-      id: cookieSignature.sign(cookieValue, config.cookieSecret),
-    };
+    const returnVal: any = { id: cookieValue };
+    if (data.exportAuthToken) {
+      returnVal.authToken = cookieSignature.sign(cookieValue, config.cookieSecret);
+    }
+
+    // returned signed cookie. So we can omit cookie parsing in ui
+    return returnVal;
   }
 );
 

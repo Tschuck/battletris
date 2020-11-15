@@ -1,3 +1,4 @@
+import { getStringifiedMessage, parseMessage, ProcessMessageType } from '@battletris/shared';
 import process from 'process';
 
 import Game from './Game';
@@ -15,17 +16,17 @@ class ProcessHandler {
    */
   listen() {
     process.on('message', (message: string) => {
+      const { type, payload } = parseMessage(ProcessMessageType, message);
+
       try {
-        // extract message payload
-        const { type, payload } = JSON.parse(message);
         // run game function
         if (this.game[type]) {
           this.game[type](payload);
         } else {
-          throw new Error(`unknown message type ${type}`);
+          this.log('error', `unknown message type: ${ProcessMessageType[type]}`);
         }
       } catch (ex) {
-        this.log('error', `not parsed: ${message} (${ex.message})`);
+        this.log('error', `[${ProcessMessageType[type]}]: ${payload} (${ex.message})`);
       }
     });
   }
@@ -36,8 +37,8 @@ class ProcessHandler {
    * @param type message type
    * @param payload payload for the type (currently not specified, it's fully dynamic)
    */
-  sendToParent(type: string, payload?: any) {
-    process.send(JSON.stringify({ type, payload }));
+  sendToParent(type: ProcessMessageType, payload?: any) {
+    process.send(getStringifiedMessage(type, payload));
   }
 
   /**
@@ -47,7 +48,7 @@ class ProcessHandler {
    * @param message message to log via parent process
    */
   log(type: string, message: string) {
-    this.sendToParent('log', { type, message });
+    this.sendToParent(ProcessMessageType.LOG, { type, message });
   }
 };
 

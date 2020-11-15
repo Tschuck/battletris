@@ -28,4 +28,4 @@ export default interface GameUser {
   targetId: string;
 }
 
-export interface EnrichtedGameUser extends User, GameUser { }
+export interface EnrichedGameUserInterface extends User, GameUser { }

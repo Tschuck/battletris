@@ -1,4 +1,4 @@
-import { GameDataInterface } from '@battletris/shared';
+import { GameDataInterface, ProcessMessageType } from '@battletris/shared';
 import gameProcess from './GameProcess';
 
 export default class Game {
@@ -11,7 +11,7 @@ export default class Game {
    */
   initialize(data: GameDataInterface) {
     this.data = data;
-    gameProcess.sendToParent('initialized', this.data);
+    gameProcess.sendToParent(ProcessMessageType.INITIALIZE, this.data);
   }
 
   keypress(key: string) {

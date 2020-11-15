@@ -1,7 +1,7 @@
 import server from './server';
 import config from './lib/config';
 import { startDb, Room } from './db';
-import ensureDefaultFrooms from './lib/rooms.default';
+import ensureDefaultRooms from './lib/rooms.default';
 
 // register plugins
 import './server/plugins';
@@ -11,11 +11,11 @@ import './actions';
 import RoomHandler from './rooms/RoomHandler';
 
 const start = async () => {
-  // load database jsons beforw
+  // load database json before
   await startDb();
 
   // create initial, predefined actions and start them
-  await ensureDefaultFrooms();
+  await ensureDefaultRooms();
   const rooms = await Room.find();
   rooms.forEach((entity) => new RoomHandler(entity));
 

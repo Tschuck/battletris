@@ -1,4 +1,5 @@
 enum WsMessageType {
+  INVALID_MESSAGE = -1,
   ROOM_JOIN = 0,
   ROOM_LEAVE = 1,
   USER_UPDATE = 2,

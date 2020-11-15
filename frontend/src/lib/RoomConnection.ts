@@ -1,6 +1,8 @@
-import { EnrichtedGameUserInterface, RoomWithDataInterface, WsMessageType } from '@battletris/shared';
+import {
+  getStringifiedMessage, parseMessage, RoomWithDataInterface, WsMessageType,
+} from '@battletris/shared';
 import { merge } from 'lodash';
-import { getRequest, postRequest } from './request';
+import { getRequest } from './request';
 // eslint-disable-next-line import/no-cycle
 import currUser from './User';
 
@@ -59,18 +61,17 @@ export default class RoomConnection {
    * Join the game (= subscribe for websocket room) and connect to websocket.
    */
   async connect() {
-    const { id } = await postRequest('register');
     // load current room data
     this.room = await getRequest(`room/${this.roomId}`);
 
     // Open new websocket connection and ensure userId
-    this.connection = new WebSocket('ws://localhost:3000/ws');
+    this.connection = new WebSocket('ws://localhost:2020/ws');
     this.connection.onmessage = (event) => {
-      const { type, payload } = JSON.parse(event.data);
-      this.handlers.forEach((handler) => handler(type, payload));
+      const { type, payload } = parseMessage(WsMessageType, event.data);
+      this.handlers.forEach((handler) => handler(type as WsMessageType, payload));
     };
     this.connection.onopen = () => this.send(WsMessageType.ROOM_JOIN, {
-      id,
+      authToken: currUser.authToken,
       roomId: this.roomId,
     });
 
@@ -123,10 +124,7 @@ export default class RoomConnection {
    * @param payload data to send
    */
   send(type: WsMessageType, payload?: any) {
-    this.connection.send(JSON.stringify({
-      payload,
-      type,
-    }));
+    this.connection.send(getStringifiedMessage(type, payload));
   }
 
   /**

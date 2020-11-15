@@ -24,7 +24,7 @@
   },
   "name": "battletris",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "rm -r ./dist && tsc -p tsconfig.json",
     "debug": "yarn build && node --inspect dist/src/index.js",
     "start": "yarn build && node dist/src/index.js",
     "postinstall": "cd ../shared && yarn link && cd ../backend && yarn link @battletris/shared"

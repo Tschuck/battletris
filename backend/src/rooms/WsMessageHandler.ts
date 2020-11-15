@@ -64,9 +64,11 @@ export default async (
       game.data.users[index].status = GameUserStatus.ACCEPTED;
       // if all users accepted, start the game
       const allStarted = !game.data.users.find(
-        (user) => user.status === GameUserStatus.JOINED,
+        (user) => user?.status === GameUserStatus.JOINED,
       );
-      game.data.status = GameStatus.STARTED;
+      if (allStarted) {
+        game.data.status = GameStatus.STARTED;
+      }
 
       break;
     }
@@ -75,7 +77,7 @@ export default async (
       break;
     }
     default: {
-      console.log(`ws type: '${type}' not implemented`);
+      console.log(`ws type: "${WsMessageType[type]}(${type})" not implemented`);
       return;
     }
   }
