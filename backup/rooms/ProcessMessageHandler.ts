@@ -1,6 +1,4 @@
-import { ErrorCodes, GameStatus, ProcessMessageType, WsMessageType } from '@battletris/shared';
-import GameUser, { GameUserStatus } from '../game/GameUser';
-import config from '../lib/config';
+import { ProcessMessageType, WsMessageType } from '@battletris/shared';
 import GameBridge from './GameBridge';
 
 export default async (
@@ -28,6 +26,10 @@ export default async (
         await game.room.broadcastToWs(WsMessageType.GAME_STATS, {
           winner: 'TODO',
         });
+        break;
+      }
+      case ProcessMessageType.GAME_USER_UPDATE: {
+        await game.room.broadcastToWs(WsMessageType.GAME_USER_UPDATE, payload);
         break;
       }
       default: {

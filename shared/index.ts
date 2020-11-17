@@ -10,7 +10,7 @@ import {
   parseMessage,
 } from './functions/messageHandler';
 import GameDataInterface from './interfaces/GameData';
-import GameUserInterface, { EnrichedGameUserInterface } from './interfaces/GameUser';
+import { MinimalGameUserInterface, GameUserInterface, EnrichedGameUserInterface } from './interfaces/GameUser';
 import RoomWithDataInterface from './interfaces/RoomWithData';
 import UserInterface from './interfaces/User';
 
@@ -23,6 +23,7 @@ export {
   parseMessage,
   getStringifiedMessage,
   GameStatus,
+  MinimalGameUserInterface,
   GameUserInterface,
   GameUserStatus,
   ProcessMessageType,

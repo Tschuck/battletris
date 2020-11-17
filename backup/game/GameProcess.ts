@@ -6,23 +6,37 @@ import Game from './Game';
 class ProcessHandler {
   game: Game;
 
+  keepAliveTimeout: NodeJS.Timeout;
+
   constructor() {
+    // create new game data object
     this.game = new Game();
+    // list for messages
     this.listen();
+    // keep the process keep alive and just wait for messages initially
+    this.keepAliveTimeout = setInterval(() => {}, 1 << 30);
+  }
+
+  /**
+   * Close the game process and clear the keep alive timeout.
+   */
+  exit() {
+    clearInterval(this.keepAliveTimeout);;
+    process.exit();
   }
 
   /**
    * Listen to parent process messages and pass them into the Game instance
    */
   listen() {
-    process.on('message', (message: string) => {
+    process.on('message', async (message: string) => {
       const { type, payload } = parseMessage(ProcessMessageType, message);
 
       try {
         // run game function
         const funcName = ProcessMessageType[type]?.toLowerCase();
         if (this.game[funcName]) {
-          this.game[funcName](payload);
+          await this.game[funcName](payload);
         } else {
           this.log('error', `unknown message type: ${ProcessMessageType[type]}`);
         }

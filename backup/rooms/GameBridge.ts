@@ -1,12 +1,11 @@
-import { GameDataInterface, GameStatus, getStringifiedMessage, parseMessage, ProcessMessageType, WsMessageType } from '@battletris/shared';
+import { GameDataInterface, GameStatus, getStringifiedMessage, parseMessage, ProcessMessageType } from '@battletris/shared';
 import { ChildProcess, fork } from 'child_process';
 import { existsSync } from 'fs';
 import path from 'path';
+import GameUser from '../game/GameUser';
 import roomRegistry from '../rooms';
 import RoomHandler from '../rooms/RoomHandler';
 import server from '../server';
-import Game from './Game';
-import GameUser from './GameUser';
 import handleProcessMessage from './ProcessMessageHandler';
 
 // file path to use to start a game process
@@ -92,8 +91,9 @@ export default class GameHandler {
    */
   async start() {
     this.data.status = GameStatus.STARTED;
+
     this.process = fork(gameFilePath, [], {
-      // silent: true,
+      silent: true,
       stdio: [ 'pipe', 'pipe', 'pipe', 'ipc' ]
     });
 
@@ -103,7 +103,8 @@ export default class GameHandler {
     // general message handling
     this.process.on('message', (message: string) => this.handleProcessMessage(message));
     this.process.on('error', (error) => this.log('error', error.message));
-    this.process.on('exit', () => this.log('info', 'exited'));
+    this.process.stderr.on('data', (error) => this.log('error', error));
+    this.process.on('exit', (code, sig) => this.log('info', `exited: ${code} / ${sig}`));
 
     // set the process and send the initial data to the child process
     this.sendToProcess(ProcessMessageType.INITIALIZE, this.data);

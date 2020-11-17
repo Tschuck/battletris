@@ -1,6 +1,6 @@
 import { ErrorCodes, WsMessageType } from '@battletris/shared';
 import { Room } from '../db';
-import GameBridge from '../game/GameBridge';
+import GameBridge from './GameBridge';
 import server from '../server';
 import roomRegistry from './registry';
 import WsConnection from './WsConnection';

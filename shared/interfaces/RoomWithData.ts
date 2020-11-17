@@ -6,7 +6,7 @@ export default interface RoomWithData {
 
   name: string;
 
-  connectionCount: number
+  connectionCount: number;
 
   isMatchRunning: boolean;
 

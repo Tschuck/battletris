@@ -1,9 +1,10 @@
 enum ProcessMessageType {
   INVALID_MESSAGE = -1,
   LOG = 0,
-  INITIALIZE = 1,
+  JOIN_WS = 1,
   STOP = 2,
   STOPPED = 3,
+  GAME_USER_UPDATE = 4,
   TEST = 99,
 }
 

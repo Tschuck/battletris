@@ -247,7 +247,6 @@ function flattenMap(map) {
   return map;
 }
 
-
 export {
   checkForCollision,
   clearFullRows,

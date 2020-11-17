@@ -8,7 +8,6 @@ import './server/plugins';
 
 // register actions
 import './actions';
-import RoomHandler from './rooms/RoomHandler';
 
 const start = async () => {
   // load database json before
@@ -16,8 +15,6 @@ const start = async () => {
 
   // create initial, predefined actions and start them
   await ensureDefaultRooms();
-  const rooms = await Room.find();
-  rooms.forEach((entity) => new RoomHandler(entity));
 
   // start server
   server.listen(config.port, (err) => {

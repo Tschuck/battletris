@@ -109,7 +109,7 @@ export default [
       [ 0, 1, 0 ],
     ],
   ],
-  // pyramide
+  // pyramid
   [
     [
       [ 0, 1, 0 ],

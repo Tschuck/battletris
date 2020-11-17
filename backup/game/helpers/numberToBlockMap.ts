@@ -196,7 +196,7 @@ export default function(number) {
   }
 
   // fill empty rows
-  map = mapHandler.getEmptyMap(20, map);
+  map = mapHelper.getEmptyMap(20, map);
 
   return map;
 }

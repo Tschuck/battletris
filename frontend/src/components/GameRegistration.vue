@@ -59,7 +59,7 @@ import { onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 import { WsMessageType } from '@battletris/shared';
 
-import GameUser from '@battletris/shared/interfaces/GameUser';
+import { GameUserInterface } from '@battletris/shared/interfaces/GameUser';
 import ClassLogo from './ClassLogo.vue';
 import RoomConnection, { getCurrentConnection } from '../lib/RoomConnection';
 
@@ -72,12 +72,12 @@ import RoomConnection, { getCurrentConnection } from '../lib/RoomConnection';
   },
   setup() {
     const conn: RoomConnection = getCurrentConnection() as RoomConnection;
-    const gameUsers = ref<GameUser[]>([]);
+    const gameUsers = ref<GameUserInterface[]>([]);
     const activeIndex = ref(-1);
     const loading = ref(true);
 
     const updateGameUsers = () => {
-      gameUsers.value = [0, 1, 2, 3, 4, 5].map((index) => conn.room?.game.users[index] as GameUser);
+      gameUsers.value = [0, 1, 2, 3, 4, 5].map((index) => conn.room?.game.users[index] as GameUserInterface);
       activeIndex.value = conn.activeIndex;
     };
     updateGameUsers();

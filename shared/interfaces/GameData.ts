@@ -1,8 +1,8 @@
-import GameStatus from "../enums/GameStatus";
-import GameUser from "./GameUser";
+import GameStatus from '../enums/GameStatus';
+import { GameUserInterface } from './GameUser';
 
 export default interface GameDataInterface {
-  users: GameUser[];
+  users: GameUserInterface[];
 
   status: GameStatus;
-};
+}

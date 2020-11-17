@@ -10,7 +10,8 @@ enum WsMessageType {
   GAME_CANCEL = 7,
   GAME_UPDATE = 8,
   GAME_USER_UPDATE = 9,
-  GAME_STATS = 10,
+  GAME_CHANGE = 10,
+  GAME_STATS = 20,
   TEST = 99,
 }
 

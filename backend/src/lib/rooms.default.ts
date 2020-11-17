@@ -1,5 +1,5 @@
 import * as Throttle from 'promise-parallel-throttle';
-import Room from '../db/Room';
+import { Room } from '../db';
 
 export default async () => {
   const defaultRooms = [

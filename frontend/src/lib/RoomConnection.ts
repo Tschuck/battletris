@@ -1,6 +1,8 @@
 import {
   getStringifiedMessage, parseMessage, RoomWithDataInterface, WsMessageType,
 } from '@battletris/shared';
+import Cookies from 'js-cookie';
+import config from './config';
 import { getRequest } from './request';
 // eslint-disable-next-line import/no-cycle
 import roomHandler from './RoomHandler';
@@ -62,11 +64,15 @@ export default class RoomConnection {
    * Join the game (= subscribe for websocket room) and connect to websocket.
    */
   async connect() {
+    // workaround websocket connection upgrade event header value to include cookie and
+    // authentication value
+    Cookies.set('battletris_room', this.roomId);
+
     // load current room data
     this.room = await getRequest(`room/${this.roomId}`);
 
     // Open new websocket connection and ensure userId
-    this.connection = new WebSocket('ws://localhost:2020/ws');
+    this.connection = new WebSocket(config.wsUrl);
     this.connection.onmessage = (event) => {
       const { type, payload } = parseMessage(WsMessageType, event.data);
       this.handlers.forEach((handler) => handler(type as WsMessageType, payload));
