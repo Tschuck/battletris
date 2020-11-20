@@ -103,9 +103,9 @@ import { ref } from '@vue/composition-api';
 
 import { disconnectLastConnection } from '../lib/RoomConnection';
 import Loading from '../components/Loading.vue';
-import roomHandler from '../lib/RoomHandler';
 import ViewWrapper from '../components/ViewWrapper.vue';
 import user from '../lib/User';
+import { getRequest } from '../lib/request';
 
 @Component({
   components: {
@@ -125,9 +125,8 @@ import user from '../lib/User';
       loading.value = true;
       // disconnect last connection
       disconnectLastConnection();
-      await roomHandler.load();
       // get room overview
-      rooms.value = Object.keys(roomHandler.rooms).map((key) => roomHandler.rooms[key]);
+      rooms.value = await getRequest('rooms');
       loading.value = false;
     };
     init();

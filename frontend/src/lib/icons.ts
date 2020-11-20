@@ -10,4 +10,5 @@ library.add(faArrowUp);
 library.add(faArrowDown);
 library.add(faArrowLeft);
 library.add(faArrowRight);
+
 Vue.component('font-awesome-icon', FontAwesomeIcon);

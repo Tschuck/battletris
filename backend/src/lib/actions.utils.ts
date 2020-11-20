@@ -17,7 +17,7 @@ export const createEndpoint = (
     ...opts,
   };
 
-  server.log.info(`[ACTION] register ${type} => ${url}`);
+  server.log.debug(`[ACTION] register ${type} => ${url}`);
   server[type](
     url,
     specs,

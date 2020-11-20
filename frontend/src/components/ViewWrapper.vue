@@ -9,9 +9,9 @@
       </router-link>
       <div v-if="$route.name === 'room'">
         <span class="ml-6 text-xl font-semibold text-gray-100">></span>
-        <span class="ml-6 text-xl font-semibold text-gray-100">{{
-          roomName
-        }}</span>
+        <span class="ml-6 text-xl font-semibold text-gray-100">
+          {{ routeName }}
+        </span>
       </div>
       <div class="flex-grow block w-full lg:flex lg:items-center lg:w-auto">
         <div class="text-sm lg:flex-grow" />
@@ -29,12 +29,10 @@
 </template>
 
 <script lang="ts">
-import { computed, SetupContext } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 import ClassLogo from './ClassLogo.vue';
 import UserPreview from './UserPreview.vue';
 import Loading from './Loading.vue';
-import roomHandler from '../lib/RoomHandler';
 
 @Component({
   components: {
@@ -45,15 +43,7 @@ import roomHandler from '../lib/RoomHandler';
   props: {
     loading: { type: Boolean },
     showHeader: { type: Boolean, default: true },
-  },
-  setup(_, { root }: SetupContext) {
-    const roomName = computed(() => {
-      if (root?.$route?.params?.roomId && roomHandler.rooms[root.$route.params.roomId]) {
-        return roomHandler.rooms[root.$route.params.roomId].name;
-      }
-    });
-
-    return { roomName };
+    routeName: { type: String },
   },
 })
 export default class RootNav extends Vue {}

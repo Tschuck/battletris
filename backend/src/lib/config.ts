@@ -1,14 +1,13 @@
 import path from 'path';
 
-import server from '../server';
-
 const prefix = 'BATTLETRIS_';
 const _ = (name: string, defaultValue: any) => {
   const paramName = `${prefix}${name.toUpperCase()}`;
   const value = process.env[paramName];
   if ((value || defaultValue) !== undefined) {
-    if (defaultValue !== undefined) {
-      server.log.warn(`[CONFIG] using default for: ${paramName}: ${defaultValue}`);
+    // do not log in game process
+    if (defaultValue !== undefined && process.env.BATTLETRIS_IS_GAME !== 'true') {
+      console.warn('\x1b[33m%s\x1b[0m: ', `[CONFIG] using default for: ${paramName}: ${defaultValue}`);
     }
 
     return value || defaultValue;
@@ -42,4 +41,6 @@ export default {
   startCounter: _('GAME_START_COUNTER', 10),
   // start sub process in debug mode
   debugGame: _('DEBUG_GAME', false),
+  // overall log level
+  logLevel: _('LOG_LEVEL', 'debug'),
 };

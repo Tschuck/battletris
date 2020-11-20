@@ -1,6 +1,5 @@
 import { UserInterface, WsMessageType } from '@battletris/shared';
 import { getRequest, postRequest } from './request';
-// eslint-disable-next-line import/no-cycle
 import { getCurrentConnection } from './RoomConnection';
 
 class User implements UserInterface {

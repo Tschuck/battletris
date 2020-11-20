@@ -20,7 +20,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { ref } from '@vue/composition-api';
 
 import user from './lib/User';
-import roomHandler from './lib/RoomHandler';
 import Loading from './components/Loading.vue';
 
 @Component({
@@ -32,7 +31,6 @@ import Loading from './components/Loading.vue';
 
     (async () => {
       await user.init();
-      await roomHandler.load();
       loading.value = false;
     })();
 

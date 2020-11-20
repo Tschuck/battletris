@@ -1,5 +1,5 @@
 <template>
-  <ViewWrapper :loading="loading">
+  <ViewWrapper :loading="loading" :rout-name="room ? room.name : ''">
     <template v-if="!loading">
       <div class="grid h-full grid-cols-4 gap-6">
         <div
@@ -9,8 +9,8 @@
           <Chat />
         </div>
         <div class="col-span-3">
-          <GameRegistration v-if="!isMatchRunning" />
-          <Game v-else />
+          <!-- <GameRegistration v-if="!isMatchRunning" />
+          <Game v-else /> -->
         </div>
       </div>
     </template>
@@ -67,6 +67,7 @@ import ViewWrapper from '../components/ViewWrapper.vue';
       creating,
       isMatchRunning,
       loading,
+      room,
     };
   },
 })
