@@ -5,7 +5,7 @@
   >
     <h2 class="pr-3 font-bold">{{ $t("lobby.title") }}</h2>
 
-    <div class="p-1 mt-3 mr-3 overflow-y-auto border border-gray-600">
+    <div class="p-1 mt-3 mr-3 overflow-y-auto border">
       <span v-for="(name, index) in usersInLobby" :key="index">
         <span class="text-sm">{{ index !== 0 ? ',' : '' }} {{ name }}</span>
       </span>
@@ -14,7 +14,7 @@
     <div class="flex-grow pr-3 overflow-y-auto">
       <div v-for="(message, index) in chat" :key="index" class="mt-3">
         <p class="text-sm">{{ message.message }}</p>
-        <div class="flex text-xs italic text-gray-500">
+        <div class="flex text-xs italic opacity-25">
           <p>{{ getUserName(message.id) }}</p>
           <p class="flex-grow" />
           <p>{{ message.date }}</p>
@@ -23,7 +23,7 @@
     </div>
     <div class="flex pr-3">
       <input
-        class="flex-grow w-full px-3 py-2 mr-3 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+        class="flex-grow w-full px-3 py-2 mr-3 leading-tight border rounded shadow appearance-none bg-3 focus:outline-none focus:shadow-outline"
         v-model="newMessage"
         @keyup.enter="sendMessage"
         :placeholder="$t('lobby.chat-message')"
@@ -78,6 +78,7 @@ import { getCurrentConnection } from '../lib/RoomConnection';
             });
             break;
           }
+          case WsMessageType.USER_UPDATE:
           case WsMessageType.ROOM_JOIN: {
             setUsersInLobby();
             break;

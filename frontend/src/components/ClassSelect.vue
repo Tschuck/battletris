@@ -6,7 +6,7 @@
         style="width: 40%"
         v-if="isVisible"
       >
-        <div class="flex-grow p-6 text-gray-300 bg-gray-900">
+        <div class="flex-grow p-6 text-gray-300 bg-1">
           <h1 class="text-lg font-bold">{{ $t(`classes.${value}.title`) }}</h1>
           <p class="text-xs text-gray-400" v-html="$t(`classes.${value}.desc`)"></p>
 
@@ -37,11 +37,11 @@
           </div>
         </div>
 
-        <div class="flex-shrink-0">
+        <div class="flex-shrink-0 bg-3">
           <div
             class="flex items-center px-3 py-1 mb-3"
             :class="{
-              'bg-gray-900 text-gray-300': className === value,
+              'bg-1': className === value,
             }"
             v-for="className in classes"
             :key="className"
@@ -53,8 +53,8 @@
               <div
                 class="flex items-center justify-center w-10 h-10 border-4 border-gray-900 border-solid rounded-full cursor-pointer"
                 :class="{
-                  'bg-gray-900': className !== value,
-                  'bg-gray-300': className === value,
+                  'bg-1': className !== value,
+                  'bg-gray-500': className === value,
                 }"
               >
                 <ClassLogo

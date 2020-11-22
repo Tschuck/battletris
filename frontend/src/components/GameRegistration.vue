@@ -23,7 +23,7 @@
         </h2>
         <div v-else-if="regUser">
           <div
-            class="flex items-center justify-center bg-gray-900 rounded-full"
+            class="flex items-center justify-center rounded-full"
             style="height: 160px; width: 160px"
           >
             <ClassLogo

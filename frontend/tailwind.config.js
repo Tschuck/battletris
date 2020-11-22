@@ -5,7 +5,11 @@ module.exports = {
   },
   purge: [],
   theme: {
-    extend: {},
+    extend: {
+      borderColor: {
+        default: '#4b4d4e',
+      },
+    },
   },
   variants: {},
   plugins: [],

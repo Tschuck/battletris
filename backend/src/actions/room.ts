@@ -23,10 +23,9 @@ createEndpoint(
   },
 );
 
-
 const loadRoomWithData = async (uuid: string): Promise<RoomWithDataInterface> => {
   const room = rooms[uuid];
-  const userIds = Object.keys(room?.users || []);
+  const userIds = Object.keys(room?.users) || [];
   const roomEntity = await Room.findOne(uuid);
   const users = await User.find({
     id: In(Array.from(userIds)),

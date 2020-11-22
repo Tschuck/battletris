@@ -1,10 +1,11 @@
-import { Classes, ErrorCodes } from '@battletris/shared';
+import { Classes, ErrorCodes, WsMessageType } from '@battletris/shared';
 import cookieSignature from 'cookie-signature';
 import config from '../lib/config';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '../db';
 import { createEndpoint, ensureUserRegistered } from '../lib/actions.utils';
 import Namegen from '../lib/namegen';
+import { rooms } from '../server/RoomHandler';
 
 const nameGenerator = Namegen.compile("sV i");
 
@@ -88,6 +89,11 @@ createEndpoint(
       matches: [],
       name: data.name || nameGenerator.toString(),
     }).save();
+
+    // update current ws connection
+    if (data.roomId && rooms[data.roomId]) {
+      rooms[data.roomId].wsBroadcast(WsMessageType.USER_UPDATE, { user });
+    }
 
     return user;
   }

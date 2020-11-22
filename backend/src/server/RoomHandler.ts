@@ -5,7 +5,7 @@ import { existsSync } from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
 import Pino from 'pino';
-import { Room } from '../db';
+import { Room, User } from '../db';
 import config from '../lib/config';
 import server from './server';
 import { WebsocketHandler } from 'fastify-websocket';
@@ -76,7 +76,7 @@ export default class RoomHandler {
    */
   closeRoom() {
     if (rooms[this.id] || this.process) {
-      this.log(`process closed: ${this.process?.pid}`);
+      this.log(`room closed: ${this.process?.pid}`);
       this.process = null;
       delete rooms[this.id];
     }
@@ -165,10 +165,20 @@ export default class RoomHandler {
    * @param payload payload to send
    */
   wsBroadcast(type: WsMessageType, payload: any) {
-    Object.keys(this.users).forEach((userId: string) => {
-      this.users[userId].send(getStringifiedMessage(type, payload));
-    });
+    Object.keys(this.users).forEach((userId: string) => this.wsSend(userId, type, payload));
   }
+
+  /**
+   * Send a type and a payload to all registered wsConnections.
+   *
+   * @param userId user id to send the message to
+   * @param type type to send
+   * @param payload payload to send
+   */
+  wsSend(userId: string, type: WsMessageType, payload: any) {
+    this.users[userId].send(getStringifiedMessage(type, payload));
+  }
+
 
   /**
    * Add a user to the room websocket and listen for messages!
@@ -176,15 +186,21 @@ export default class RoomHandler {
    * @param userId user id to check
    * @param socket socket to add
    */
-  wsJoin(userId: string, ws: WebSocket) {
+  async wsJoin(userId: string, ws: WebSocket) {
     this.users[userId] = ws;
 
     // handle ws leave
     ws.on('close', (...args) => {
       delete this.users[userId];
+      // notify clients, that the user left the room
+      this.wsBroadcast(WsMessageType.ROOM_LEAVE, { userId });
       if (Object.keys(this.users).length === 0) {
         this.closeRoom();
       }
+    });
+
+    this.wsSend(userId, WsMessageType.ROOM_JOIN, {
+      user: await User.findOne(userId),
     });
 
     this.wsListen(userId);

@@ -36,15 +36,14 @@ class User implements UserInterface {
   }
 
   async update(name: string, className: string) {
-    await postRequest('user', { className, name });
+    const roomConnection = getCurrentConnection();
+    await postRequest('user', {
+      className,
+      name,
+      roomId: roomConnection?.roomId,
+    });
     this.name = name;
     this.className = className;
-
-    // update user data also for others
-    const roomConnection = getCurrentConnection();
-    if (roomConnection) {
-      roomConnection.send(WsMessageType.USER_UPDATE, { className, name });
-    }
   }
 
   async export() {

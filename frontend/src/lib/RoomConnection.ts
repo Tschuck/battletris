@@ -42,7 +42,7 @@ export default class RoomConnection extends WsConnection {
       switch (type) {
         case WsMessageType.ROOM_JOIN:
         case WsMessageType.USER_UPDATE: {
-          this.room.users[payload.userId] = payload.user;
+          this.room.users[payload.user.id] = payload.user;
           break;
         }
         case WsMessageType.ROOM_LEAVE: {

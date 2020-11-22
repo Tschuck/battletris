@@ -60,6 +60,7 @@ export default class WsConnection {
    * @param type message type
    * @param payload payload
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   defaultMessageHandler(type: WsMessageType, payload: any) {
     // will be overwritten by specific handler
   }

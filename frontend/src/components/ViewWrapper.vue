@@ -1,15 +1,15 @@
 <template>
   <div class="flex flex-col">
-    <nav class="flex flex-wrap items-center justify-between p-3 bg-gray-900" v-if="showHeader">
-      <router-link to="/" class="flex items-center flex-shrink-0 text-white">
-        <img width="42" height="42" src="battletris-light.svg" />
-        <span class="ml-6 text-xl font-semibold text-gray-100">{{
+    <nav class="flex flex-wrap items-center justify-between p-3 header-bg" v-if="showHeader">
+      <router-link to="/" class="flex items-center flex-shrink-0">
+        <img width="42" height="42" src="battletris.svg" />
+        <span class="ml-6 text-xl font-semibold">{{
           $t("battletris")
         }}</span>
       </router-link>
       <div v-if="$route.name === 'room'">
-        <span class="ml-6 text-xl font-semibold text-gray-100">></span>
-        <span class="ml-6 text-xl font-semibold text-gray-100">
+        <span class="ml-6 text-xl font-semibold">></span>
+        <span class="ml-6 text-xl font-semibold">
           {{ routeName }}
         </span>
       </div>

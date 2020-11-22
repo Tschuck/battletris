@@ -8,27 +8,27 @@
         <h3 class="px-3 mt-2 text-sm font-bold">
           {{ $t("dashboard.tavern.title") }}
         </h3>
-        <p class="content" v-html="$t('dashboard.tavern.desc')" />
+        <p class="pt-0 content" v-html="$t('dashboard.tavern.desc')" />
 
         <h3 class="px-3 mt-2 text-sm font-bold">
           {{ $t("dashboard.battle-control.title") }}
         </h3>
-        <p class="content" v-html="$t('dashboard.battle-control.desc')" />
+        <p class="pt-0 content" v-html="$t('dashboard.battle-control.desc')" />
 
         <h3 class="px-3 mt-2 text-sm font-bold">
           {{ $t("dashboard.how-to-play.title") }}
         </h3>
-        <p class="content" v-html="$t('dashboard.how-to-play.desc')" />
+        <p class="pt-0 content" v-html="$t('dashboard.how-to-play.desc')" />
 
         <h3 class="px-3 mt-2 text-sm font-bold">
           {{ $t("dashboard.abilities.title") }}
         </h3>
-        <p class="content" v-html="$t('dashboard.abilities.desc')" />
+        <p class="pt-0 content" v-html="$t('dashboard.abilities.desc')" />
 
         <h3 class="px-3 mt-2 text-sm font-bold">
           {{ $t("dashboard.targets.title") }}
         </h3>
-        <p class="content" v-html="$t('dashboard.targets.desc')" />
+        <p class="pt-0 content" v-html="$t('dashboard.targets.desc')" />
       </div>
 
       <div class="col-span-2">
@@ -74,7 +74,7 @@
           <h2 class="header">{{ $t("room.join") }}</h2>
           <div class="flex flex-row flex-wrap content">
             <router-link
-              class="flex-shrink-0 w-40 p-3 mb-2 mr-3 border border-gray-500 rounded min-w-xs hover:shadow-lg"
+              class="flex-shrink-0 w-40 p-3 mb-2 mr-3 border rounded min-w-xs bg-hover-3"
               v-for="room in rooms"
               :key="room.id"
               :value="room.id"

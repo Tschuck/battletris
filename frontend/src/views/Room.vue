@@ -1,9 +1,9 @@
 <template>
-  <ViewWrapper :loading="loading" :rout-name="room ? room.name : ''">
+  <ViewWrapper :loading="loading" :route-name="room ? room.name : ''">
     <template v-if="!loading">
       <div class="grid h-full grid-cols-4 gap-6">
         <div
-          class="border-r border-gray-300 border-solid"
+          class="border-r border-solid bg-2"
           v-if="activeIndex === -1 || !isMatchRunning"
         >
           <Chat />
@@ -27,7 +27,6 @@ import Game from '../components/Game.vue';
 import GameRegistration from '../components/GameRegistration.vue';
 import Loading from '../components/Loading.vue';
 import RoomConnection from '../lib/RoomConnection';
-import GameConnection from '../lib/GameConnection';
 import ViewWrapper from '../components/ViewWrapper.vue';
 
 @Component({

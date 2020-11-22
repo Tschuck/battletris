@@ -1,11 +1,11 @@
 <template>
-  <div class="flex flex-col overflow-hidden bg-white" style="height: 100vh">
+  <div class="flex flex-col overflow-hidden text-gray-300 bg-3" style="height: 100vh">
     <nav
-      class="flex flex-wrap items-center justify-between p-3 bg-gray-900"
+      class="flex flex-wrap items-center justify-between p-3 header-bg"
       v-if="loading"
     >
-      <img width="42" height="42" src="battletris-light.svg" />
-      <span class="ml-6 text-xl font-semibold text-gray-100">{{
+      <img width="42" height="42" src="battletris.svg" />
+      <span class="ml-6 text-xl font-semibold">{{
         $t("battletris")
       }}</span>
       <div class="flex-grow" />
@@ -47,33 +47,64 @@ export default class Home extends Vue {}
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-1: #1a2024;
+  --bg-2:  #242c31;
+  --bg-3: #3e4649;
+  --border: #4b4d4e;
+}
+
+.bg-1, .bg-hover-1:hover {
+  background-color: var(--bg-1);
+}
+
+.bg-2, .bg-hover-2:hover {
+  background-color: var(--bg-2);
+}
+
+.bg-3, .bg-hover-3:hover {
+  background-color: var(--bg-3);
+}
+
+.header-bg {
+  background-color: var(--bg-1);
+  border: var(--border);
+}
+
 .button {
-  @apply px-4 py-2 font-bold text-white bg-blue-900 rounded;
+  @apply px-4 py-2 font-bold rounded;
+  background-color: var(--bg-3);
 
   &:hover {
-    @apply bg-blue-800;
+    background-color:  var(--bg-1);
   }
 }
 
 .button-outline {
-  @apply px-4 py-2 font-bold text-blue-900 border border-blue-900 rounded;
+  @apply px-4 py-2 font-bold border rounded;
+  border: 1px solid var(--bg-3);
 
   &:hover {
-    @apply bg-blue-800 text-white;
+    background-color:  var(--bg-1);
   }
 }
 
 .card {
   @apply overflow-hidden rounded;
+  background-color: var(--bg-2);
 
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 2px 5px 3px 0 rgb(0 0 0 / 20%);
 
   .header {
-    @apply p-3 font-bold text-white bg-gray-900 text-sm;
+    @apply p-3 font-bold text-sm header-bg;
   }
 
   .content {
     @apply px-3 py-3 text-sm;
+
+    &.pt-0 {
+      padding-top: 0;
+    }
   }
 }
 </style>
