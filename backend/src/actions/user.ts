@@ -82,18 +82,15 @@ createEndpoint(
   {},
   async (data, req, reply) => {
     const userId = await ensureUserRegistered(req);
-
-    // ensure default user
-    // let matches: Match[] = await Match.find({
-    //   where: { users: [{id: userId}] },
-    //   take: 10,
-    // });
-
-    const matches = await createQueryBuilder(Match)
-      .select('match.id')
-      .from(Match, 'match')
-      .leftJoinAndSelect('user_matches', 'mum')
-      .where('mum.userId = :userId', { userId })
+    const matches = await createQueryBuilder(Match, 'match')
+      .leftJoin(
+        'match.users',
+        'user',
+        'user.id = :userId',
+        { userId },
+      )
+      .where('user.id = :userId', { userId })
+      .take(10)
       .getMany();
 
     // parse match stats object

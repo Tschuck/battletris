@@ -146,13 +146,6 @@ export default class RoomHandler {
           stats: JSON.stringify(stats),
         }).save();
 
-        console.log({
-          users: Object.keys(stats.users) as any,
-          started: stats.started,
-          stopped: stats.stopped,
-          stats: JSON.stringify(stats),
-        });
-
         this.wsBroadcast(WsMessageType.GAME_STOP, message.payload);
       }
     });
