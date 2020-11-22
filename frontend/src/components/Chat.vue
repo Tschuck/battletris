@@ -54,8 +54,8 @@ import { getCurrentConnection } from '../lib/RoomConnection';
 
     const setUsersInLobby = () => {
       usersInLobby.value = Object
-        .keys(conn?.room?.users || {})
-        .map((userId) => conn?.room?.users[userId].name) as string[];
+        .keys(conn?.users || {})
+        .map((userId) => conn?.users[userId].name) as string[];
     };
     setUsersInLobby();
 
@@ -93,7 +93,7 @@ import { getCurrentConnection } from '../lib/RoomConnection';
 
     const newMessage = ref('');
     const sending = ref(false);
-    const getUserName = (id: string) => conn?.room?.users[id]?.name || id;
+    const getUserName = (id: string) => conn?.users[id]?.name || id;
     const sendMessage = async (event: Event) => {
       event.preventDefault();
       event.stopPropagation();

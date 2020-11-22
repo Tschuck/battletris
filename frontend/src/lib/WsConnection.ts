@@ -1,5 +1,6 @@
 import {
-  getStringifiedMessage, parseMessage, RoomWithDataInterface, WsMessageType,
+  GameUserStatus,
+  getStringifiedMessage, parseMessage, RoomWithDataInterface, UserInterface, WsMessageType,
 } from '@battletris/shared';
 import config from './config';
 import { getRequest } from './request';
@@ -26,8 +27,15 @@ export default class WsConnection {
   /** Function that is called with incoming messages */
   handlers: ((type: WsMessageType, data: any) => void)[];
 
-  /** Room endpoint result */
-  room: RoomWithDataInterface|null = null;
+  connectionCount = 0;
+
+  isMatchRunning = false;
+
+  name = '';
+
+  users: Record<string, UserInterface> = {};
+
+  gameRegistration: Record<string, GameUserStatus> = {};
 
   constructor(roomId: string, type: string) {
     this.handlers = [];
@@ -40,7 +48,7 @@ export default class WsConnection {
    */
   async connect() {
     const { joinToken, room } = await getRequest(`room/${this.roomId}/join`);
-    this.room = room;
+    this.updateRoomValues(room);
 
     // Open new websocket connection and ensure userId
     this.connection = new WebSocket(`${config.wsUrl}/ws/${this.type}/${joinToken}`);
@@ -69,11 +77,11 @@ export default class WsConnection {
    * Disconnect from websocket connection.
    */
   async disconnect() {
-    console.log('disconnect');
     this.connection.close();
     // reset values
     this.handlers = [];
-    this.room = null;
+    // reset room values
+    this.updateRoomValues();
   }
 
   /**
@@ -97,10 +105,22 @@ export default class WsConnection {
   ) {
     this.handlers.push(handler);
     if (onUnmounted) {
-      // remove listeners on unmount
+      // remove listeners on unmounted
       onUnmounted(() => {
         this.handlers.splice(this.handlers.indexOf(handler), 1);
       });
     }
+  }
+
+  /**
+   * Writes all values from the loaded backend room into the room connection instance.
+   * @param room loaded room object from backend
+   */
+  updateRoomValues(room?: RoomWithDataInterface) {
+    this.connectionCount = room?.connectionCount || 0;
+    this.isMatchRunning = room?.isMatchRunning || false;
+    this.name = room?.name || '';
+    this.users = room?.users || {};
+    this.gameRegistration = room?.gameRegistration || {};
   }
 }

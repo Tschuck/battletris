@@ -60,14 +60,14 @@ import RoomConnection, { getCurrentConnection } from '../lib/RoomConnection';
     const messages = ref<any[]>([]);
 
     const updateUsers = () => {
-      const filteredUsers = conn.room?.game.users.filter((user) => !!user);
-      gameUsers.value = filteredUsers as GameUserInterface[];
+      // const filteredUsers = conn.game.users.filter((user) => !!user);
+      // gameUsers.value = filteredUsers as GameUserInterface[];
     };
     updateUsers();
     conn.onMessage(async (type: number) => {
-      if (type === WsMessageType.GAME_USER_UPDATE) {
-        updateUsers();
-      }
+      // if (type === WsMessageType.GAME_USER_UPDATE) {
+      //   updateUsers();
+      // }
     }, onUnmounted);
 
     return {

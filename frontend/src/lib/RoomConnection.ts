@@ -38,15 +38,27 @@ export default class RoomConnection extends WsConnection {
    * @param payload payload
    */
   defaultMessageHandler(type: WsMessageType, payload: any) {
-    if (this?.room) {
+    if (this?.users) {
       switch (type) {
         case WsMessageType.ROOM_JOIN:
         case WsMessageType.USER_UPDATE: {
-          this.room.users[payload.user.id] = payload.user;
+          this.users[payload.user.id] = payload.user;
           break;
         }
         case WsMessageType.ROOM_LEAVE: {
-          delete this.room.users[payload.userId];
+          delete this.users[payload.userId];
+          break;
+        }
+        case WsMessageType.GAME_REG_UPDATE: {
+          // backend will return a object wil all changed userIds
+          Object.keys(payload).forEach((userId) => {
+            // user left the game registration
+            if (!payload[userId]) {
+              delete this.gameRegistration[userId];
+            } else {
+              this.gameRegistration[userId] = payload[userId];
+            }
+          });
           break;
         }
         default: {

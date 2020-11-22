@@ -1,3 +1,4 @@
+import GameUserStatus from '../enums/GameUserStatus';
 import GameData from './GameData';
 import User from './User';
 
@@ -12,5 +13,7 @@ export default interface RoomWithData {
 
   game: GameData;
 
-  users: {[id: string]: User};
+  users: Record<string, User>;
+
+  gameRegistration: Record<string, GameUserStatus>;
 }

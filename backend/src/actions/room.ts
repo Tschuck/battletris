@@ -10,13 +10,13 @@ createEndpoint(
   {},
   {},
   async () => {
-    let rooms = await Room.find();
-    return rooms.map((roomEntity) => {
-      const startedRoom = rooms[roomEntity.id];
+    const dbRooms = await Room.find();
+    return dbRooms.map((roomEntity) => {
+      const room = rooms[roomEntity.id];
 
       return {
         ...roomEntity,
-        connectionCount: startedRoom?.users?.size || 0,
+        connectionCount: room ? Object.keys(room.users).length : 0,
         isMatchRunning: false,
       };
     });
@@ -36,6 +36,7 @@ const loadRoomWithData = async (uuid: string): Promise<RoomWithDataInterface> =>
   return {
     ...roomEntity,
     connectionCount: userIds.length,
+    gameRegistration: room.gameRegistration,
     isMatchRunning: false,
     users: userIdMap,
   } as RoomWithDataInterface;

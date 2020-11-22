@@ -1,6 +1,5 @@
-import { getStringifiedMessage, parseMessage, ProcessMessageType, WsMessageType } from '@battletris/shared';
+import { ErrorCodes, GameUserStatus, getStringifiedMessage, parseMessage, ProcessMessageType, WsMessageType } from '@battletris/shared';
 import { ChildProcess, fork } from 'child_process';
-import { Socket } from 'dgram';
 import { existsSync } from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
@@ -8,7 +7,6 @@ import Pino from 'pino';
 import { Room, User } from '../db';
 import config from '../lib/config';
 import server from './server';
-import { WebsocketHandler } from 'fastify-websocket';
 
 // file path to use to start a game process
 const gameFilePath = path.resolve('./dist/src/game/index.js');
@@ -36,31 +34,27 @@ export default class RoomHandler {
     return rooms[id];
   }
 
-  /**
-   * room id
-   */
+  /** room id */
   id: string;
 
-  /**
-   * game process
-   */
+  /** game process */
   process: ChildProcess;
 
-  /**
-   * List of connected user ids.
-   */
+  /** List of connected user ids */
   users: {
     [userId: string]: WebSocket,
   }
 
-  /**
-   * room specific logger.
-   */
+  /** room specific logger */
   logger: Pino;
+
+  /** room specific logger */
+  gameRegistration: Record<string, GameUserStatus>;
 
   constructor(id: string) {
     this.id = id;
     this.users = { };
+    this.gameRegistration = { };
     this.logger = Pino({
       prettyPrint: true,
       level: config.logLevel,
@@ -192,6 +186,7 @@ export default class RoomHandler {
     // handle ws leave
     ws.on('close', (...args) => {
       delete this.users[userId];
+      delete this.gameRegistration[userId];
       // notify clients, that the user left the room
       this.wsBroadcast(WsMessageType.ROOM_LEAVE, { userId });
       if (Object.keys(this.users).length === 0) {
@@ -213,17 +208,65 @@ export default class RoomHandler {
    */
   wsListen(userId: string) {
     this.users[userId].on('message', (message: string) => {
-      const { type, payload } = parseMessage(WsMessageType, message);
+      try {
+        const { type, payload } = parseMessage(WsMessageType, message);
 
-      switch (type) {
-        case WsMessageType.CHAT: {
+        server.log.debug(`[WS][${userId}]: ${WsMessageType[type]} ${JSON.stringify(payload)}`)
+
+        if (type === WsMessageType.CHAT) {
           this.wsBroadcast(WsMessageType.CHAT, {
             message: payload,
             id: userId,
           });
 
-          break;
+          return;
         }
+
+        switch (type) {
+          case WsMessageType.GAME_JOIN: {
+            // user has already joined this match
+            if (this.gameRegistration[userId]) {
+              throw new Error(ErrorCodes.CONNECTION_ID_ALREADY_REGISTERED);
+            }
+            if (Object.keys(this.gameRegistration).length === 6) {
+              throw new Error(ErrorCodes.MAX_USERS);
+            }
+            this.gameRegistration[userId] = GameUserStatus.JOINED;
+            break;
+          }
+          case WsMessageType.GAME_LEAVE: {
+            // user has already joined this match
+            if (!this.gameRegistration[userId]) {
+              throw new Error(ErrorCodes.CONNECTION_NOT_JOINED);
+            }
+
+            delete this.gameRegistration[userId];
+            break;
+          }
+          case WsMessageType.GAME_ACCEPT: {
+            // user has already joined this match
+            if (!this.gameRegistration[userId]) {
+              throw new Error(ErrorCodes.CONNECTION_NOT_JOINED);
+            }
+            this.gameRegistration[userId] = GameUserStatus.ACCEPTED;
+            break;
+          }
+          case WsMessageType.GAME_CANCEL: {
+            // user has already joined this match
+            if (!this.gameRegistration[userId]) {
+              throw new Error(ErrorCodes.CONNECTION_NOT_JOINED);
+            }
+            this.gameRegistration[userId] = GameUserStatus.JOINED;
+            break;
+          }
+        }
+
+        this.wsBroadcast(WsMessageType.GAME_REG_UPDATE, {
+          [userId]: this.gameRegistration[userId] || '',
+        });
+      } catch (ex) {
+        server.log.error(ex.message);
+        this.users[userId].send(WsMessageType.ERROR, { e: ex.message });
       }
     });
   }

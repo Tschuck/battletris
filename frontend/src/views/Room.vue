@@ -1,5 +1,5 @@
 <template>
-  <ViewWrapper :loading="loading" :route-name="room ? room.name : ''">
+  <ViewWrapper :loading="loading" :route-name="roomName">
     <template v-if="!loading">
       <div class="grid h-full grid-cols-4 gap-6">
         <div
@@ -9,8 +9,7 @@
           <Chat />
         </div>
         <div class="col-span-3">
-          <!-- <GameRegistration v-if="!isMatchRunning" />
-          <Game v-else /> -->
+          <GameRegistration v-if="!isMatchRunning" />
         </div>
       </div>
     </template>
@@ -20,7 +19,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { onUnmounted, ref } from '@vue/composition-api';
-import { GameStatus, RoomWithDataInterface, WsMessageType } from '@battletris/shared';
+import { WsMessageType } from '@battletris/shared';
 
 import Chat from '../components/Chat.vue';
 import Game from '../components/Game.vue';
@@ -43,22 +42,22 @@ import ViewWrapper from '../components/ViewWrapper.vue';
   setup(props) {
     const loading = ref(true);
     const creating = ref(false);
-    const room = ref<RoomWithDataInterface | null>(null);
-    const conn = new RoomConnection(props.roomId as string);
+    const roomName = ref<string>('');
+    const roomConn = new RoomConnection(props.roomId as string);
     const isMatchRunning = ref(false);
     const activeIndex = ref(-1);
 
     const handleMessage = (type: WsMessageType) => {
       if (type === WsMessageType.GAME_UPDATE) {
-        isMatchRunning.value = conn.room?.game.status === GameStatus.STARTED;
-        activeIndex.value = conn.activeIndex;
+        isMatchRunning.value = roomConn?.isMatchRunning;
+        activeIndex.value = roomConn.activeIndex;
       }
     };
-    conn.onMessage((type) => handleMessage(type), onUnmounted);
+    roomConn.onMessage((type) => handleMessage(type), onUnmounted);
 
     (async () => {
-      await conn.connect();
-      room.value = conn.room;
+      await roomConn.connect();
+      roomName.value = roomConn.name;
       loading.value = false;
     })();
 
@@ -67,7 +66,7 @@ import ViewWrapper from '../components/ViewWrapper.vue';
       creating,
       isMatchRunning,
       loading,
-      room,
+      roomName,
     };
   },
 })
