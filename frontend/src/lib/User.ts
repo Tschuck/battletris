@@ -1,4 +1,4 @@
-import { UserInterface, WsMessageType } from '@battletris/shared';
+import { MatchInterface, UserInterface } from '@battletris/shared';
 import { getRequest, postRequest } from './request';
 import { getCurrentConnection } from './RoomConnection';
 
@@ -11,7 +11,7 @@ class User implements UserInterface {
 
   name = '';
 
-  matches: string[] = [];
+  matches: MatchInterface[] = [];
 
   async init(battletrisId?: string) {
     const registerParams: {

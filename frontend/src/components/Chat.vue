@@ -47,7 +47,7 @@ import { WsMessageType } from '@battletris/shared';
 import { getCurrentConnection } from '../lib/RoomConnection';
 
 @Component({
-  setup() {
+  setup(props, { root }) {
     const chat = ref<any[]>([]);
     const conn = getCurrentConnection();
     const usersInLobby = ref<string[]>([]);
@@ -59,23 +59,25 @@ import { getCurrentConnection } from '../lib/RoomConnection';
     };
     setUsersInLobby();
 
+    const addChatMsg = (userId: string, message: string) => {
+      const d = new Date();
+      const timeString = `${d.getHours()}:${d.getMinutes()}.${d.getSeconds()}`;
+      chat.value.unshift({
+        id: userId,
+        message,
+        date: timeString,
+      });
+    };
+
     if (conn) {
       conn.onMessage((type: WsMessageType, payload: any) => {
-        const d = new Date();
-        const timeString = `${d.getHours()}:${d.getMinutes()}.${d.getSeconds()}`;
         switch (type) {
           case WsMessageType.CHAT: {
-            chat.value.unshift({
-              ...payload,
-              date: timeString,
-            });
+            addChatMsg(payload.id, payload.message);
             break;
           }
           case WsMessageType.GAME_STATS: {
-            chat.value.unshift({
-              message: payload,
-              date: timeString,
-            });
+            addChatMsg('', payload.message);
             break;
           }
           case WsMessageType.USER_UPDATE:
@@ -85,6 +87,12 @@ import { getCurrentConnection } from '../lib/RoomConnection';
           }
           case WsMessageType.ROOM_LEAVE: {
             setUsersInLobby();
+            break;
+          }
+          case WsMessageType.GAME_STOP: {
+            addChatMsg('', root.$i18n.t('game.ends', {
+              winner: conn?.users[payload?.winner].name,
+            }));
             break;
           }
         }

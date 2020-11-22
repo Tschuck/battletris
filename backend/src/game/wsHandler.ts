@@ -1,9 +1,8 @@
 import { getStringifiedMessage, parseMessage, WsMessageType } from '@battletris/shared';
 import { SocketStream } from 'fastify-websocket';
 import WebSocket from 'ws';
-import game from './Game';
+import game from './game';
 import logger from './logger';
-import processHandler from './processHandler';
 
 const wss = new WebSocket.Server({ noServer: true });
 
@@ -35,10 +34,6 @@ class WsHandler {
         // processHandler.send(ProcessMessageType.LEAVE_ROOM, { userId });
         // remove from the users
         delete this.users[userId];
-        // if all users were closed, exit the process
-        if (this.users.size === 0) {
-          processHandler.exit();
-        }
       });
 
       this.wsSend(userId, WsMessageType.GAME_UPDATE, game.serialize());

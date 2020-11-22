@@ -89,7 +89,9 @@
         <div class="card">
           <h2 class="header">{{ $t("history.title") }}</h2>
           <div class="flex flex-row flex-wrap content">
-            {{ $t('coming-soon') }}
+            <div class="p-3 mt-3 border" v-for="(match, index) in matches" :key="index">
+              {{ match }}
+            </div>
           </div>
         </div>
       </div>
@@ -120,6 +122,7 @@ import { getRequest } from '../lib/request';
     // user params
     const name = ref(user.name);
     const className = ref(user.className || 'unknown');
+    const matches = ref(user.matches || []);
 
     const init = async () => {
       loading.value = true;
@@ -127,6 +130,7 @@ import { getRequest } from '../lib/request';
       disconnectLastConnection();
       // get room overview
       rooms.value = await getRequest('rooms');
+      matches.value = await getRequest('user/matches');
       loading.value = false;
     };
     init();
@@ -155,11 +159,12 @@ import { getRequest } from '../lib/request';
     return {
       className,
       creating,
-      rooms,
-      importUser,
       importError,
+      importUser,
       loading,
+      matches,
       name,
+      rooms,
       setLocalStorage,
       uploadIdRef,
       user,

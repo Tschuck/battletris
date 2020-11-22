@@ -49,8 +49,12 @@ import ViewWrapper from '../components/ViewWrapper.vue';
     const activeIndex = ref(-1);
 
     const handleMessage = (type: WsMessageType) => {
-      if (type === WsMessageType.GAME_STARTED) {
-        isMatchRunning.value = roomConn?.isMatchRunning;
+      switch (type) {
+        case WsMessageType.GAME_STARTED:
+        case WsMessageType.GAME_STOP: {
+          isMatchRunning.value = roomConn?.isMatchRunning;
+          break;
+        }
       }
     };
     roomConn.onMessage((type) => handleMessage(type), onUnmounted);

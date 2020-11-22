@@ -2,7 +2,7 @@ import { ErrorCodes, ProcessMessageType } from '@battletris/shared';
 import { SocketStream } from 'fastify-websocket';
 import wsHandler from './wsHandler';
 import logger from './logger';
-import game from './Game';
+import game from './game';
 
 class ProcessHandler {
   keepAliveTimeout: NodeJS.Timeout;
@@ -30,7 +30,7 @@ class ProcessHandler {
 
       if (type === ProcessMessageType.GAME_START) {
         return game.start(request.payload);
-      } else if (!game.isStarted) {
+      } else if (!game.started) {
         return this.send(ProcessMessageType.ERROR, { error: ErrorCodes.GAME_NOT_STARTED });
       }
 

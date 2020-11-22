@@ -38,7 +38,7 @@ export default {
   // reduce the speed timeout with the amount of ms
   increaseSteps: _('INCREASE_STEPS', 50),
   // amount of seconds until the game starts (max =10)
-  startCounter: _('GAME_START_COUNTER', 10),
+  startCounter: _('GAME_START_COUNTER', 3),
   // start sub process in debug mode
   debugGame: _('DEBUG_GAME', false),
   // overall log level

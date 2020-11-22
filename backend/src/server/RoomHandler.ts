@@ -1,12 +1,13 @@
-import { ErrorCodes, GameUserStatus, getStringifiedMessage, parseMessage, ProcessMessageType, WsMessageType } from '@battletris/shared';
+import { ErrorCodes, GameUserStatus, getStringifiedMessage, MatchStatsInterface, parseMessage, ProcessMessageType, WsMessageType } from '@battletris/shared';
 import { ChildProcess, fork } from 'child_process';
 import { existsSync } from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
 import Pino from 'pino';
-import { Room, User } from '../db';
+import { Match, Room, User } from '../db';
 import config from '../lib/config';
 import server from './server';
+import { PrimaryColumn } from 'typeorm';
 
 // file path to use to start a game process
 const gameFilePath = path.resolve('./dist/src/game/index.js');
@@ -102,7 +103,6 @@ export default class RoomHandler {
       }, socket);
     } catch (ex) {
       socket.write(ex.message);
-      socket.close();
       socket.destroy();
     }
   }
@@ -135,6 +135,27 @@ export default class RoomHandler {
     this.processSend(ProcessMessageType.GAME_START, startInfo);
 
     // ensure process is cleared, when its closed
+    this.process.on('message', async (message: { type: ProcessMessageType, payload }) => {
+      if (message.type === ProcessMessageType.GAME_STOP) {
+        const stats = message.payload as MatchStatsInterface;
+
+        await Match.create({
+          users: Object.keys(stats.users).map((id) => ({ id }) as Partial<User>),
+          started: stats.started,
+          stopped: stats.stopped,
+          stats: JSON.stringify(stats),
+        }).save();
+
+        console.log({
+          users: Object.keys(stats.users) as any,
+          started: stats.started,
+          stopped: stats.stopped,
+          stats: JSON.stringify(stats),
+        });
+
+        this.wsBroadcast(WsMessageType.GAME_STOP, message.payload);
+      }
+    });
     this.process.on('close', () => this.closeRoom());
   }
 

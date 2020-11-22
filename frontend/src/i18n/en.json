@@ -132,7 +132,8 @@
     "running": "Game is running",
     "slot": "Slot",
     "start": "Start",
-    "stop": "Stop"
+    "stop": "Stop",
+    "ends": "Game ended. Winner is \"{winner}\""
   },
   "history": {
     "title": "Match History"

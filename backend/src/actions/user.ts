@@ -2,10 +2,11 @@ import { Classes, ErrorCodes, WsMessageType } from '@battletris/shared';
 import cookieSignature from 'cookie-signature';
 import config from '../lib/config';
 import { v4 as uuidv4 } from 'uuid';
-import { User } from '../db';
+import { Match, User } from '../db';
 import { createEndpoint, ensureUserRegistered } from '../lib/actions.utils';
 import Namegen from '../lib/namegen';
 import { rooms } from '../server/RoomHandler';
+import { createQueryBuilder } from 'typeorm';
 
 const nameGenerator = Namegen.compile("sV i");
 
@@ -72,6 +73,34 @@ createEndpoint(
     }
 
     return user;
+  }
+);
+
+createEndpoint(
+  'get', '/user/matches',
+  {},
+  {},
+  async (data, req, reply) => {
+    const userId = await ensureUserRegistered(req);
+
+    // ensure default user
+    // let matches: Match[] = await Match.find({
+    //   where: { users: [{id: userId}] },
+    //   take: 10,
+    // });
+
+    const matches = await createQueryBuilder(Match)
+      .select('match.id')
+      .from(Match, 'match')
+      .leftJoinAndSelect('user_matches', 'mum')
+      .where('mum.userId = :userId', { userId })
+      .getMany();
+
+    // parse match stats object
+    return (matches || []).map((match) => ({
+      ...match,
+      ...JSON.parse(match.stats),
+    }));
   }
 );
 

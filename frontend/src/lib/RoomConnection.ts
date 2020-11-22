@@ -63,6 +63,10 @@ export default class RoomConnection extends WsConnection {
           this.isMatchRunning = true;
           break;
         }
+        case WsMessageType.GAME_STOP: {
+          this.isMatchRunning = false;
+          break;
+        }
         default: {
           console.log(`${type} ws messages not implemented`);
         }
