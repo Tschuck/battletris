@@ -194,7 +194,7 @@ export default class RoomHandler {
       }
     });
 
-    this.wsSend(userId, WsMessageType.ROOM_JOIN, {
+    this.wsBroadcast(WsMessageType.ROOM_JOIN, {
       user: await User.findOne(userId),
     });
 
@@ -261,9 +261,20 @@ export default class RoomHandler {
           }
         }
 
+        // send latest game register update
         this.wsBroadcast(WsMessageType.GAME_REG_UPDATE, {
           [userId]: this.gameRegistration[userId] || '',
         });
+
+        // check if game should be started
+        const registeredIds = Object.keys(this.gameRegistration);
+        const allStarted = !registeredIds.find(
+          (id) => this.gameRegistration[id] === GameUserStatus.JOINED,
+        );
+        if (registeredIds.length !== 0 && allStarted) {
+          // start the game!
+          console.log('STARTED :)');
+        }
       } catch (ex) {
         server.log.error(ex.message);
         this.users[userId].send(WsMessageType.ERROR, { e: ex.message });
