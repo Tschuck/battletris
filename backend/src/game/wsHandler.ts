@@ -39,6 +39,10 @@ class WsHandler {
         }
       });
 
+      this.broadcast(WsMessageType.CHAT, {
+        'message': 'hello from process',
+      })
+
       // listen for messages
       this.listen(userId, ws);
     });

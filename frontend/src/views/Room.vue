@@ -27,6 +27,7 @@ import Game from '../components/Game.vue';
 import GameRegistration from '../components/GameRegistration.vue';
 import Loading from '../components/Loading.vue';
 import RoomConnection from '../lib/RoomConnection';
+import GameConnection from '../lib/GameConnection';
 import ViewWrapper from '../components/ViewWrapper.vue';
 
 @Component({

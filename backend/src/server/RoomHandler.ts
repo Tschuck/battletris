@@ -173,16 +173,14 @@ export default class RoomHandler {
   /**
    * Add a user to the room websocket and listen for messages!
    *
-   * @param headers request headers
    * @param userId user id to check
    * @param socket socket to add
    */
-  wsJoin(userId: string, ws: Socket) {
+  wsJoin(userId: string, ws: WebSocket) {
     this.users[userId] = ws;
 
     // handle ws leave
-    ws.on('close', () => {
-      server.log.debug(`closed connection: ${userId}`);
+    ws.on('close', (...args) => {
       delete this.users[userId];
       if (Object.keys(this.users).length === 0) {
         this.closeRoom();

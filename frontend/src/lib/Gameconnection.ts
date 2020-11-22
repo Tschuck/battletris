@@ -4,9 +4,9 @@ import {
 import WsConnection from './WsConnection';
 
 // only keep the last connection opened
-let lastConnection: RoomConnection|null;
+let lastConnection: GameConnection|null;
 
-export const getCurrentConnection = (): RoomConnection|null => lastConnection;
+export const getCurrentConnection = (): GameConnection|null => lastConnection;
 
 export const disconnectLastConnection = () => {
   if (lastConnection) {
@@ -17,14 +17,12 @@ export const disconnectLastConnection = () => {
 /**
  * Handle websocket connection for a game room.
  */
-export default class RoomConnection extends WsConnection {
-  static async connect(roomId: string, type: string) {
-    const connection = new RoomConnection(roomId, type);
-    await connection.connect();
-    return connection;
-  }
-
+export default class GameConnection extends WsConnection {
   activeIndex = -1;
+
+  constructor(roomId: string, type = 'game') {
+    super(roomId, type);
+  }
 
   async connect() {
     await super.connect();
@@ -40,6 +38,21 @@ export default class RoomConnection extends WsConnection {
    * @param payload payload
    */
   defaultMessageHandler(type: WsMessageType, payload: any) {
-    // todo: implement
+    if (this?.room) {
+      switch (type) {
+        case WsMessageType.ROOM_JOIN:
+        case WsMessageType.USER_UPDATE: {
+          this.room.users[payload.userId] = payload.user;
+          break;
+        }
+        case WsMessageType.ROOM_LEAVE: {
+          delete this.room.users[payload.userId];
+          break;
+        }
+        default: {
+          console.log(`${type} ws messages not implemented`);
+        }
+      }
+    }
   }
 }

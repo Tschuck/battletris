@@ -18,12 +18,6 @@ export const disconnectLastConnection = () => {
  * Handle websocket connection for a game room.
  */
 export default class RoomConnection extends WsConnection {
-  static async connect(roomId: string) {
-    const connection = new RoomConnection(roomId);
-    await connection.connect();
-    return connection;
-  }
-
   activeIndex = -1;
 
   constructor(roomId: string, type = 'room') {

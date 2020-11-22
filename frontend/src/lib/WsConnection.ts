@@ -43,7 +43,7 @@ export default class WsConnection {
     this.room = room;
 
     // Open new websocket connection and ensure userId
-    this.connection = new WebSocket(`${config.wsUrl}/${this.type}/${joinToken}`);
+    this.connection = new WebSocket(`${config.wsUrl}/ws/${this.type}/${joinToken}`);
     this.connection.onmessage = (event) => {
       const { type, payload } = parseMessage(WsMessageType, event.data);
       this.handlers.forEach((handler) => handler(type as WsMessageType, payload));
