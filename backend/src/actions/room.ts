@@ -17,7 +17,7 @@ createEndpoint(
       return {
         ...roomEntity,
         connectionCount: room ? Object.keys(room.users).length : 0,
-        isMatchRunning: false,
+        isMatchRunning: !!(room && room.process),
       };
     });
   },
@@ -37,7 +37,7 @@ const loadRoomWithData = async (uuid: string): Promise<RoomWithDataInterface> =>
     ...roomEntity,
     connectionCount: userIds.length,
     gameRegistration: room.gameRegistration,
-    isMatchRunning: false,
+    isMatchRunning: !!(room && room.process),
     users: userIdMap,
   } as RoomWithDataInterface;
 };

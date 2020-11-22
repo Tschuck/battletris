@@ -1,7 +1,8 @@
-import { ProcessMessageType } from '@battletris/shared';
+import { ErrorCodes, ProcessMessageType } from '@battletris/shared';
 import { SocketStream } from 'fastify-websocket';
 import wsHandler from './wsHandler';
 import logger from './logger';
+import game from './Game';
 
 class ProcessHandler {
   keepAliveTimeout: NodeJS.Timeout;
@@ -25,9 +26,17 @@ class ProcessHandler {
    */
   listen() {
     process.on('message', (request, socket: SocketStream) => {
-      switch (request.type) {
-        case ProcessMessageType.JOIN_ROOM: {
-          wsHandler.join(request.headers, request.userId, socket);
+      const { type, payload } = request;
+
+      if (type === ProcessMessageType.GAME_START) {
+        return game.start(request.payload);
+      } else if (!game.isStarted) {
+        return this.send(ProcessMessageType.ERROR, { error: ErrorCodes.GAME_NOT_STARTED });
+      }
+
+      switch (type) {
+        case ProcessMessageType.WS_JOIN: {
+          wsHandler.join(payload.headers, payload.userId, socket);
           break;
         }
       }

@@ -1,16 +1,17 @@
+import { getStringifiedMessage, parseMessage, WsMessageType } from '@battletris/shared';
 import { SocketStream } from 'fastify-websocket';
-import processHandler from './processHandler';
 import WebSocket from 'ws';
+import game from './Game';
 import logger from './logger';
-import { getStringifiedMessage, parseMessage, ProcessMessageType, WsMessageType } from '@battletris/shared';
+import processHandler from './processHandler';
 
 const wss = new WebSocket.Server({ noServer: true });
 
 class WsHandler {
-  connections: Set<WebSocket>;
+  users: Record<string, WebSocket>;
 
   constructor() {
-    this.connections = new Set();
+    this.users = {};
   }
 
   /**
@@ -24,24 +25,23 @@ class WsHandler {
 
     // handle websocket upgrade to be able to use the
     wss.handleUpgrade({ headers, method: 'GET' }, socket, [], async (ws: WebSocket) => {
-      this.connections.add(ws);
+      this.users[userId] = ws;
 
       // handle ws leave
       ws.on('close', () => {
         logger.debug(`closed connection: ${userId}`);
         // remove the user from the original server room
-        processHandler.send(ProcessMessageType.LEAVE_ROOM, { userId });
-        // remove from the connections
-        this.connections.delete(ws);
-        // if all connections were closed, exit the process
-        if (this.connections.size === 0) {
+        // Do we need it?
+        // processHandler.send(ProcessMessageType.LEAVE_ROOM, { userId });
+        // remove from the users
+        delete this.users[userId];
+        // if all users were closed, exit the process
+        if (this.users.size === 0) {
           processHandler.exit();
         }
       });
 
-      this.broadcast(WsMessageType.CHAT, {
-        'message': 'hello from process',
-      })
+      this.wsSend(userId, WsMessageType.GAME_UPDATE, game.serialize());
 
       // listen for messages
       this.listen(userId, ws);
@@ -69,10 +69,19 @@ class WsHandler {
    * @param type type to send
    * @param payload payload to send
    */
-  broadcast(type: WsMessageType, payload: any) {
-    this.connections.forEach((ws: WebSocket) => {
-      ws.send(getStringifiedMessage(type, payload));
-    });
+  wsBroadcast(type: WsMessageType, payload?: any) {
+    Object.keys(this.users).forEach((userId: string) => this.wsSend(userId, type, payload));
+  }
+
+  /**
+   * Send a type and a payload to all registered wsConnections.
+   *
+   * @param userId user id to send the message to
+   * @param type type to send
+   * @param payload payload to send
+   */
+  wsSend(userId: string, type: WsMessageType, payload: any) {
+    this.users[userId].send(getStringifiedMessage(type, payload));
   }
 }
 

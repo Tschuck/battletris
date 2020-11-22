@@ -10,6 +10,7 @@
         </div>
         <div class="col-span-3">
           <GameRegistration v-if="!isMatchRunning" />
+          <Game v-else :room-id="roomId" />
         </div>
       </div>
     </template>
@@ -48,9 +49,8 @@ import ViewWrapper from '../components/ViewWrapper.vue';
     const activeIndex = ref(-1);
 
     const handleMessage = (type: WsMessageType) => {
-      if (type === WsMessageType.GAME_UPDATE) {
+      if (type === WsMessageType.GAME_STARTED) {
         isMatchRunning.value = roomConn?.isMatchRunning;
-        activeIndex.value = roomConn.activeIndex;
       }
     };
     roomConn.onMessage((type) => handleMessage(type), onUnmounted);

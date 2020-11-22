@@ -1,5 +1,4 @@
 import GameUserStatus from '../enums/GameUserStatus';
-import GameData from './GameData';
 import User from './User';
 
 export default interface RoomWithData {
@@ -10,8 +9,6 @@ export default interface RoomWithData {
   connectionCount: number;
 
   isMatchRunning: boolean;
-
-  game: GameData;
 
   users: Record<string, User>;
 

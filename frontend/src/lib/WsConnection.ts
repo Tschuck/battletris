@@ -27,14 +27,19 @@ export default class WsConnection {
   /** Function that is called with incoming messages */
   handlers: ((type: WsMessageType, data: any) => void)[];
 
+  /** amount of connected users */
   connectionCount = 0;
 
+  /** is currently a match running? */
   isMatchRunning = false;
 
+  /** room name */
   name = '';
 
+  /** all users with their name, className, ... config  */
   users: Record<string, UserInterface> = {};
 
+  /** all in the room registered users for a game */
   gameRegistration: Record<string, GameUserStatus> = {};
 
   constructor(roomId: string, type: string) {

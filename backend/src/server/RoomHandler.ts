@@ -87,16 +87,18 @@ export default class RoomHandler {
     try {
       // ensure game process is running
       if (!this.process) {
-        this.processStart();
+        throw new Error(ErrorCodes.GAME_NOT_STARTED);
       }
 
       // forward socket connection to game process
       this.log(`user joined: ${this.process.pid}`);
       this.process.send({
-        headers,
-        roomId: this.id,
-        type: ProcessMessageType.JOIN_ROOM,
-        userId,
+        type: ProcessMessageType.WS_JOIN,
+        payload: {
+          userId,
+          headers,
+          roomId: this.id,
+        }
       }, socket);
     } catch (ex) {
       socket.write(ex.message);
@@ -108,7 +110,7 @@ export default class RoomHandler {
   /**
    * Start the room process and listen for process messages, that needs to be synced.
    */
-  processStart() {
+  async processStart() {
     this.process = fork(gameFilePath, ['params'], {
       silent: true,
       env: {
@@ -124,19 +126,16 @@ export default class RoomHandler {
     this.process.stdout.on('data', (data) => process.stdout.write(data));
     this.process.stderr.on('data', (data) => process.stderr.write(data));
 
+    // send initial information for all registered users and their classes
+    const startInfo = {};
+    await Promise.all(Object.keys(this.gameRegistration).map(async (userId) => {
+      const userEntity = await User.findOne(userId);
+      startInfo[userId] = userEntity;
+    }));
+    this.processSend(ProcessMessageType.GAME_START, startInfo);
+
     // ensure process is cleared, when its closed
     this.process.on('close', () => this.closeRoom());
-
-    // handle process messages
-    this.process.on('message', ({ type, payload }: any) => {
-      switch (type) {
-        case ProcessMessageType.LEAVE_ROOM: {
-          this.log(`user left: ${payload.userId}`);
-          this.users.delete(payload.userId);
-          break;
-        }
-      }
-    });
   }
 
   /**
@@ -158,7 +157,7 @@ export default class RoomHandler {
    * @param type type to send
    * @param payload payload to send
    */
-  wsBroadcast(type: WsMessageType, payload: any) {
+  wsBroadcast(type: WsMessageType, payload?: any) {
     Object.keys(this.users).forEach((userId: string) => this.wsSend(userId, type, payload));
   }
 
@@ -184,7 +183,7 @@ export default class RoomHandler {
     this.users[userId] = ws;
 
     // handle ws leave
-    ws.on('close', (...args) => {
+    ws.on('close', () => {
       delete this.users[userId];
       delete this.gameRegistration[userId];
       // notify clients, that the user left the room
@@ -207,7 +206,7 @@ export default class RoomHandler {
    * @param userId user id
    */
   wsListen(userId: string) {
-    this.users[userId].on('message', (message: string) => {
+    this.users[userId].on('message', async (message: string) => {
       try {
         const { type, payload } = parseMessage(WsMessageType, message);
 
@@ -271,9 +270,10 @@ export default class RoomHandler {
         const allStarted = !registeredIds.find(
           (id) => this.gameRegistration[id] === GameUserStatus.JOINED,
         );
+        // ensure game process is running
         if (registeredIds.length !== 0 && allStarted) {
-          // start the game!
-          console.log('STARTED :)');
+          await this.processStart();
+          this.wsBroadcast(WsMessageType.GAME_STARTED);
         }
       } catch (ex) {
         server.log.error(ex.message);

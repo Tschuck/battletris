@@ -18,8 +18,6 @@ export const disconnectLastConnection = () => {
  * Handle websocket connection for a game room.
  */
 export default class RoomConnection extends WsConnection {
-  activeIndex = -1;
-
   constructor(roomId: string, type = 'room') {
     super(roomId, type);
   }
@@ -59,6 +57,10 @@ export default class RoomConnection extends WsConnection {
               this.gameRegistration[userId] = payload[userId];
             }
           });
+          break;
+        }
+        case WsMessageType.GAME_STARTED: {
+          this.isMatchRunning = true;
           break;
         }
         default: {

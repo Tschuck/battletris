@@ -1,7 +1,8 @@
 enum ProcessMessageType {
+  ERROR = -2,
   INVALID_MESSAGE = -1,
-  JOIN_ROOM = 0,
-  LEAVE_ROOM = 0,
+  GAME_START = 0,
+  WS_JOIN = 1,
 }
 
 export default ProcessMessageType;

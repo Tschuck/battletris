@@ -1,16 +1,18 @@
 <template>
   <div class="grid h-full grid-cols-3 gap-6 p-6">
+    GAME!
     <div
       class="flex flex-shrink-0 card"
       v-for="(regUser, index) in gameUsers"
       :key="index"
     >
+    {{ regUser }}
       <!-- <h2 class="header">{{ $t("game.slot") }} {{ index + 1 }}</h2>
 
       <div class="flex items-center justify-center flex-grow content">
         {{ regUser.name }}
       </div> -->
-      <div>
+      <!-- <div>
         <div
           class="grid w-auto grid-cols-10 gap-0 border-solid "
           v-for="(row, rowIndex) in regUser.map"
@@ -23,7 +25,7 @@
             :class="{ 'bg-gray-700': col }"
           ></div>
         </div>
-      </div>
+      </div> -->
     </div>
     <!--
     <div
@@ -40,38 +42,41 @@
 import { onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 
-import { GameUserInterface } from '@battletris/shared/interfaces/GameUser';
 import { WsMessageType } from '@battletris/shared';
 import ClassLogo from './ClassLogo.vue';
-import RoomConnection, { getCurrentConnection } from '../lib/RoomConnection';
+import GameConnection from '../lib/GameConnection';
 
 @Component({
   components: {
     ClassLogo,
   },
   props: {
-    isOpen: { type: String },
+    roomId: { type: String },
   },
-  setup() {
-    const conn: RoomConnection = getCurrentConnection() as RoomConnection;
-    const gameUserIndex = ref(conn.activeIndex);
-    const gameUsers = ref<GameUserInterface[]>([]);
+  setup(props) {
+    const gameConn: GameConnection = new GameConnection(props.roomId as string);
+    const gameUsers = ref<any[]>([]);
     const loading = ref(true);
     const messages = ref<any[]>([]);
 
     const updateUsers = () => {
-      // const filteredUsers = conn.game.users.filter((user) => !!user);
-      // gameUsers.value = filteredUsers as GameUserInterface[];
+      console.log('update users');
     };
     updateUsers();
-    conn.onMessage(async (type: number) => {
-      // if (type === WsMessageType.GAME_USER_UPDATE) {
-      //   updateUsers();
-      // }
+    gameConn.onMessage(async (type: WsMessageType, payload: any) => {
+      switch (type) {
+        case WsMessageType.GAME_UPDATE: {
+          gameUsers.value = payload.users;
+          loading.value = false;
+          break;
+        }
+      }
     }, onUnmounted);
 
+    // just start the game. loading will be resolved, when game process responds with full game data
+    gameConn.connect();
+
     return {
-      gameUserIndex,
       gameUsers,
       loading,
       messages,
