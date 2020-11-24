@@ -103,7 +103,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { ref } from '@vue/composition-api';
 
-import { disconnectLastConnection } from '../lib/RoomConnection';
+import { disconnectLastConnection as disconnectRoom } from '../lib/RoomConnection';
+import { disconnectLastConnection as disconnectGame } from '../lib/GameConnection';
 import Loading from '../components/Loading.vue';
 import ViewWrapper from '../components/ViewWrapper.vue';
 import user from '../lib/User';
@@ -127,7 +128,8 @@ import { getRequest } from '../lib/request';
     const init = async () => {
       loading.value = true;
       // disconnect last connection
-      disconnectLastConnection();
+      disconnectRoom();
+      disconnectGame();
       // get room overview
       rooms.value = await getRequest('rooms');
       matches.value = await getRequest('user/matches');
@@ -146,6 +148,7 @@ import { getRequest } from '../lib/request';
       loading.value = true;
       try {
         await user.import(uploadIdRef.value as { files: Blob[] });
+        await init();
         importError.value = false;
       } catch (ex) {
         importError.value = true;

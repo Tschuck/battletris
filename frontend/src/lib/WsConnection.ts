@@ -21,8 +21,8 @@ export default class WsConnection {
   /** websocket connection => room / game */
   type: string;
 
-  /** Open websocket connection */
-  connection!: WebSocket;
+  /** Open websocket ws */
+  ws!: WebSocket;
 
   /** Function that is called with incoming messages */
   handlers: ((type: WsMessageType, data: any) => void)[];
@@ -56,10 +56,14 @@ export default class WsConnection {
     this.updateRoomValues(room);
 
     // Open new websocket connection and ensure userId
-    this.connection = new WebSocket(`${config.wsUrl}/ws/${this.type}/${joinToken}`);
-    this.connection.onmessage = (event) => {
-      const { type, payload } = parseMessage(WsMessageType, event.data);
-      this.handlers.forEach((handler) => handler(type as WsMessageType, payload));
+    this.ws = new WebSocket(`${config.wsUrl}/ws/${this.type}/${joinToken}`);
+    this.ws.onmessage = (event) => {
+      const fr = new FileReader();
+      fr.onload = () => {
+        const { type, payload } = parseMessage(WsMessageType, fr.result as string);
+        this.handlers.forEach((handler) => handler(type as WsMessageType, payload));
+      };
+      fr.readAsText(event.data);
     };
 
     // handle user updates and joined / leaved members => use unshift to ensure, that this is the
@@ -82,7 +86,7 @@ export default class WsConnection {
    * Disconnect from websocket connection.
    */
   async disconnect() {
-    this.connection.close();
+    this.ws.close();
     // reset values
     this.handlers = [];
     // reset room values
@@ -96,7 +100,7 @@ export default class WsConnection {
    * @param payload data to send
    */
   send(type: WsMessageType, payload?: any) {
-    this.connection.send(getStringifiedMessage(type, payload));
+    this.ws.send(getStringifiedMessage(type, payload));
   }
 
   /**

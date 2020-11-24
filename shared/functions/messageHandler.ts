@@ -5,6 +5,7 @@ export interface ParsedMessage {
   type: ProcessMessageType|WsMessageType;
   payload: any;
 }
+export const encodingFormat = 'utf-16le';
 
 /**
  * Parse a stringified message that was send via websocket or via process.
@@ -20,10 +21,10 @@ export function parseMessage(
 
   try {
     const parsed = JSON.parse(message);
-    if (typeMapping[parsed.t]) {
+    if (typeMapping[parsed[0]]) {
       result = {
-        payload: parsed.p,
-        type: parsed.t,
+        type: parsed[0],
+        payload: parsed[1],
       };
     }
   } catch (ex) {
@@ -39,8 +40,8 @@ export function parseMessage(
  * @param payload payload to attach
  */
 export function getStringifiedMessage(type: ProcessMessageType|WsMessageType, payload: any) {
-  return JSON.stringify({
-    t: type,
-    p: payload,
-  });
+  return JSON.stringify([
+    type,
+    payload,
+  ]);
 }

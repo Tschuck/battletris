@@ -1,4 +1,4 @@
-import { MatchStatsInterface, ProcessMessageType, WsMessageType } from '@battletris/shared';
+import { formatGameUser, MatchStatsInterface, ProcessMessageType, WsMessageType } from '@battletris/shared';
 import { User } from '../db';
 import config from '../lib/config';
 import GameUser from './GameUser';
@@ -6,6 +6,7 @@ import numberToBlockMap from './helpers/numberToBlockMap';
 import logger from './logger';
 import processHandler from './processHandler';
 import wsHandler from './wsHandler';
+import * as mapHelper from './helpers/mapHelper';
 
 class Game {
   /** users ids mapped to the index to improve performance for incremental updates */
@@ -30,25 +31,22 @@ class Game {
     let counter = config.startCounter;
     await new Promise((resolve) => {
       const updateMap = () => {
-        counter -= 1;
-        this.users.forEach((user, index) => {
-          user.map = numberToBlockMap(counter);
-        });
-
-        wsHandler.wsBroadcast(
-          WsMessageType.GAME_USER_UPDATE,
-          this.users.map((user) => user ? { map: user.map } : null),
-        );
-
         if (counter === 0) {
           clearInterval(startLoop);
-          resolve();
+          return resolve();
         }
+
+        this.users.forEach((user) => user.map = numberToBlockMap(counter));
+        this.sendGameUserUpdates();
+        counter -= 1;
       };
 
       updateMap();
       const startLoop = setInterval(() => updateMap(), 1000);
     });
+
+    this.users.forEach((user) => user.map = mapHelper.getEmptyMap(20));
+    this.sendGameUserUpdates();
   }
 
   /**
@@ -64,27 +62,42 @@ class Game {
     this.users = [];
     this.indexIdMap = {};
     // setup game users
-    this.userIds.forEach((userId) => {
-      this.users.push(new GameUser(users[userId]));
-      this.indexIdMap[this.users.length - 1] = userId;
+    this.userIds.forEach((userId, index) => {
+      this.users.push(new GameUser(users[userId], index));
+      this.indexIdMap[index] = userId;
     });
 
     logger.debug(`Game started with: ${this.userIds.join(', ')}`);
     // start the actual game log
     await this.initLoop();
-    this.stop();
+    // this.stop();
+    setTimeout(() => {
+      this.stop();
+    }, 10_000);
   }
 
   /**
-   * Transform the game into a json objectg
+   * Transform the game into a json object
    */
   serialize() {
     const serialized = {
-      users: this.users.map((user) => user.serialize()),
+      // do not use user serialize! user serialize will only send updates
+      users: this.users.map((user) => formatGameUser(user)),
       indexIdMap: this.indexIdMap,
     };
 
     return serialized;
+  }
+
+  /**
+   * Send a incremental update to all users.
+   */
+  sendGameUserUpdates() {
+    const update = this.users.map((user) => user.serialize());
+    wsHandler.wsBroadcast(
+      WsMessageType.GAME_USER_UPDATE,
+      update,
+    );
   }
 
   /**

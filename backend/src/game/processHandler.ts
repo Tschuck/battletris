@@ -1,5 +1,5 @@
 import { ErrorCodes, ProcessMessageType } from '@battletris/shared';
-import { SocketStream } from 'fastify-websocket';
+import { Socket } from 'net';
 import wsHandler from './wsHandler';
 import logger from './logger';
 import game from './game';
@@ -25,7 +25,7 @@ class ProcessHandler {
    * Listen to process messages.
    */
   listen() {
-    process.on('message', (request, socket: SocketStream) => {
+    process.on('message', (request, socket: Socket) => {
       const { type, payload } = request;
 
       if (type === ProcessMessageType.GAME_START) {

@@ -45,6 +45,7 @@ export default class RoomConnection extends WsConnection {
         }
         case WsMessageType.ROOM_LEAVE: {
           delete this.users[payload.userId];
+          delete this.gameRegistration[payload.userId];
           break;
         }
         case WsMessageType.GAME_REG_UPDATE: {

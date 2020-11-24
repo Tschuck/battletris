@@ -1,10 +1,14 @@
 <template>
-  <ViewWrapper :loading="loading" :route-name="roomName">
+  <ViewWrapper
+    :loading="loading"
+    :route-name="roomName"
+    :show-header="!isJoined || !isMatchRunning"
+  >
     <template v-if="!loading">
       <div class="grid h-full grid-cols-4 gap-6">
         <div
           class="border-r border-solid bg-2"
-          v-if="activeIndex === -1 || !isMatchRunning"
+          v-if="!isJoined || !isMatchRunning"
         >
           <Chat />
         </div>
@@ -28,6 +32,7 @@ import GameRegistration from '../components/GameRegistration.vue';
 import Loading from '../components/Loading.vue';
 import RoomConnection from '../lib/RoomConnection';
 import ViewWrapper from '../components/ViewWrapper.vue';
+import currUser from '../lib/User';
 
 @Component({
   components: {
@@ -46,13 +51,17 @@ import ViewWrapper from '../components/ViewWrapper.vue';
     const roomName = ref<string>('');
     const roomConn = new RoomConnection(props.roomId as string);
     const isMatchRunning = ref(false);
-    const activeIndex = ref(-1);
+    const isJoined = ref(false);
 
     const handleMessage = (type: WsMessageType) => {
       switch (type) {
         case WsMessageType.GAME_STARTED:
         case WsMessageType.GAME_STOP: {
           isMatchRunning.value = roomConn?.isMatchRunning;
+          break;
+        }
+        case WsMessageType.GAME_REG_UPDATE: {
+          isJoined.value = !!roomConn.gameRegistration[currUser.id];
           break;
         }
       }
@@ -62,12 +71,14 @@ import ViewWrapper from '../components/ViewWrapper.vue';
     (async () => {
       await roomConn.connect();
       roomName.value = roomConn.name;
+      isJoined.value = !!roomConn.gameRegistration[currUser.id];
+      isMatchRunning.value = roomConn?.isMatchRunning;
       loading.value = false;
     })();
 
     return {
-      activeIndex,
       creating,
+      isJoined,
       isMatchRunning,
       loading,
       roomName,

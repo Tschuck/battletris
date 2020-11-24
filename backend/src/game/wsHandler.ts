@@ -1,5 +1,5 @@
-import { getStringifiedMessage, parseMessage, WsMessageType } from '@battletris/shared';
-import { SocketStream } from 'fastify-websocket';
+import { ErrorCodes, getStringifiedMessage, parseMessage, WsMessageType } from '@battletris/shared';
+import { Socket } from 'net';
 import WebSocket from 'ws';
 import game from './game';
 import logger from './logger';
@@ -19,7 +19,7 @@ class WsHandler {
    * @param userId user id for the websocket
    * @param socket socket from server to use
   */
-  join(headers: Record<string, string>, userId: string, socket: SocketStream) {
+  join(headers: Record<string, string>, userId: string, socket: Socket) {
     logger.debug(`joined: ${userId}`);
 
     // handle websocket upgrade to be able to use the
@@ -53,7 +53,15 @@ class WsHandler {
     ws.on('message', (message) => {
       const { type, payload } = parseMessage(WsMessageType, message);
 
+      if (!game.users[game.userIds.indexOf(userId)]) {
+        return this.wsSend(userId, WsMessageType.ERROR, ErrorCodes.CONNECTION_NOT_JOINED);
+      }
+
       switch (type) {
+        case WsMessageType.GAME_INPUT: {
+          game.users[game.userIds.indexOf(userId)].onKeyPress(payload);
+          break;
+        }
       }
     });
   }
@@ -76,7 +84,7 @@ class WsHandler {
    * @param payload payload to send
    */
   wsSend(userId: string, type: WsMessageType, payload: any) {
-    this.users[userId].send(getStringifiedMessage(type, payload));
+    this.users[userId].send(getStringifiedMessage(type, payload), { binary: true });
   }
 }
 

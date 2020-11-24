@@ -70,9 +70,8 @@ export default class RoomHandler {
    * Close the room and the corresponding process.
    */
   closeRoom() {
-    if (rooms[this.id] || this.process) {
-      this.log(`room closed: ${this.process?.pid}`);
-      this.process = null;
+    if (rooms[this.id] && Object.keys(this.users).length === 0 && !this.process) {
+      this.log(`room closed: ${this.id}`);
       delete rooms[this.id];
     }
   }
@@ -134,7 +133,7 @@ export default class RoomHandler {
     }));
     this.processSend(ProcessMessageType.GAME_START, startInfo);
 
-    // ensure process is cleared, when its closed
+    // ensure match history creation
     this.process.on('message', async (message: { type: ProcessMessageType, payload }) => {
       if (message.type === ProcessMessageType.GAME_STOP) {
         const stats = message.payload as MatchStatsInterface;
@@ -149,7 +148,28 @@ export default class RoomHandler {
         this.wsBroadcast(WsMessageType.GAME_STOP, message.payload);
       }
     });
-    this.process.on('close', () => this.closeRoom());
+
+    // wait for process close and reset all game registrations
+    this.process.on('close', () => {
+      this.process = null;
+
+      // clear left users and reset states
+      Object.keys(this.gameRegistration).forEach((userId) => {
+        // user already left, but was in game => clear it
+        if (this.gameRegistration[userId] === GameUserStatus.LEFT) {
+          this.wsClose(userId);
+          // ensure user is removed
+          this.wsBroadcast(WsMessageType.ROOM_LEAVE, { userId });
+        } else {
+          // otherwise, clear the accepted state
+          this.gameRegistration[userId] = GameUserStatus.JOINED;
+        }
+      });
+      // send game registration updates
+      this.wsBroadcast(WsMessageType.GAME_REG_UPDATE, this.gameRegistration);
+      // check if room can be cleared
+      this.closeRoom();
+    });
   }
 
   /**
@@ -176,6 +196,26 @@ export default class RoomHandler {
   }
 
   /**
+   * User closed the websocket connection.
+   *
+   * @param userId user id that has closed
+   */
+  wsClose(userId: string) {
+    // do not remove the users, when the game is running and the user is registered
+    if ((this.process && !this.gameRegistration[userId]) || !this.process) {
+      delete this.users[userId];
+      delete this.gameRegistration[userId];
+      // notify clients, that the user left the room
+      this.wsBroadcast(WsMessageType.ROOM_LEAVE, { userId });
+      // check if room can be closed
+      this.closeRoom();
+    } else {
+      // mark registration as LEFT, so it can be removed after the game
+      this.gameRegistration[userId] = GameUserStatus.LEFT;
+    }
+  }
+
+  /**
    * Send a type and a payload to all registered wsConnections.
    *
    * @param userId user id to send the message to
@@ -183,7 +223,7 @@ export default class RoomHandler {
    * @param payload payload to send
    */
   wsSend(userId: string, type: WsMessageType, payload: any) {
-    this.users[userId].send(getStringifiedMessage(type, payload));
+    this.users[userId].send(getStringifiedMessage(type, payload), { binary: true });
   }
 
 
@@ -195,17 +235,13 @@ export default class RoomHandler {
    */
   async wsJoin(userId: string, ws: WebSocket) {
     this.users[userId] = ws;
+    // revert left state, when user rejoins the match
+    if (this.gameRegistration[userId] === 'LEFT') {
+      this.gameRegistration[userId] = GameUserStatus.JOINED;
+    }
 
     // handle ws leave
-    ws.on('close', () => {
-      delete this.users[userId];
-      delete this.gameRegistration[userId];
-      // notify clients, that the user left the room
-      this.wsBroadcast(WsMessageType.ROOM_LEAVE, { userId });
-      if (Object.keys(this.users).length === 0) {
-        this.closeRoom();
-      }
-    });
+    ws.on('close', () => this.wsClose(userId));
 
     this.wsBroadcast(WsMessageType.ROOM_JOIN, {
       user: await User.findOne(userId),

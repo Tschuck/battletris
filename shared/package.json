@@ -7,5 +7,8 @@
     "typescript": "^3.9.6"
   },
   "main": "./index.ts",
-  "name": "@battletris/shared"
+  "name": "@battletris/shared",
+  "dependencies": {
+    "lodash": "^4.17.20"
+  }
 }

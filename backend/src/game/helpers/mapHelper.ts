@@ -141,7 +141,7 @@ function generateEmptyRows(count) {
  */
 function getEmptyMap(count = 20, map: number[][] = [ ]): number[][] {
   for (let y = map.length; y < count; y++) {
-    map.push([...Array(10)]);
+    map.push([...Array(10)].map(() => 0));
   }
 
   return map;
