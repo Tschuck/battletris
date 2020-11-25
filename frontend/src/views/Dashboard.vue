@@ -105,7 +105,7 @@ import { ref } from '@vue/composition-api';
 
 import { disconnectLastConnection as disconnectRoom } from '../lib/RoomConnection';
 import { disconnectLastConnection as disconnectGame } from '../lib/GameConnection';
-import Loading from '../components/Loading.vue';
+import Loading from '../components/general/Loading.vue';
 import ViewWrapper from '../components/ViewWrapper.vue';
 import user from '../lib/User';
 import { getRequest } from '../lib/request';

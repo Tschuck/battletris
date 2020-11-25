@@ -63,9 +63,9 @@ import { onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 import { GameUserStatus, UserInterface, WsMessageType } from '@battletris/shared';
 
-import ClassLogo from './ClassLogo.vue';
-import RoomConnection, { getCurrentConnection } from '../lib/RoomConnection';
-import currUser from '../lib/User';
+import ClassLogo from '../general/ClassLogo.vue';
+import RoomConnection, { getCurrentConnection } from '../../lib/RoomConnection';
+import currUser from '../../lib/User';
 
 @Component({
   components: {

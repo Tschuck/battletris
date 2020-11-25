@@ -30,9 +30,9 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import ClassLogo from './ClassLogo.vue';
-import UserPreview from './UserPreview.vue';
-import Loading from './Loading.vue';
+import ClassLogo from './general/ClassLogo.vue';
+import UserPreview from './general/UserPreview.vue';
+import Loading from './general/Loading.vue';
 
 @Component({
   components: {

@@ -7,7 +7,6 @@ import Pino from 'pino';
 import { Match, Room, User } from '../db';
 import config from '../lib/config';
 import server from './server';
-import { PrimaryColumn } from 'typeorm';
 
 // file path to use to start a game process
 const gameFilePath = path.resolve('./dist/src/game/index.js');
@@ -21,6 +20,15 @@ export const rooms: Record<string, RoomHandler> = {};
  * validation will take place in separate action) */
 export const roomAccess: Set<string> = new Set();
 
+/**
+ * Handles a room and all it's connected ws connections. Sends events on specific messages. Please
+ * keep in mind:
+ *
+ *    - never remove a user from the users websocket registration, when a user has joined a game
+ *    - ensure to remove users that are on status LEFT, but were registered in the game
+ *    - clear room only, when no user is joined => also never delete the room during match
+ *    - match is running, when process is running
+ */
 export default class RoomHandler {
   /**
    * Ensure room is initialized and exists in the db.

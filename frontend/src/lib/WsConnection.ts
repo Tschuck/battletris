@@ -111,14 +111,18 @@ export default class WsConnection {
   onMessage(
     handler: (type: WsMessageType, data: any) => void,
     onUnmounted?: Function,
-  ) {
+  ): () => void {
     this.handlers.push(handler);
+    // remove on message handler
+    const unMount = () => this.handlers.splice(this.handlers.indexOf(handler), 1);
+
+    // if component unmounted is bind, remove the function
     if (onUnmounted) {
       // remove listeners on unmounted
-      onUnmounted(() => {
-        this.handlers.splice(this.handlers.indexOf(handler), 1);
-      });
+      onUnmounted(unMount);
     }
+
+    return unMount;
   }
 
   /**

@@ -39,6 +39,10 @@ class Game {
         this.users.forEach((user) => user.map = numberToBlockMap(counter));
         this.sendGameUserUpdates();
         counter -= 1;
+
+        if (counter === 0) {
+          counter = 9;
+        }
       };
 
       updateMap();
@@ -71,9 +75,9 @@ class Game {
     // start the actual game log
     await this.initLoop();
     // this.stop();
-    setTimeout(() => {
-      this.stop();
-    }, 10_000);
+    // setTimeout(() => {
+    //   this.stop();
+    // }, 10_000);
   }
 
   /**

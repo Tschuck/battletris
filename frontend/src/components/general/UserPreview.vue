@@ -30,7 +30,7 @@
 <script lang="ts">
 import { ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
-import user from '../lib/User';
+import user from '../../lib/User';
 import ClassLogo from './ClassLogo.vue';
 import ClassSelect from './ClassSelect.vue';
 

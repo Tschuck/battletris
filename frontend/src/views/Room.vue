@@ -26,10 +26,10 @@ import { Component, Vue } from 'vue-property-decorator';
 import { onUnmounted, ref } from '@vue/composition-api';
 import { WsMessageType } from '@battletris/shared';
 
-import Chat from '../components/Chat.vue';
-import Game from '../components/Game.vue';
-import GameRegistration from '../components/GameRegistration.vue';
-import Loading from '../components/Loading.vue';
+import Chat from '../components/room/Chat.vue';
+import Game from '../components/game/Game.vue';
+import GameRegistration from '../components/room/GameRegistration.vue';
+import Loading from '../components/general/Loading.vue';
 import RoomConnection from '../lib/RoomConnection';
 import ViewWrapper from '../components/ViewWrapper.vue';
 import currUser from '../lib/User';

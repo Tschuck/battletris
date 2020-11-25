@@ -20,7 +20,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { ref } from '@vue/composition-api';
 
 import user from './lib/User';
-import Loading from './components/Loading.vue';
+import Loading from './components/general/Loading.vue';
 
 @Component({
   components: {
