@@ -1,3 +1,4 @@
+import Blocks, { BlockMapping } from './enums/Blocks';
 import Classes from './enums/Classes';
 import ErrorCodes from './enums/ErrorCodes';
 import GameStatus from './enums/GameStatus';
@@ -15,6 +16,8 @@ import RoomWithDataInterface from './interfaces/RoomWithData';
 import UserInterface from './interfaces/User';
 
 export {
+  BlockMapping,
+  Blocks,
   Classes,
   ErrorCodes,
   formatGameUser,

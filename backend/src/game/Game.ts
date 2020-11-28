@@ -39,10 +39,6 @@ class Game {
         this.users.forEach((user) => user.map = numberToBlockMap(counter));
         this.sendGameUserUpdates();
         counter -= 1;
-
-        if (counter === 0) {
-          counter = 9;
-        }
       };
 
       updateMap();
@@ -72,12 +68,22 @@ class Game {
     });
 
     logger.debug(`Game started with: ${this.userIds.join(', ')}`);
-    // start the actual game log
+    // show countdown
     await this.initLoop();
-    // this.stop();
-    // setTimeout(() => {
-    //   this.stop();
-    // }, 10_000);
+
+    // start the actual game log
+    this.users.forEach((user) => {
+      // ensure random game block
+      user.setNewBlock();
+      // start game loop iteration
+      user.gameLoop();
+    });
+    // directly show new blocks for the users
+    this.sendGameUserUpdates();
+
+    setTimeout(() => {
+      this.stop();
+    }, 15_000);
   }
 
   /**
@@ -122,6 +128,8 @@ class Game {
         className: user.className,
         rows: 0,
       };
+      // ensure timeout stopping
+      user.gameLoopStop();
     });
 
     processHandler.send(ProcessMessageType.GAME_STOP, stats);

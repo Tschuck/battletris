@@ -49,7 +49,7 @@ import GameField from './GameField.vue';
     };
     const keyUpHandler = () => {
       keyPressed = true;
-      setTimeout(() => keyPressed = false, 50);
+      setTimeout(() => keyPressed = false, 0);
     };
 
     const bindKeyPress = () => {
@@ -94,3 +94,10 @@ import GameField from './GameField.vue';
 })
 export default class Game extends Vue {}
 </script>
+
+<style lang="postcss">
+  .konvajs-content {
+    width: auto !important;
+    height: auto !important;
+  }
+</style>

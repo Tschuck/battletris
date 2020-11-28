@@ -46,7 +46,9 @@ export const formatGameUser = (gameUser: any): any => {
 
   Object.keys(gameUser).forEach((key: any) => {
     // ignore not supported properties
-    if (GameUserMapping[key] && gameUser[key]) {
+    if (GameUserMapping[key]
+      && gameUser[key] !== undefined
+      && gameUser[key] !== null) {
       formatted[GameUserMapping[key]] = gameUser[key];
     }
   });
