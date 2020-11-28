@@ -7,7 +7,8 @@ export interface MatchStatsInterface {
 
   users: {
     [userId: string]: {
-      rows: number;
+      blockCount: number;
+      rowCount: number;
       className: string;
     };
   };

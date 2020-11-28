@@ -20,8 +20,11 @@ export interface GameUserInterface {
   /** active block x position */
   y: number;
 
+  /** amount of used blocks */
+  blockCount: number;
+
   /** amount of cleared rows */
-  rows: number;
+  rowCount: number;
 }
 
 export enum GameUserMapping {
@@ -32,7 +35,8 @@ export enum GameUserMapping {
   rotation = 4,
   x = 5,
   y = 6,
-  rows = 7,
+  blockCount = 9,
+  rowCount = 8,
 }
 
 /**

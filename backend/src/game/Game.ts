@@ -80,10 +80,6 @@ class Game {
     });
     // directly show new blocks for the users
     this.sendGameUserUpdates();
-
-    setTimeout(() => {
-      this.stop();
-    }, 15_000);
   }
 
   /**
@@ -111,6 +107,17 @@ class Game {
   }
 
   /**
+   * When a user lost, check if the game ends. Will be triggered from game user.
+   */
+  onUserLost(userId: string) {
+    const lostCount = this.users.filter((user) => user.lost).length;
+    // allow guys without friends. usually stop the game, when only one player stands
+    if (this.users.length === 1 && lostCount === 1 || lostCount === this.users.length - 1) {
+      this.stop();
+    }
+  }
+
+  /**
    * Game is finished. Create stats, send it to the parent and exit the process.
    */
   stop() {
@@ -126,7 +133,8 @@ class Game {
     this.users.forEach((user) => {
       stats.users[user.id] = {
         className: user.className,
-        rows: 0,
+        blockCount: user.blockCount,
+        rowCount: user.rowCount,
       };
       // ensure timeout stopping
       user.gameLoopStop();

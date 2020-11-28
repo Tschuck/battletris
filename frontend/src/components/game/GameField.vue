@@ -1,5 +1,10 @@
 <template>
-  <div style="width: 100%; height: 100%;" ref="container" />
+  <div style="width: 100%; height: 100%;">
+    <div ref="container" style="width: 100%; height: calc(100% - 100px);" />
+
+    <div>blockCount: {{blockCount}}</div>
+    <div>rowCount: {{rowCount}}</div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -9,6 +14,7 @@ import Konva from 'konva';
 
 import { formatGameUser, WsMessageType, Blocks } from '@battletris/shared';
 import { GameUserInterface } from '@battletris/shared/functions/gameUser';
+import { cloneDeep } from 'lodash';
 import ClassLogo from '../general/ClassLogo.vue';
 import GameConnection, { getCurrentConnection } from '../../lib/GameConnection';
 import currUser from '../../lib/User';
@@ -54,6 +60,8 @@ const colorMap = {
     const isCurrUser = ref<boolean>(currUser.id === userId);
     const userElId = ref((userId).replace(/-/g, ''));
     const container = ref();
+    const blockCount = ref(userData.blockCount);
+    const rowCount = ref(userData.rowCount);
 
     // convas rendering
     let gameStage: Konva.Stage;
@@ -139,7 +147,7 @@ const colorMap = {
       stoneLayer.y(userData.y * colHeight);
       stoneLayer.x(userData.x * colWidth);
       // format the new block into the correct color
-      const blockToDisplay = Blocks[userData.block][userData.rotation].map(
+      const blockToDisplay = cloneDeep(Blocks[userData.block][userData.rotation]).map(
         (row) => row.map((col) => (col ? userData.block : 0)),
       );
       updateLayerColors(stoneLayer, blockToDisplay);
@@ -183,13 +191,14 @@ const colorMap = {
         case WsMessageType.GAME_USER_UPDATE: {
           // only update the map, if the current user is updated
           if (payload[userIndex]) {
+            const updatedUser = formatGameUser(payload[userIndex]);
             const {
               block,
               map,
               rotation,
               x,
               y,
-            } = formatGameUser(payload[userIndex]);
+            } = updatedUser;
 
             if (isSet(x) || isSet(y) || isSet(block) || isSet(rotation)) {
               userData.block = updatedOrPrevious(block, userData.block);
@@ -200,14 +209,19 @@ const colorMap = {
               updateStoneLayer();
             }
 
-            console.log(map);
-
             // if map was updated, update the rows
             if (Array.isArray(map)) {
               updateLayerColors(mapLayer, map);
             }
 
-            // console.log(`[${userData.y}][${userData.x}] - ${userData.block} => ${userData.rotation}`);
+            // update stats
+            if (updatedUser.rowCount) {
+              rowCount.value = updatedUser.rowCount;
+            }
+            if (updatedUser.blockCount) {
+              blockCount.value = updatedUser.blockCount;
+            }
+
             gameStage.draw();
           }
           break;
@@ -216,8 +230,10 @@ const colorMap = {
     }, onUnmounted);
 
     return {
+      blockCount,
       container,
       isCurrUser,
+      rowCount,
       userElId,
     };
   },
