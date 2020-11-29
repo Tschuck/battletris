@@ -213,20 +213,22 @@ const colorMap = {
               y,
             } = updatedUser;
 
+            // if map was updated, update the rows
+            if (Array.isArray(map)) {
+              // update the user map to the lastet version, so we can create the preview stone
+              userData.map = userData.map.map((row, index) => (map[index] ? map[index] : row));
+              // draw the updated rows again
+              updateLayerColors(mapLayer, map);
+            }
+
             if (isSet(x) || isSet(y) || isSet(block) || isSet(rotation)) {
+              // set new block information
               userData.block = updatedOrPrevious(block, userData.block);
               userData.rotation = updatedOrPrevious(rotation, userData.rotation);
               userData.y = updatedOrPrevious(y, userData.y);
               userData.x = updatedOrPrevious(x, userData.x);
-
+              // draw block and preview
               updateStoneLayer();
-            }
-
-            // if map was updated, update the rows
-            if (Array.isArray(map)) {
-              updateLayerColors(mapLayer, map);
-              // update the user map to the lastet version, so we can create the preview stone
-              userData.map = userData.map.map((row, index) => (map[index] ? map[index] : row));
             }
 
             // update stats

@@ -1,5 +1,5 @@
 import { BlockMapping, Blocks, WsMessageType } from '@battletris/shared';
-import { CollisionType, formatGameUser, GameStateChange, GameUserInterface, getDifference, getPreviewY, getStoneCollision, iterateOverMap } from '@battletris/shared/functions/gameHelper';
+import { CollisionType, formatGameUser, GameStateChange, GameUserInterface, GameUserMapping, getDifference, getPreviewY, getStoneCollision, iterateOverMap } from '@battletris/shared/functions/gameHelper';
 import { cloneDeep } from 'lodash';
 import { setTimeout } from 'timers';
 import { User } from '../db';
@@ -236,10 +236,9 @@ class GameUser implements GameUserInterface {
           this.y,
           this.x,
         );
-        // we know it was docked...
-        this.onDocked();
-        this.sendUpdate();
-        return;
+        this.lastState[GameUserMapping.y] = this.y;
+        this.y += 1;
+        break;
       }
       case GameStateChange.NEXT_TARGET: {
         // next user
