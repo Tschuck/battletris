@@ -5,7 +5,7 @@ import GameStatus from './enums/GameStatus';
 import GameUserStatus from './enums/GameUserStatus';
 import ProcessMessageType from './enums/ProcessMessageType';
 import WsMessageType from './enums/WsMessageType';
-import { formatGameUser } from './functions/gameUser';
+import { formatGameUser } from './functions/gameHelper';
 import {
   getStringifiedMessage,
   ParsedMessage,

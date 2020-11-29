@@ -9,6 +9,7 @@
   "main": "./index.ts",
   "name": "@battletris/shared",
   "dependencies": {
-    "lodash": "^4.17.20"
+    "lodash": "^4.17.20",
+    "ts-keycode-enum": "^1.0.6"
   }
 }

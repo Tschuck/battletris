@@ -13,7 +13,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import Konva from 'konva';
 
 import { formatGameUser, WsMessageType, Blocks } from '@battletris/shared';
-import { GameUserInterface } from '@battletris/shared/functions/gameUser';
+import { GameUserInterface, getPreviewY } from '@battletris/shared/functions/gameHelper';
 import { cloneDeep } from 'lodash';
 import ClassLogo from '../general/ClassLogo.vue';
 import GameConnection, { getCurrentConnection } from '../../lib/GameConnection';
@@ -62,11 +62,13 @@ const colorMap = {
     const container = ref();
     const blockCount = ref(userData.blockCount);
     const rowCount = ref(userData.rowCount);
+    const enablePreview = ref(true);
 
     // convas rendering
     let gameStage: Konva.Stage;
     let mapLayer: Konva.Layer;
     let stoneLayer: Konva.Layer;
+    let previewLayer: Konva.Layer;
     // current field specifications => will be set onMounted
     let width: number;
     let height: number;
@@ -75,7 +77,7 @@ const colorMap = {
 
     // ----------------------------------- konva setup ------------------------------------------ //
     /** Create the initial setup for the map */
-    const getNewGridLayer = (yMax: number, xMax: number, useStroke = true) => {
+    const getNewGridLayer = (yMax: number, xMax: number, rectOptions: Konva.RectConfig = {}) => {
       // setup the map layer
       const layer = new Konva.Layer();
 
@@ -92,10 +94,7 @@ const colorMap = {
             width: colWidth,
             x: x * colWidth,
             y: 0,
-            ...(useStroke ? {
-              stroke: colorMap.STROKE,
-              strokeWidth: 0.3,
-            } : {}),
+            ...rectOptions,
           }));
         }
 
@@ -151,6 +150,13 @@ const colorMap = {
         (row) => row.map((col) => (col ? userData.block : 0)),
       );
       updateLayerColors(stoneLayer, blockToDisplay);
+      // if preview is enable, show the preview layer and render it
+      if (enablePreview.value) {
+        updateLayerColors(previewLayer, blockToDisplay);
+        const yPreview = getPreviewY(userData.map, blockToDisplay, userData.y, userData.x);
+        previewLayer.x(userData.x * colWidth);
+        previewLayer.y(yPreview * colHeight);
+      }
     };
 
     // declar resize watcher here, so we can use all game update functions
@@ -167,10 +173,17 @@ const colorMap = {
       updateGameStage();
 
       // setup initial field
-      mapLayer = getNewGridLayer(20, 10);
-      stoneLayer = getNewGridLayer(4, 4, false);
+      mapLayer = getNewGridLayer(20, 10, {
+        stroke: colorMap.STROKE,
+        strokeWidth: 0.3,
+      });
+      stoneLayer = getNewGridLayer(4, 4);
+      previewLayer = getNewGridLayer(4, 4, {
+        opacity: 0.2,
+      });
       gameStage.add(mapLayer);
       gameStage.add(stoneLayer);
+      gameStage.add(previewLayer);
 
       // render initial data
       updateLayerColors(mapLayer, userData.map);
@@ -212,6 +225,8 @@ const colorMap = {
             // if map was updated, update the rows
             if (Array.isArray(map)) {
               updateLayerColors(mapLayer, map);
+              // update the user map to the lastet version, so we can create the preview stone
+              userData.map = userData.map.map((row, index) => (map[index] ? map[index] : row));
             }
 
             // update stats

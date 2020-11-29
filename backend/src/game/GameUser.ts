@@ -1,107 +1,13 @@
-import { BlockMapping, Blocks, GameUserStatus, WsMessageType } from '@battletris/shared';
-import { formatGameUser, GameUserInterface, GameUserMapping } from '@battletris/shared/functions/gameUser';
+import { BlockMapping, Blocks, WsMessageType } from '@battletris/shared';
+import { CollisionType, formatGameUser, GameStateChange, GameUserInterface, getDifference, getPreviewY, getStoneCollision, iterateOverMap } from '@battletris/shared/functions/gameHelper';
 import { cloneDeep } from 'lodash';
 import { setTimeout } from 'timers';
-import { Key } from 'ts-keycode-enum';
 import { User } from '../db';
 import config from '../lib/config';
 import game from './game';
 import { getEmptyMap } from './helpers/mapHelper';
 import numberToBlockMap from './helpers/numberToBlockMap';
 import wsHandler from './wsHandler';
-
-/**
- * Iterate over a map of blocks
- * @param itMap map to iterated (game map / block map)
- * @param callback function that should be called
- */
-const iterateOverMap = (
-  itMap: number[][],
-  callback: (value: number, y: number, x: number) => any,
-): any => {
-  for (let y = itMap.length - 1; y !== -1; y -= 1) {
-    for (let x = itMap[y].length - 1; x !== -1; x -= 1) {
-      // early exit
-      const value = callback(itMap[y][x], y, x);
-      if (value) {
-        return value;
-      }
-    }
-  }
-}
-
-/**
- * Return a nested property from an object.
- * @param obj obj to get nested value from
- * @param path path to select
- */
-const getNestedVal = (obj: any, ...selector: any[]) => {
-  let returnVal = obj;
-  for (let i = 0; i < selector.length; i += 1) {
-    if (typeof returnVal[selector[i]] === 'undefined') {
-      return null;
-    }
-
-    returnVal = returnVal[selector[i]];
-  }
-
-  return returnVal;
-};
-
-/**
- * Compares two game users objects and returns the difference
- * @param newObj new user obj
- * @param oldObj old user obj
- */
-function getDifference(newObj: Partial<GameUser> = { }, oldObj: Partial<GameUser> = { }) {
-  const diff: Partial<GameUser> = {};
-
-  Object.keys(newObj).forEach((key) => {
-    // check map changes separately
-    if (key === `${GameUserMapping.map}`) {
-      // check for map changes
-      for (let y = 0; y < newObj[key].length; y += 1) {
-        for (let x = 0; x < newObj[key][y].length; x += 1) {
-          // update always the full row, otherwise we get problems in ui merging logic
-          if (getNestedVal(newObj, key, y, x) !== getNestedVal(oldObj, key, y, x)) {
-            diff[key] = diff[key] || [];
-            diff[key][y] = newObj[key][y];
-            break;
-          }
-        }
-      }
-      return;
-    }
-
-    // build the diff
-    if (oldObj[key] !== newObj[key]) {
-      diff[key] = newObj[key];
-    }
-  });
-
-  return diff;
-}
-
-/**
- * Type of a collision. DOCKED will be determined, if a block was moved down and a overlapping with
- * the game map happens
- */
-enum CollisionType {
-  DOCKED = 1,
-  INVALID = 2,
-}
-/**
- * Mapping of user state changes. Can be either a technical one (like new block), or a user
- * interaction (keys).
- */
-enum GameStateChange {
-  NEW_BLOCK = 0,
-  TURN = Key.UpArrow,
-  LEFT = Key.LeftArrow,
-  RIGHT = Key.RightArrow,
-  DOWN = Key.DownArrow,
-  TAB = Key.Tab,
-}
 
 /**
  * Gets a random between to numbers
@@ -172,37 +78,6 @@ class GameUser implements GameUserInterface {
   }
 
   /**
-   * Check if a block map overlaps with the underlying game map.
-   * @param block block map to check
-   */
-  getStoneCollision(block: number[][]) {
-    return iterateOverMap(block, (value, y, x) => {
-      const xOnMap = this.x + x;
-      const yOnMap = this.y + y;
-
-      // out of bounds on the left or on the right
-      if ((xOnMap < 0 || xOnMap > 9) && value) {
-        return CollisionType.INVALID;
-      }
-
-      // out of bounds at the bottom
-      if (yOnMap > 20 && value) {
-        return CollisionType.INVALID;
-      }
-
-      // detect only initial dock at the bottom
-      if (yOnMap === 20 && value) {
-        return CollisionType.DOCKED;
-      }
-
-      // block overlaps!
-      if (this.map[yOnMap] && this.map[yOnMap][xOnMap] && value) {
-        return CollisionType.DOCKED;
-      }
-    });
-  }
-
-  /**
    * Checks for a collision of the current active block and the map. If a collision occurred, react
    * and e.g. merge block the map or revert current changes
    *
@@ -213,7 +88,7 @@ class GameUser implements GameUserInterface {
     const actualBlock = Blocks[this.block][this.rotation];
 
     // detect if a collision occurred
-    const collision = this.getStoneCollision(actualBlock);
+    const collision = getStoneCollision(this.map, actualBlock, this.y, this.x);
     if (collision) {
       // game ends for you here...
       if (change === GameStateChange.NEW_BLOCK) {
@@ -235,33 +110,41 @@ class GameUser implements GameUserInterface {
       );
 
       // "brand" the active stone into the map
-      if (collision === CollisionType.DOCKED && change !== GameStateChange.TURN) {
-        iterateOverMap(actualBlock, (value, y, x) => {
-          if (value) {
-            this.map[this.y + y][this.x + x] = this.block;
-          }
-        });
-
-        // check for resolved rows
-        let clearedRows = 0; // TODO: use this for stacking mana and stuff
-        for (let y = this.map.length - 1; y !== -1; y -= 1) {
-          const filledCols = this.map[y].filter((col) => !!col).length;
-          // row is full! clear it
-          if (filledCols === 10) {
-            // clear the filled row and move down the next one
-            this.map.splice(y, 1);
-            // add a new empty row
-            this.map.unshift(getEmptyMap(1)[0]);
-            // reset y, and increase row and cleared row count
-            y += 1;
-            this.rowCount += 1;
-            clearedRows += 1;
-          }
-        }
-
-        this.setNewBlock();
+      if (collision === CollisionType.DOCKED
+        && change !== GameStateChange.TURN
+        && change !== GameStateChange.LEFT
+        && change !== GameStateChange.RIGHT) {
+        this.onDocked();
       }
     }
+  }
+
+  /** User stone dock collision was detected. Write it into the game map. */
+  onDocked() {
+    iterateOverMap(Blocks[this.block][this.rotation], (value, y, x) => {
+      if (value) {
+        this.map[this.y + y][this.x + x] = this.block;
+      }
+    });
+
+    // check for resolved rows
+    let clearedRows = 0; // TODO: use this for stacking mana and stuff
+    for (let y = this.map.length - 1; y !== -1; y -= 1) {
+      const filledCols = this.map[y].filter((col) => !!col).length;
+      // row is full! clear it
+      if (filledCols === 10) {
+        // clear the filled row and move down the next one
+        this.map.splice(y, 1);
+        // add a new empty row
+        this.map.unshift(getEmptyMap(1)[0]);
+        // reset y, and increase row and cleared row count
+        y += 1;
+        this.rowCount += 1;
+        clearedRows += 1;
+      }
+    }
+
+    this.setNewBlock();
   }
 
   /**
@@ -346,7 +229,19 @@ class GameUser implements GameUserInterface {
         this.y += 1;
         break;
       }
-      case GameStateChange.TAB: {
+      case GameStateChange.FALL_DOWN: {
+        this.y = getPreviewY(
+          this.map,
+          Blocks[this.block][this.rotation],
+          this.y,
+          this.x,
+        );
+        // we know it was docked...
+        this.onDocked();
+        this.sendUpdate();
+        return;
+      }
+      case GameStateChange.NEXT_TARGET: {
         // next user
         break;
       }

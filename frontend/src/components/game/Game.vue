@@ -16,7 +16,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mergeWith, update } from 'lodash';
 
 import { formatGameUser, WsMessageType } from '@battletris/shared';
-import { GameUserInterface } from '@battletris/shared/functions/gameUser';
+import { GameUserInterface } from '@battletris/shared/functions/gameHelper';
 import ClassLogo from '../general/ClassLogo.vue';
 import GameConnection from '../../lib/GameConnection';
 import currUser from '../../lib/User';
@@ -38,7 +38,7 @@ import GameField from './GameField.vue';
     const activeIndex = ref<number>(-1);
 
     // bind key handler
-    let keyPressed = false;
+    const keyPressed = false;
     const keyDownHandler = ($event: KeyboardEvent) => {
       // allow key press only each 50 ms
       if (keyPressed) {
@@ -48,8 +48,8 @@ import GameField from './GameField.vue';
       gameConn.send(WsMessageType.GAME_INPUT, $event.keyCode);
     };
     const keyUpHandler = () => {
-      keyPressed = true;
-      setTimeout(() => keyPressed = false, 0);
+      // keyPressed = false;
+      // setTimeout(() => keyPressed = false, 50);
     };
 
     const bindKeyPress = () => {
