@@ -1,7 +1,6 @@
 import { BlockMapping, Blocks, WsMessageType } from '@battletris/shared';
 import { CollisionType, formatGameUser, GameStateChange, GameUserInterface, GameUserMapping, getDifference, getPreviewY, getStoneCollision, iterateOverMap } from '@battletris/shared/functions/gameHelper';
 import { cloneDeep } from 'lodash';
-import { setTimeout } from 'timers';
 import { User } from '../db';
 import config from '../lib/config';
 import game from './game';
@@ -52,6 +51,9 @@ class GameUser implements GameUserInterface {
   /** game loop timeout */
   gameLoopTimeout: NodeJS.Timeout;
 
+  /** increase speed of block down moving */
+  increaseLoopTimeout: NodeJS.Timeout;
+
   /** is the user out of game? */
   lost: boolean;
 
@@ -60,6 +62,9 @@ class GameUser implements GameUserInterface {
 
   /** amount of cleared rows */
   rowCount: number;
+
+  /** timeout, until the next block moves down */
+  speed: number;
 
   constructor(user: User, gameUserIndex: number) {
     // save latest state
@@ -75,6 +80,7 @@ class GameUser implements GameUserInterface {
     this.block = 0;
     this.y = 0;
     this.rotation = 0;
+    this.speed = config.userSpeed;
   }
 
   /**
@@ -95,7 +101,7 @@ class GameUser implements GameUserInterface {
         this.map = numberToBlockMap('L');
         this.lost = true;
         this.block = BlockMapping.EMPTY;
-        this.gameLoopStop();
+        this.stop();
         game.onUserLost(this.id);
         this.sendUpdate();
         return;
@@ -161,13 +167,14 @@ class GameUser implements GameUserInterface {
 
       // ensure next tick
       this.gameLoop();
-    }, config.gameLoopSpeed);
+    }, this.speed);
   }
 
   /**
    * Stop timeout
    */
-  gameLoopStop() {
+  stop() {
+    clearTimeout(this.increaseLoopTimeout);
     clearTimeout(this.gameLoopTimeout);
   }
 
@@ -205,6 +212,17 @@ class GameUser implements GameUserInterface {
     wsHandler.wsBroadcast(WsMessageType.GAME_USER_UPDATE, updateArr);
   }
 
+  start() {
+    // ensure random game block
+    this.setNewBlock();
+    // start game loop iteration
+    this.gameLoop();
+    // start increase timeout
+    this.increaseLoopTimeout = setInterval(() => {
+      this.speed -= config.increaseSteps;
+    }, config.increaseInterval);
+  }
+
   /**
    *
    * @param keyCode key number
@@ -227,6 +245,9 @@ class GameUser implements GameUserInterface {
       }
       case GameStateChange.DOWN: {
         this.y += 1;
+        // reset move down timer
+        clearTimeout(this.gameLoopTimeout);
+        this.gameLoop();
         break;
       }
       case GameStateChange.FALL_DOWN: {

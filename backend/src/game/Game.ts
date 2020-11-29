@@ -72,12 +72,7 @@ class Game {
     await this.initLoop();
 
     // start the actual game log
-    this.users.forEach((user) => {
-      // ensure random game block
-      user.setNewBlock();
-      // start game loop iteration
-      user.gameLoop();
-    });
+    this.users.forEach((user) => user.start());
     // directly show new blocks for the users
     this.sendGameUserUpdates();
   }
@@ -137,7 +132,7 @@ class Game {
         rowCount: user.rowCount,
       };
       // ensure timeout stopping
-      user.gameLoopStop();
+      user.stop();
     });
 
     processHandler.send(ProcessMessageType.GAME_STOP, stats);

@@ -4,11 +4,17 @@
 
     <div>blockCount: {{blockCount}}</div>
     <div>rowCount: {{rowCount}}</div>
+    <div>speed: {{speed}}</div>
+    <countdown :interval="100" :time="nextBlockMove">
+      <template slot-scope="props">next block: {{ props.milliseconds }}</template>
+    </countdown>
   </div>
 </template>
 
 <script lang="ts">
-import { onUnmounted, onMounted, ref } from '@vue/composition-api';
+import {
+  onUnmounted, onMounted, ref,
+} from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 import Konva from 'konva';
 
@@ -60,9 +66,12 @@ const colorMap = {
     const isCurrUser = ref<boolean>(currUser.id === userId);
     const userElId = ref((userId).replace(/-/g, ''));
     const container = ref();
+    const enablePreview = ref(true);
+    // stat values
     const blockCount = ref(userData.blockCount);
     const rowCount = ref(userData.rowCount);
-    const enablePreview = ref(true);
+    const speed = ref(userData.speed);
+    const nextBlockMove = ref(Date.now());
 
     // convas rendering
     let gameStage: Konva.Stage;
@@ -205,6 +214,19 @@ const colorMap = {
           // only update the map, if the current user is updated
           if (payload[userIndex]) {
             const updatedUser = formatGameUser(payload[userIndex]);
+
+            // update stats
+            if (updatedUser.rowCount) {
+              rowCount.value = updatedUser.rowCount;
+            }
+            if (updatedUser.blockCount) {
+              blockCount.value = updatedUser.blockCount;
+            }
+            if (updatedUser.speed) {
+              speed.value = updatedUser.speed;
+            }
+
+            // map updates
             const {
               block,
               map,
@@ -229,14 +251,10 @@ const colorMap = {
               userData.x = updatedOrPrevious(x, userData.x);
               // draw block and preview
               updateStoneLayer();
-            }
-
-            // update stats
-            if (updatedUser.rowCount) {
-              rowCount.value = updatedUser.rowCount;
-            }
-            if (updatedUser.blockCount) {
-              blockCount.value = updatedUser.blockCount;
+              // set new countdown
+              if (userData.y) {
+                nextBlockMove.value = Date.now() + speed.value;
+              }
             }
 
             gameStage.draw();
@@ -250,7 +268,9 @@ const colorMap = {
       blockCount,
       container,
       isCurrUser,
+      nextBlockMove,
       rowCount,
+      speed,
       userElId,
     };
   },

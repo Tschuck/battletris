@@ -27,6 +27,9 @@ export interface GameUserInterface {
 
   /** amount of cleared rows */
   rowCount: number;
+
+  /** timeout, until the next block moves down */
+  speed: number;
 }
 
 export enum GameUserMapping {
@@ -37,8 +40,9 @@ export enum GameUserMapping {
   rotation = 4,
   x = 5,
   y = 6,
-  blockCount = 9,
+  blockCount = 7,
   rowCount = 8,
+  speed = 9,
 }
 
 /**
