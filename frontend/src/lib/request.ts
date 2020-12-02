@@ -3,7 +3,7 @@ import config from './config';
 
 const getRequest = async (url: string, params?: any) => {
   const { data } = await axios.get(
-    `${config.serverUrl}/${url}`,
+    `${config.serverUrl}/api/${url}`,
     {
       params,
       withCredentials: true,
@@ -15,7 +15,7 @@ const getRequest = async (url: string, params?: any) => {
 
 const postRequest = async (url: string, params?: any) => {
   const { data } = await axios.post(
-    `${config.serverUrl}/${url}`,
+    `${config.serverUrl}/api/${url}`,
     params,
     { withCredentials: true },
   );

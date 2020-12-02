@@ -1,11 +1,11 @@
 {
   "dependencies": {
-    "@types/node": "^14.14.6",
     "axios": "^0.21.0",
     "cookie-signature": "^1.1.0",
     "fastify": "^3.7.0",
     "fastify-cookie": "^4.1.0",
     "fastify-cors": "^4.1.0",
+    "fastify-static": "^3.3.0",
     "fs-extra": "^9.0.1",
     "lodash": "^4.17.20",
     "pino": "^6.7.0",
@@ -18,18 +18,22 @@
     "ws": "^7.4.0"
   },
   "devDependencies": {
+    "@types/node": "^14.14.6",
     "@typescript-eslint/eslint-plugin": "3",
     "eslint": "^7.0.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-config-airbnb-typescript": "^7.2.1",
     "typescript": "^3.9.6"
   },
+  "engines": {
+    "node": "12.x"
+  },
   "name": "battletris",
   "scripts": {
-    "build": "rm -rf ./dist && tsc -p tsconfig.json",
+    "build": "rm -rf ./dist/node_modules && rm -rf ./dist/src && tsc -p tsconfig.json",
     "debug": "yarn build && node --inspect dist/src/index.js",
     "debug:game": "yarn build && BATTLETRIS_DEBUG_GAME=true node dist/src/index.js",
-    "start": "yarn build && node dist/src/index.js",
-    "postinstall": "cd ../shared && yarn link && cd ../backend && yarn link @battletris/shared"
+    "postinstall": "cd ../shared && yarn link && cd ../backend && yarn link @battletris/shared",
+    "start": "yarn build && node dist/src/index.js"
   }
 }

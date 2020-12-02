@@ -19,7 +19,7 @@ export const createEndpoint = (
 
   server.log.debug(`[ACTION] register ${type} => ${url}`);
   server[type](
-    url,
+    `/api${url}`,
     specs,
     (request, reply) => func(
       { ...request.query, ...request.params, ...request.body },

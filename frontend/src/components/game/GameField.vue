@@ -6,7 +6,7 @@
     <div>rowCount: {{rowCount}}</div>
     <div>speed: {{speed}}</div>
     <countdown :interval="100" :time="nextBlockMove">
-      <template slot-scope="props">next block: {{ props.milliseconds }}</template>
+      <template slot-scope="props">next down move: {{ props.milliseconds }}</template>
     </countdown>
   </div>
 </template>
@@ -45,6 +45,8 @@ const colorMap = {
     '#E8D595',
   ],
 };
+
+const animationSpeed = 0.1;
 
 @Component({
   components: {
@@ -86,10 +88,12 @@ const colorMap = {
 
     // ----------------------------------- konva setup ------------------------------------------ //
     /** Create the initial setup for the map */
-    const getNewGridLayer = (yMax: number, xMax: number, rectOptions: Konva.RectConfig = {}) => {
-      // setup the map layer
-      const layer = new Konva.Layer();
-
+    const getNewGridLayer = (
+      layer: Konva.Layer|Konva.Group,
+      yMax: number,
+      xMax: number,
+      rectOptions: Konva.RectConfig = {},
+    ) => {
       for (let y = 0; y < yMax; y += 1) {
         const rowGroup = new Konva.Group({
           x: 0,
@@ -112,7 +116,7 @@ const colorMap = {
 
       return layer;
     };
-    const updateLayerSize = (layer: Konva.Layer) => {
+    const updateLayerSize = (layer: Konva.Layer|Konva.Group) => {
       layer.children.toArray().forEach((row, y: number) => {
         row.height(colHeight);
         row.y(y * colHeight);
@@ -139,7 +143,7 @@ const colorMap = {
       gameStage.height(height);
     };
     /** update the map with a map diff object from the game process */
-    const updateLayerColors = (layer: Konva.Layer, mapDiff: number[][]) => {
+    const updateLayerColors = (layer: Konva.Layer|Konva.Group, mapDiff: number[][]) => {
       mapDiff.forEach((updatedRow: number[], y: number) => {
         // if the row was updated, iterate over the cols
         if (updatedRow) {
@@ -150,29 +154,91 @@ const colorMap = {
         }
       });
     };
-    const updateStoneLayer = () => {
-      // set new position
-      stoneLayer.y(userData.y * colHeight);
-      stoneLayer.x(userData.x * colWidth);
+    /** create a new stone layer for the current block. */
+    const createStoneLayer = (rectOptions: Konva.RectConfig = {}) => {
       // format the new block into the correct color
-      const blockToDisplay = cloneDeep(Blocks[userData.block][userData.rotation]).map(
+      // use stone roation 0, will be handled by drawing
+      const newBlock = cloneDeep(Blocks[userData.block][0]).map(
         (row) => row.map((col) => (col ? userData.block : 0)),
       );
-      updateLayerColors(stoneLayer, blockToDisplay);
-      // if preview is enable, show the preview layer and render it
-      if (enablePreview.value) {
-        updateLayerColors(previewLayer, blockToDisplay);
-        const yPreview = getPreviewY(userData.map, blockToDisplay, userData.y, userData.x);
-        previewLayer.x(userData.x * colWidth);
-        previewLayer.y(yPreview * colHeight);
+
+      // create a new layer in the correct size
+      const layer = new Konva.Layer({
+        width: newBlock.length * colWidth,
+        height: newBlock.length * colHeight,
+      });
+      const rotatingGroup = new Konva.Group({
+        width: newBlock.length * colWidth,
+        height: newBlock.length * colHeight,
+      });
+      layer.add(rotatingGroup);
+      // create stone map within the inner group. so we can spin it seperatly
+      getNewGridLayer(rotatingGroup, newBlock.length, newBlock.length, rectOptions);
+      // set the layer colors
+      updateLayerColors(rotatingGroup, newBlock);
+
+      return layer;
+    };
+    /** move a stone layer to a specific postion */
+    const positionStoneLayer = (layer: Konva.Layer, isPreview = false, duration = animationSpeed) => {
+      const x = userData.x * colWidth;
+      let y;
+
+      // if its not a preview stone, so we can just use user stone position
+      if (!isPreview) {
+        y = userData.y * colHeight;
+      } else {
+        // calculate lowest y position that is possible
+        y = getPreviewY(
+          userData.map,
+          Blocks[userData.block][userData.rotation % 4],
+          userData.y,
+          userData.x,
+        ) * colHeight;
       }
+
+      // animate the positioning and rotation
+      layer.to({
+        duration,
+        rotation: userData.rotation * 90,
+        x,
+        y,
+      });
+    };
+    /** removes old stone layers, create new ones for the latest block and add them to the stage */
+    const onStoneChange = () => {
+      // ensure that the layers for the stones are not duplicated
+      if (stoneLayer) {
+        stoneLayer.remove();
+      }
+      if (previewLayer) {
+        previewLayer.remove();
+      }
+      // create new layers
+      stoneLayer = createStoneLayer();
+      previewLayer = createStoneLayer({ opacity: 0.2 });
+      // apply offset for correct rotation
+      [stoneLayer, previewLayer].forEach((layer) => {
+        // in case of a block, children null will be always the group for rotating
+        const offsetX = layer.children[0].getClientRect().width / 2;
+        const offsetY = layer.children[0].getClientRect().height / 2;
+        layer.children[0].position({ x: offsetX, y: offsetY });
+        layer.children[0].offset({ x: offsetX, y: offsetY });
+      });
+      // set initial position
+      positionStoneLayer(stoneLayer, false, 0);
+      positionStoneLayer(previewLayer, true, 0);
+      // add them to the stage
+      gameStage.add(stoneLayer);
+      gameStage.add(previewLayer);
     };
 
     // declar resize watcher here, so we can use all game update functions
     const windowResizeWatch = () => {
       updateGameStage();
       updateLayerSize(mapLayer);
-      updateLayerSize(stoneLayer);
+      updateLayerSize(stoneLayer.children[0] as Konva.Group);
+      updateLayerSize(previewLayer.children[0] as Konva.Group);
       stoneLayer.x(userData.x * colWidth);
       stoneLayer.y(userData.y * colHeight);
       gameStage.draw();
@@ -182,21 +248,15 @@ const colorMap = {
       updateGameStage();
 
       // setup initial field
-      mapLayer = getNewGridLayer(20, 10, {
+      mapLayer = getNewGridLayer(new Konva.Layer(), 20, 10, {
         stroke: colorMap.STROKE,
-        strokeWidth: 0.3,
-      });
-      stoneLayer = getNewGridLayer(4, 4);
-      previewLayer = getNewGridLayer(4, 4, {
-        opacity: 0.2,
-      });
-      gameStage.add(mapLayer);
-      gameStage.add(stoneLayer);
-      gameStage.add(previewLayer);
-
-      // render initial data
+        strokeWidth: 0.1,
+      }) as Konva.Layer;
       updateLayerColors(mapLayer, userData.map);
-      updateStoneLayer();
+      gameStage.add(mapLayer);
+
+      // setup initial stone layers
+      onStoneChange();
 
       // resize layers sizes, when the window size has changed
       window.addEventListener('resize', windowResizeWatch);
@@ -241,23 +301,33 @@ const colorMap = {
               userData.map = userData.map.map((row, index) => (map[index] ? map[index] : row));
               // draw the updated rows again
               updateLayerColors(mapLayer, map);
+              mapLayer.draw();
             }
 
-            if (isSet(x) || isSet(y) || isSet(block) || isSet(rotation)) {
-              // set new block information
-              userData.block = updatedOrPrevious(block, userData.block);
+            // if block was updated, redraw the stone layer
+            if (isSet(block) || isSet(x) || isSet(y) || isSet(rotation)) {
+              // move down the
               userData.rotation = updatedOrPrevious(rotation, userData.rotation);
               userData.y = updatedOrPrevious(y, userData.y);
               userData.x = updatedOrPrevious(x, userData.x);
-              // draw block and preview
-              updateStoneLayer();
-              // set new countdown
-              if (userData.y) {
-                nextBlockMove.value = Date.now() + speed.value;
-              }
-            }
 
-            gameStage.draw();
+              if (isSet(block)) {
+                userData.block = updatedOrPrevious(block, userData.block);
+                onStoneChange();
+              } else {
+                // set initial position
+                positionStoneLayer(stoneLayer, false);
+                positionStoneLayer(previewLayer, true);
+                // update next block move timer
+                if (userData.y) {
+                  nextBlockMove.value = Date.now() + speed.value;
+                }
+              }
+
+              // redraw the stone layers
+              stoneLayer.draw();
+              previewLayer.draw();
+            }
           }
           break;
         }

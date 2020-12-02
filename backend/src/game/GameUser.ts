@@ -91,7 +91,7 @@ class GameUser implements GameUserInterface {
    */
   checkGameState(change?: GameStateChange) {
     // check for out of range
-    const actualBlock = Blocks[this.block][this.rotation];
+    const actualBlock = Blocks[this.block][this.getRotationBlockIndex()];
 
     // detect if a collision occurred
     const collision = getStoneCollision(this.map, actualBlock, this.y, this.x);
@@ -127,7 +127,7 @@ class GameUser implements GameUserInterface {
 
   /** User stone dock collision was detected. Write it into the game map. */
   onDocked() {
-    iterateOverMap(Blocks[this.block][this.rotation], (value, y, x) => {
+    iterateOverMap(Blocks[this.block][this.getRotationBlockIndex()], (value, y, x) => {
       if (value) {
         this.map[this.y + y][this.x + x] = this.block;
       }
@@ -231,7 +231,7 @@ class GameUser implements GameUserInterface {
     switch (key) {
       case GameStateChange.TURN: {
         if (this.block !== 4) {
-          this.rotation = this.rotation === 3 ? 0 : this.rotation + 1;
+          this.rotation += 1;
         }
         break;
       }
@@ -253,7 +253,7 @@ class GameUser implements GameUserInterface {
       case GameStateChange.FALL_DOWN: {
         this.y = getPreviewY(
           this.map,
-          Blocks[this.block][this.rotation],
+          Blocks[this.block][this.getRotationBlockIndex()],
           this.y,
           this.x,
         );
@@ -269,6 +269,13 @@ class GameUser implements GameUserInterface {
 
     this.checkGameState(key);
     this.sendUpdate();
+  }
+
+  /**
+   * Transforms the current rotation counter into a block index
+   */
+  getRotationBlockIndex() {
+    return this.rotation % 4;
   }
 }
 
