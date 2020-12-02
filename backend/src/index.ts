@@ -18,7 +18,7 @@ const start = async () => {
   await ensureDefaultRooms();
 
   // start server
-  server.listen(config.port, (err) => {
+  server.listen(config.port, '0.0.0.0', (err) => {
     if (err) {
       server.log.error(err.message);
       process.exit(1);

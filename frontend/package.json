@@ -44,10 +44,10 @@
   "name": "battletris",
   "private": true,
   "scripts": {
-    "build": "vue-cli-service build --modern && yarn copy:dist",
+    "dev:build": "vue-cli-service build --modern && yarn copy:dist",
     "copy:dist": "rm -rf ../backend/dist/public && cp -r ./dist ../backend/dist/public",
     "lint": "vue-cli-service lint",
-    "postinstall": "cd ../shared && yarn link && cd ../frontend && yarn link @battletris/shared",
+    "dev:postinstall": "cd ../shared && yarn link && cd ../frontend && yarn link @battletris/shared",
     "start": "vue-cli-service serve --modern --port 1984"
   },
   "version": "0.1.0"

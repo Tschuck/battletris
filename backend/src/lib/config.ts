@@ -20,7 +20,7 @@ export default {
   /** secret to sign the cookies */
   cookieSecret: _('COOKIE_SECRET', '6f5af457-b1b6-444d-8488-2d1241d0ad5f'),
   /** path to store the db at */
-  dbPath: _('DB_PATH', path.resolve('../.db.sqlite')),
+  dbPath: _('DB_PATH', path.resolve('.db.sqlite')),
   /** max amount of default games to initialize on startup */
   defaultGameCount: _('DEFAULT_GAME_COUNT', 5),
   /** frontend running at this url */
@@ -28,7 +28,7 @@ export default {
   /** max allowed users in game */
   maxGameUsers: 6,
   /** game server starts on port */
-  port: _('PORT', 2020),
+  port: process.env.PORT || _('PORT', 2020),
   /** run game loop every X ms */
   gameLoopSpeed: _('GAME_LOOP_SPEED', 1000),
   /** "user speed", moves blocks down, ... */

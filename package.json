@@ -2,12 +2,12 @@
   "name": "battletris",
   "scripts": {
     "build": "yarn build:backend && yarn build:frontend",
-    "build:backend": "cd ./backend && yarn build",
-    "build:frontend": "cd ./frontend && yarn build",
-    "deploy": "yarn build",
+    "build:backend": "cd ./backend && yarn dev:build",
+    "build:frontend": "cd ./frontend && yarn dev:build",
+    "deploy": "yarn build && cd ./backend && yarn deploy",
     "install": "yarn install:shared && yarn install:backend && yarn install:frontend",
-    "install:backend": "cd ./backend && yarn",
-    "install:frontend": "cd ./frontend && yarn",
+    "install:backend": "cd ./backend && yarn && yarn dev:postinstall",
+    "install:frontend": "cd ./frontend && yarn && yarn dev:postinstall",
     "install:shared": "cd ./shared && yarn"
   }
 }
