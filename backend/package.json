@@ -30,12 +30,9 @@
   },
   "name": "battletris",
   "scripts": {
+    "build": "rm -rf ./dist/node_modules && rm -rf ./dist/src && tsc -p tsconfig.json",
     "debug": "yarn build && node --inspect dist/src/index.js",
-    "debug:game": "yarn build && BATTLETRIS_DEBUG_GAME=true node dist/src/index.js",
-    "dev:build": "rm -rf ./dist/node_modules && rm -rf ./dist/src && tsc -p tsconfig.json",
-    "dev:postinstall": "cd ../shared && yarn link && cd ../backend && yarn link @battletris/shared",
-    "dev:start": "yarn build && node dist/src/index.js",
-    "deploy": "git add --all && git commit -m \"heroku deploy\" && git push heroku master && heroku logs --tail",
-    "start": "node dist/src/index.js"
+    "postinstall": "cd ../shared && yarn link && cd ../backend && yarn link @battletris/shared",
+    "start": "yarn build && node dist/src/index.js"
   }
 }

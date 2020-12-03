@@ -1,9 +1,10 @@
 .db.sqlite
+.deploy
 backend/dist
 backend/node_modules
 frontend/dist
 frontend/node_modules
-shared/node_modules
 node_modules
-yarn.lock
+shared/node_modules
 tsconfig.tsbuildinfo
+yarn.lock
