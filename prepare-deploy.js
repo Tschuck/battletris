@@ -7,6 +7,7 @@ const backendFolder = path.resolve('./backend');
 const frontendFolder = path.resolve('./frontend');
 const package = {
   ...require(`${backendFolder}/package.json`),
+  version: Date.now(),
   devDependencies: {},
   scripts: {
     start: "node dist/src/index.js"
