@@ -26,7 +26,7 @@
     "typescript": "^3.9.6"
   },
   "engines": {
-    "node": "12.x"
+    "node": "12.19.0"
   },
   "name": "battletris",
   "scripts": {
