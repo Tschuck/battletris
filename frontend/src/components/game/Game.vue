@@ -13,7 +13,6 @@
 <script lang="ts">
 import { onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
-import { mergeWith, update } from 'lodash';
 
 import { formatGameUser, WsMessageType } from '@battletris/shared';
 import { GameUserInterface } from '@battletris/shared/functions/gameHelper';

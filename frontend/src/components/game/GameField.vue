@@ -8,7 +8,7 @@
       <div>speed: {{speed}}</div>
 
       <div v-if="isCurrUser">
-        <div>latency: ~{{latency}} ms</div>
+        <div>latency: {{latency.join('ms, ')}}</div>
       </div>
 
       <countdown :interval="100" :time="nextBlockMove">
@@ -81,7 +81,7 @@ const animationSpeed = 0.07;
     const rowCount = ref(userData.rowCount);
     const speed = ref(userData.speed);
     const nextBlockMove = ref(Date.now());
-    const latency = ref(0);
+    const latency = ref<number[]>([]);
 
     // convas rendering
     let gameStage: Konva.Stage;
@@ -266,6 +266,7 @@ const animationSpeed = 0.07;
         stroke: colorMap.STROKE,
         strokeWidth: 0.1,
       }) as Konva.Layer;
+
       updateLayerColors(mapLayer, userData.map);
       gameStage.add(mapLayer);
 
@@ -289,7 +290,11 @@ const animationSpeed = 0.07;
 
             // detect latency of input
             if (lastKeyPressTime && isCurrUser) {
-              latency.value = Date.now() - lastKeyPressTime;
+              latency.value.unshift(Date.now() - lastKeyPressTime);
+              if (latency.value.length > 10) {
+                latency.value.pop();
+              }
+              lastKeyPressTime = 0;
             }
 
             // update stats
