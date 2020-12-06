@@ -44,7 +44,7 @@ import ClassSelect from './ClassSelect.vue';
     loading: { type: Boolean },
   },
   setup() {
-    const name = ref(user.name);
+    const name = ref<string>(user.name);
     const className = ref(user.className);
     const isSelectClass = ref(false);
     const classSelect = ref(null);
@@ -54,6 +54,11 @@ import ClassSelect from './ClassSelect.vue';
       if (debounce) {
         window.clearTimeout(debounce);
       }
+
+      if (name.value.length > 50) {
+        name.value = name.value.slice(0, 50);
+      }
+
       debounce = setTimeout(() => user.update(name.value, className.value), 500);
     };
 

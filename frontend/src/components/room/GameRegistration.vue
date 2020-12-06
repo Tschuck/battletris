@@ -11,7 +11,6 @@
         <div>
           <div
             class="flex items-center justify-center rounded-full"
-            style="height: 160px; width: 160px"
           >
             <ClassLogo
               v-if="user"
@@ -21,7 +20,7 @@
               color="#fff"
             />
           </div>
-          <h2 class="mt-6 text-xl font-bold text-center">
+          <h2 class="mt-6 overflow-hidden text-xl font-bold text-center">
             {{ user.name }}
           </h2>
         </div>

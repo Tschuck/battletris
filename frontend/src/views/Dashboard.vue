@@ -89,7 +89,7 @@
         <div class="card">
           <h2 class="header">{{ $t("history.title") }}</h2>
           <div class="flex flex-row flex-wrap content">
-            <div class="p-3 mt-3 border" v-for="(match, index) in matches" :key="index">
+            <div class="p-3 mt-3 overflow-hidden border" v-for="(match, index) in matches" :key="index">
               {{ match }}
             </div>
           </div>

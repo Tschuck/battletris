@@ -1,13 +1,15 @@
 import { BlockMapping, Blocks, WsMessageType } from '@battletris/shared';
 import { CollisionType, formatGameUser, GameStateChange, GameUserInterface, GameUserMapping, getDifference, getPreviewY, getStoneCollision, iterateOverMap } from '@battletris/shared/functions/gameHelper';
 import { cloneDeep } from 'lodash';
-import { cpuUsage } from 'process';
 import { User } from '../db';
 import config from '../lib/config';
 import game from './game';
 import { getEmptyMap } from './helpers/mapHelper';
 import numberToBlockMap from './helpers/numberToBlockMap';
 import wsHandler from './wsHandler';
+
+// order to move turned blocks that get stuck out of the bounds or out of the docked mode
+const turnBlockEvades = [ 1, -1, 2, -2 ];
 
 /**
  * Gets a random between to numbers
@@ -97,18 +99,18 @@ class GameUser implements GameUserInterface {
     // detect if a collision occurred
     let collision = getStoneCollision(this.map, actualBlock, this.y, this.x);
 
-    // check if block was spinned and if we can be moved to the left / right
-    if (change === GameStateChange.TURN && collision === CollisionType.OUT_OF_BOUNDS_X) {
-      if (this.x < 3) {
-        while (collision === CollisionType.OUT_OF_BOUNDS_X) {
-          this.x += 1;
-          collision = getStoneCollision(this.map, actualBlock, this.y, this.x);
-        }
-      } else {
-        while (collision === CollisionType.OUT_OF_BOUNDS_X) {
-          this.x -= 1;
-          collision = getStoneCollision(this.map, actualBlock, this.y, this.x);
-        }
+    // check if block was turned and if we can be moved to the left / right
+    if (change === GameStateChange.TURN
+      && (collision === CollisionType.OUT_OF_BOUNDS_X || collision === CollisionType.DOCKED)) {
+      const xOrigin = this.x;
+      let evadeCounter = 0;
+      // try to move blocks out of bounds / out of docked stones => will be max 2 in positive /
+      // negative direction
+      while (turnBlockEvades[evadeCounter] &&
+        (collision === CollisionType.OUT_OF_BOUNDS_X || collision === CollisionType.DOCKED)) {
+        this.x = xOrigin + turnBlockEvades[evadeCounter];
+        collision = getStoneCollision(this.map, actualBlock, this.y, this.x);
+        evadeCounter += 1;
       }
     }
 

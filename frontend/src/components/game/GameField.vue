@@ -8,7 +8,7 @@
       <div>speed: {{speed}}</div>
 
       <div v-if="isCurrUser">
-        <div>latency: {{latency.join('ms, ')}}</div>
+        <div>latency: ~{{latency}}ms</div>
       </div>
 
       <countdown :interval="100" :time="nextBlockMove">
@@ -81,7 +81,8 @@ const animationSpeed = 0.07;
     const rowCount = ref(userData.rowCount);
     const speed = ref(userData.speed);
     const nextBlockMove = ref(Date.now());
-    const latency = ref<number[]>([]);
+    const latencies = ref<number[]>([]);
+    const latency = ref<number>(0);
 
     // convas rendering
     let gameStage: Konva.Stage;
@@ -94,7 +95,7 @@ const animationSpeed = 0.07;
     let colHeight: number;
     let colWidth: number;
     // meassure performance
-    let lastKeyPressTime: number;
+    const lastKeyPressTime: number[] = [];
 
     // ----------------------------------- konva setup ------------------------------------------ //
     /** Create the initial setup for the map */
@@ -208,7 +209,7 @@ const animationSpeed = 0.07;
       }
 
       layer.children[0].to({
-        duration: enableAnimation.value ? duration : 0,
+        duration: 0,
         rotation: userData.rotation * 90,
       });
 
@@ -289,12 +290,15 @@ const animationSpeed = 0.07;
             const updatedUser = formatGameUser(payload[userIndex]);
 
             // detect latency of input
-            if (lastKeyPressTime && isCurrUser) {
-              latency.value.unshift(Date.now() - lastKeyPressTime);
-              if (latency.value.length > 10) {
-                latency.value.pop();
+            const lastKeyPress = lastKeyPressTime.shift();
+            if (lastKeyPress && isCurrUser) {
+              latencies.value.unshift(Date.now() - lastKeyPress);
+              if (latencies.value.length > 10) {
+                latencies.value.pop();
               }
-              lastKeyPressTime = 0;
+              latency.value = Math.round(
+                latencies.value.reduce((a, b) => (a + b)) / latencies.value.length,
+              );
             }
 
             // update stats
@@ -354,7 +358,7 @@ const animationSpeed = 0.07;
 
     // listen for keypress
     const keyDownHandler = ($event: KeyboardEvent) => {
-      lastKeyPressTime = Date.now();
+      lastKeyPressTime.push(Date.now());
       gameConn.send(WsMessageType.GAME_INPUT, $event.keyCode);
     };
     if (isCurrUser.value) {

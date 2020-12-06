@@ -42,6 +42,9 @@ export default class WsConnection {
   /** all in the room registered users for a game */
   gameRegistration: Record<string, GameUserStatus> = {};
 
+  /** do not send messages, if the socket was closed */
+  closed = false;
+
   constructor(roomId: string, type: string) {
     this.handlers = [];
     this.roomId = roomId;
@@ -69,6 +72,11 @@ export default class WsConnection {
     // handle user updates and joined / leaved members => use unshift to ensure, that this is the
     // first handler
     this.handlers.unshift((type, payload) => this.defaultMessageHandler(type, payload));
+
+    // do not send messages, if socket is closed
+    this.ws.onclose = () => {
+      this.closed = true;
+    };
   }
 
   /**
@@ -100,7 +108,9 @@ export default class WsConnection {
    * @param payload data to send
    */
   send(type: WsMessageType, payload?: any) {
-    this.ws.send(getStringifiedMessage(type, payload));
+    if (!this.closed) {
+      this.ws.send(getStringifiedMessage(type, payload));
+    }
   }
 
   /**

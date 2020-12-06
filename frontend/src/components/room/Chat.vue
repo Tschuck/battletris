@@ -6,8 +6,8 @@
     <h2 class="pr-3 font-bold">{{ $t("lobby.title") }}</h2>
 
     <div class="p-1 mt-3 mr-3 overflow-y-auto border">
-      <span v-for="(name, index) in usersInLobby" :key="index">
-        <span class="text-sm">{{ index !== 0 ? ',' : '' }} {{ name }}</span>
+      <span v-for="(name, index) in usersInLobby" :key="index" style="min-height: 24px">
+        <span class="overflow-hidden text-sm">{{ index !== 0 ? ',' : '' }} {{ name }}</span>
       </span>
     </div>
 
@@ -15,7 +15,7 @@
       <div v-for="(message, index) in chat" :key="index" class="mt-3">
         <p class="text-sm">{{ message.message }}</p>
         <div class="flex text-xs italic opacity-25">
-          <p>{{ getUserName(message.id) }}</p>
+          <p class="overflow-hidden">{{ getUserName(message.id) }}</p>
           <p class="flex-grow" />
           <p>{{ message.date }}</p>
         </div>
@@ -61,7 +61,11 @@ import { getCurrentConnection } from '../../lib/RoomConnection';
 
     const addChatMsg = (userId: string, message: string) => {
       const d = new Date();
-      const timeString = `${d.getHours()}:${d.getMinutes()}.${d.getSeconds()}`;
+      const timeString = [
+        d.getHours().toString().padStart(2, '0'),
+        d.getMinutes().toString().padStart(2, '0'),
+        d.getSeconds().toString().padStart(2, '0'),
+      ].join(':');
       chat.value.unshift({
         id: userId,
         message,
@@ -106,7 +110,7 @@ import { getCurrentConnection } from '../../lib/RoomConnection';
       event.preventDefault();
       event.stopPropagation();
       sending.value = true;
-      await conn?.send(WsMessageType.CHAT, newMessage.value);
+      await conn?.send(WsMessageType.CHAT, newMessage.value.slice(0, 100));
       newMessage.value = '';
       sending.value = false;
     };
