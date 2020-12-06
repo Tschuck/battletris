@@ -1,13 +1,20 @@
 <template>
-  <div style="width: 100%; height: 100%;">
-    <div ref="container" style="width: 100%; height: calc(100% - 100px);" />
+  <div style="width: 100%; height: 100%;" class="flex flex-col">
+    <div ref="container" class="flex-grow" />
 
-    <div>blockCount: {{blockCount}}</div>
-    <div>rowCount: {{rowCount}}</div>
-    <div>speed: {{speed}}</div>
-    <countdown :interval="100" :time="nextBlockMove">
-      <template slot-scope="props">next down move: {{ props.milliseconds }}</template>
-    </countdown>
+    <div>
+      <div>blockCount: {{blockCount}}</div>
+      <div>rowCount: {{rowCount}}</div>
+      <div>speed: {{speed}}</div>
+
+      <div v-if="isCurrUser">
+        <div>latency: ~{{latency}} ms</div>
+      </div>
+
+      <countdown :interval="100" :time="nextBlockMove">
+        <template slot-scope="props">next down move: {{ props.milliseconds }}</template>
+      </countdown>
+    </div>
   </div>
 </template>
 
@@ -46,7 +53,7 @@ const colorMap = {
   ],
 };
 
-const animationSpeed = 0.1;
+const animationSpeed = 0.07;
 
 @Component({
   components: {
@@ -60,7 +67,7 @@ const animationSpeed = 0.1;
   },
   setup(props) {
     const {
-      roomId, userData, userId, userIndex,
+      userData, userId, userIndex,
     } = props as unknown as GameFieldProps;
 
     // vue param setup
@@ -68,12 +75,13 @@ const animationSpeed = 0.1;
     const isCurrUser = ref<boolean>(currUser.id === userId);
     const userElId = ref((userId).replace(/-/g, ''));
     const container = ref();
-    const enablePreview = ref(true);
+    const enableAnimation = ref(true);
     // stat values
     const blockCount = ref(userData.blockCount);
     const rowCount = ref(userData.rowCount);
     const speed = ref(userData.speed);
     const nextBlockMove = ref(Date.now());
+    const latency = ref(0);
 
     // convas rendering
     let gameStage: Konva.Stage;
@@ -85,6 +93,8 @@ const animationSpeed = 0.1;
     let height: number;
     let colHeight: number;
     let colWidth: number;
+    // meassure performance
+    let lastKeyPressTime: number;
 
     // ----------------------------------- konva setup ------------------------------------------ //
     /** Create the initial setup for the map */
@@ -197,10 +207,14 @@ const animationSpeed = 0.1;
         ) * colHeight;
       }
 
+      layer.children[0].to({
+        duration: enableAnimation.value ? duration : 0,
+        rotation: userData.rotation * 90,
+      });
+
       // animate the positioning and rotation
       layer.to({
-        duration,
-        rotation: userData.rotation * 90,
+        duration: enableAnimation.value ? duration : 0,
         x,
         y,
       });
@@ -261,8 +275,6 @@ const animationSpeed = 0.1;
       // resize layers sizes, when the window size has changed
       window.addEventListener('resize', windowResizeWatch);
     });
-    // be sure to stop watching, when game was left
-    onUnmounted(() => window.removeEventListener('resize', windowResizeWatch));
 
     // ----------------------------------- game handling ---------------------------------------- //
     const isSet = (value: number) => value !== undefined;
@@ -274,6 +286,11 @@ const animationSpeed = 0.1;
           // only update the map, if the current user is updated
           if (payload[userIndex]) {
             const updatedUser = formatGameUser(payload[userIndex]);
+
+            // detect latency of input
+            if (lastKeyPressTime && isCurrUser) {
+              latency.value = Date.now() - lastKeyPressTime;
+            }
 
             // update stats
             if (updatedUser.rowCount) {
@@ -323,10 +340,6 @@ const animationSpeed = 0.1;
                   nextBlockMove.value = Date.now() + speed.value;
                 }
               }
-
-              // redraw the stone layers
-              stoneLayer.draw();
-              previewLayer.draw();
             }
           }
           break;
@@ -334,10 +347,27 @@ const animationSpeed = 0.1;
       }
     }, onUnmounted);
 
+    // listen for keypress
+    const keyDownHandler = ($event: KeyboardEvent) => {
+      lastKeyPressTime = Date.now();
+      gameConn.send(WsMessageType.GAME_INPUT, $event.keyCode);
+    };
+    if (isCurrUser.value) {
+      window.addEventListener('keydown', keyDownHandler);
+    }
+
+    // be sure to stop watching, when game was left
+    onUnmounted(() => {
+      window.removeEventListener('resize', windowResizeWatch);
+      window.removeEventListener('keydown', keyDownHandler);
+    });
+
     return {
       blockCount,
       container,
+      enableAnimation,
       isCurrUser,
+      latency,
       nextBlockMove,
       rowCount,
       speed,

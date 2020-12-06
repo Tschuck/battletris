@@ -51,7 +51,8 @@ export enum GameUserMapping {
  */
 export enum CollisionType {
   DOCKED = 1,
-  INVALID = 2,
+  OUT_OF_BOUNDS_X = 2,
+  OUT_OF_BOUNDS_Y = 3,
 }
 /**
  * Mapping of user state changes. Can be either a technical one (like new block), or a user
@@ -176,18 +177,18 @@ export const getStoneCollision = (
   block: number[][],
   y: number,
   x: number,
-) => iterateOverMap(block, (value, itY, itX) => {
+): CollisionType => iterateOverMap(block, (value, itY, itX) => {
   const xOnMap = x + itX;
   const yOnMap = y + itY;
 
   // out of bounds on the left or on the right
   if ((xOnMap < 0 || xOnMap > 9) && value) {
-    return CollisionType.INVALID;
+    return CollisionType.OUT_OF_BOUNDS_X;
   }
 
   // out of bounds at the bottom
   if (yOnMap > 20 && value) {
-    return CollisionType.INVALID;
+    return CollisionType.OUT_OF_BOUNDS_Y;
   }
 
   // detect only initial dock at the bottom

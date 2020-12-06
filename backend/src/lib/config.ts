@@ -19,6 +19,8 @@ const _ = (name: string, defaultValue: any) => {
 export default {
   /** secret to sign the cookies */
   cookieSecret: _('COOKIE_SECRET', '6f5af457-b1b6-444d-8488-2d1241d0ad5f'),
+  /** domain to set the cookie for */
+  cookieDomain: _('COOKIE_DOMAIN', 'localhost'),
   /** path to store the db at */
   dbPath: _('DB_PATH', path.resolve('.db.sqlite')),
   /** max amount of default games to initialize on startup */

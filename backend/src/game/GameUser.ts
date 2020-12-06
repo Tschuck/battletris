@@ -1,6 +1,7 @@
 import { BlockMapping, Blocks, WsMessageType } from '@battletris/shared';
 import { CollisionType, formatGameUser, GameStateChange, GameUserInterface, GameUserMapping, getDifference, getPreviewY, getStoneCollision, iterateOverMap } from '@battletris/shared/functions/gameHelper';
 import { cloneDeep } from 'lodash';
+import { cpuUsage } from 'process';
 import { User } from '../db';
 import config from '../lib/config';
 import game from './game';
@@ -94,7 +95,23 @@ class GameUser implements GameUserInterface {
     const actualBlock = Blocks[this.block][this.getRotationBlockIndex()];
 
     // detect if a collision occurred
-    const collision = getStoneCollision(this.map, actualBlock, this.y, this.x);
+    let collision = getStoneCollision(this.map, actualBlock, this.y, this.x);
+
+    // check if block was spinned and if we can be moved to the left / right
+    if (change === GameStateChange.TURN && collision === CollisionType.OUT_OF_BOUNDS_X) {
+      if (this.x < 3) {
+        while (collision === CollisionType.OUT_OF_BOUNDS_X) {
+          this.x += 1;
+          collision = getStoneCollision(this.map, actualBlock, this.y, this.x);
+        }
+      } else {
+        while (collision === CollisionType.OUT_OF_BOUNDS_X) {
+          this.x -= 1;
+          collision = getStoneCollision(this.map, actualBlock, this.y, this.x);
+        }
+      }
+    }
+
     if (collision) {
       // game ends for you here...
       if (change === GameStateChange.NEW_BLOCK) {

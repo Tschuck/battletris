@@ -39,7 +39,7 @@ createEndpoint(
     }
 
     reply.setCookie('battletris_id', cookieValue, {
-      domain: 'localhost',
+      domain: config.cookieDomain,
       signed: true,
       httpOnly: false,
     });

@@ -1,6 +1,7 @@
+import { FastifyReply } from 'fastify';
 import fastifyCookie from 'fastify-cookie';
 import fastifyCors from 'fastify-cors';
-import fastifyStatic from 'fastify-static';
+import fastifyStatic, { FastifyStaticOptions } from 'fastify-static';
 import { existsSync } from 'fs';
 import path from 'path';
 import config from '../lib/config';
@@ -20,7 +21,12 @@ const publicPath = path.resolve('./dist/public');
 if (existsSync('./dist/public')) {
   server.register(fastifyStatic, {
     root: publicPath,
-    prefix: '/', // optional: default '/'
+    prefix: '/app',
+  });
+
+  // map wildcard resolver, so /roomId will resolve the index.html
+  server.get('/*', (req, reply) => {
+    reply.sendFile('index.html', path.resolve('./dist/public'));
   });
 }
 

@@ -37,42 +37,12 @@ import GameField from './GameField.vue';
     const messages = ref<any[]>([]);
     const activeIndex = ref<number>(-1);
 
-    // bind key handler
-    const keyPressed = false;
-    const keyDownHandler = ($event: KeyboardEvent) => {
-      // allow key press only each 50 ms
-      if (keyPressed) {
-        return;
-      }
-
-      gameConn.send(WsMessageType.GAME_INPUT, $event.keyCode);
-    };
-    const keyUpHandler = () => {
-      // keyPressed = false;
-      // setTimeout(() => keyPressed = false, 50);
-    };
-
-    const bindKeyPress = () => {
-      window.addEventListener('keydown', keyDownHandler);
-      window.addEventListener('keyup', keyUpHandler);
-    };
-
-    onUnmounted(() => {
-      window.removeEventListener('keydown', keyDownHandler);
-      window.removeEventListener('keyup', keyUpHandler);
-    });
-
     const messageHandler = gameConn.onMessage(async (type: WsMessageType, payload: any) => {
       switch (type) {
         case WsMessageType.GAME_UPDATE: {
           gameUsers.value = payload.users.map((user: any) => formatGameUser(user));
           // check if the user is part of the game
           activeIndex.value = gameUsers.value.findIndex((user) => user.id === currUser.id);
-          // if the user has joined the game, bind key watchers
-          if (activeIndex.value !== -1) {
-            bindKeyPress();
-          }
-
           loading.value = false;
           // we can unbind this listener, is just for the first sync
           messageHandler();

@@ -150,7 +150,7 @@
     "users-joined": "Users joined"
   },
   "user-id-handling": {
-    "desc": "No match history available? Play a match or login with a exported battletris id.<br><br>Battletris wants to be a secure place for you and don't want to get any security information from you. So no <strong>PASSWORD</strong>, just a passwordless authentication. If you want to use the same user id on a different pc, please export a battletris user file and import it on the other machine.",
+    "desc": "No match history available? Play a match or login with a exported battletris id.<br><br>Battletris wants to be a secure place for you and don't want to get any security information. So no <strong>PASSWORD</strong>, just a passwordless authentication. If you want to use the same user id on a different pc, please export a battletris user file and import it on the other machine.",
     "export": "Export user file",
     "import": "Import user file",
     "import-invalid": "Not a battletris user id file.",
