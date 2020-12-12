@@ -27,6 +27,11 @@ function getRandomNumber(min: number, max: number) { // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+interface GameUserEvent {
+  key: GameStateChange;
+  id: number;
+}
+
 class GameUser {
   /** db user class */
   className: string;
@@ -72,6 +77,12 @@ class GameUser {
 
   /** timeout, until the next block moves down */
   speed: number;
+
+  /** counter of key presses of the user */
+  interactionCount = 0;
+
+  /** list of latest user events */
+  userEvents: GameUserEvent[] = [];
 
   constructor(
     user: {
@@ -215,6 +226,12 @@ class GameUser {
    * @param keyCode key number
    */
   onKeyPress(key: GameStateChange) {
+    // save the user interaction to ensure to send the user, what was already processed by the
+    // backend
+    // !IMPORTANT: be careful to handle user event emptying within the backend / frontend state
+    this.interactionCount += 1;
+    this.userEvents.push({ key, id: this.interactionCount });
+
     switch (key) {
       case GameStateChange.TURN: {
         if (this.block !== 4) {

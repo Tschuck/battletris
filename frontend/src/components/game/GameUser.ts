@@ -1,7 +1,8 @@
 import GameConnection, { getCurrentConnection } from '@/lib/GameConnection';
 import {
-  gameHelper, GameUser, GameUserStatus, WsMessageType,
+  gameHelper, GameUser, WsMessageType,
 } from '@battletris/shared';
+import { formatGameUser } from '@battletris/shared/functions/gameHelper';
 import currUser from '../../lib/User';
 
 const isSet = (value: number|undefined) => value !== undefined;
@@ -29,7 +30,14 @@ export default class FrontendGameUser extends GameUser {
   /** next time, when the user block will move down */
   nextBlockMove!: number;
 
+  /** function to remove window key press listener */
   keyDownListener: any;
+
+  /** last user backup to check for changes with the backend */
+  backendState: any;
+
+  /** notifiy the using class, that something has changed */
+  onUpdate: (frontendUser: FrontendGameUser, userUpdate: Partial<GameUser>) => void;
 
   constructor(
     user: GameUser,
@@ -41,18 +49,21 @@ export default class FrontendGameUser extends GameUser {
     // !IMPORTANT: copy latest values the backend information to this instance. Otherwise, we don't
     // have the latest data. Keep in mind, the incoming game user is just a value copy of the
     // backend, so we can just iterate the keys
+    this.backendState = formatGameUser(user);
     Object.keys(user).forEach((key: string) => {
       (this as any)[key] = (user as any)[key];
     });
 
     this.connection = getCurrentConnection() as GameConnection;
     this.isCurrUser = currUser.id === user.id;
+    this.onUpdate = onUpdate;
 
     this.onMessageListener = this.connection.onMessage((type: WsMessageType, data: any) => {
       if (type === WsMessageType.GAME_USER_UPDATE && data[this.gameUserIndex]) {
-        const formatted = gameHelper.formatGameUser(data[this.gameUserIndex]);
-        this.onUserUpdate(formatted);
-        onUpdate(this, formatted);
+        // calculate the latest updates from backend (you could be already 10 clicks away)
+        const backendState = gameHelper.formatGameUser(this.backendState);
+        const backendUpdate = gameHelper.formatGameUser(data[this.gameUserIndex]);
+        gameHelper.mergeStateWithUpdate(backendState, backendUpdate);
       }
     });
 
@@ -83,53 +94,33 @@ export default class FrontendGameUser extends GameUser {
       );
     }
 
-    // update stats
-    if (updatedUser.rowCount) {
-      this.rowCount = updatedUser.rowCount;
-    }
-    if (updatedUser.blockCount) {
-      this.blockCount = updatedUser.blockCount;
-    }
-    if (updatedUser.speed) {
-      this.speed = updatedUser.speed;
-    }
+    // update the instance with the new values
+    gameHelper.mergeStateWithUpdate(this, updatedUser);
 
-    // map updates
+    // checkup what should be rendered
     const {
-      block,
-      map,
-      rotation,
-      x,
-      y,
+      map, block, x, y, rotation,
     } = updatedUser;
 
     // if map was updated, update the rows
     if (Array.isArray(map)) {
-      // update the user map to the lastet version, so we can create the preview stone
-      this.map = this.map.map((row, index) => (map[index] ? map[index] : row));
-
       this.onMapChange();
     }
 
     // if block was updated, redraw the stone layer
     if (isSet(block) || isSet(x) || isSet(y) || isSet(rotation)) {
-      // move down the
-      this.rotation = updatedOrPrevious(rotation, this.rotation);
-      this.y = updatedOrPrevious(y, this.y);
-      this.x = updatedOrPrevious(x, this.x);
-
       if (isSet(block)) {
-        this.block = updatedOrPrevious(block, this.block);
         this.onStoneChange();
       // update next block move timer
       } else {
         this.onStoneMove();
-
         if (isSet(y)) {
           this.nextBlockMove = Date.now() + this.speed;
         }
       }
     }
+
+    this.onUpdate(this, updatedUser);
   }
 
   /**
@@ -149,7 +140,11 @@ export default class FrontendGameUser extends GameUser {
   userKeyEvent($event: KeyboardEvent) {
     this.lastKeyPressTime.push(Date.now());
     this.connection.send(WsMessageType.GAME_INPUT, $event.keyCode);
-    // this.onKeyPress($event.keyCode);
+    this.onKeyPress($event.keyCode);
+  }
+
+  sendUpdate() {
+    this.onUserUpdate(gameHelper.formatGameUser(this.serialize()));
   }
 
   onMapChange() { /** will be overwritten by gameRenderer */ }

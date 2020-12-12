@@ -35,9 +35,13 @@ class BackendGameUser extends GameUser {
    * Use serialize to build a diff object and send it to the ui
    */
   sendUpdate() {
-    const updateArr = [];
-    updateArr[this.gameUserIndex] = this.serialize();
-    wsHandler.wsBroadcast(WsMessageType.GAME_USER_UPDATE, updateArr);
+    setTimeout(() => {
+      const updateArr = [];
+      updateArr[this.gameUserIndex] = this.serialize();
+      wsHandler.wsBroadcast(WsMessageType.GAME_USER_UPDATE, updateArr);
+      // clear user events, so we wont send them twice
+      this.userEvents = [];
+    }, 100);
   }
 
   start() {

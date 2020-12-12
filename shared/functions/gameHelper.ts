@@ -1,4 +1,5 @@
 import { Key } from 'ts-keycode-enum';
+import GameUser from './GameUser';
 
 export enum GameUserMapping {
   className = 0,
@@ -11,6 +12,7 @@ export enum GameUserMapping {
   blockCount = 7,
   rowCount = 8,
   speed = 9,
+  userEvents = 10,
 }
 
 /**
@@ -127,6 +129,11 @@ export function getDifference(
       return;
     }
 
+    // always use the full list, because everything was processes and will be resetted
+    if (key === `${GameUserMapping.userEvents}`) {
+      return newObj[key];
+    }
+
     // build the diff
     if (oldObj[key] !== newObj[key]) {
       diff[key] = newObj[key];
@@ -183,4 +190,25 @@ export const getPreviewY = (map: number[][], block: number[][], y: number, x: nu
   }
 
   return previewY - 1;
+};
+
+export const updatedOrPrevious = (value: number|undefined, previous: number) => (value !== undefined
+  ? value : previous);
+
+export const mergeStateWithUpdate = (state: GameUser, update: Partial<GameUser>) => {
+  Object.keys(update).forEach((key) => {
+    if (key === `${GameUserMapping.map}`) {
+      state.map = update.map.map(
+        (row: number[], index: number) => (update.map[index] ? update.map[index] : row),
+      );
+      return;
+    }
+
+    if (key === `${GameUserMapping.userEvents}`) {
+      // TODO: what will we return?
+      return [];
+    }
+
+    state[key] = updatedOrPrevious(update[key], state[key])
+  });
 };
