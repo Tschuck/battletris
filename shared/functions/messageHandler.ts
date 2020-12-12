@@ -39,7 +39,7 @@ export function parseMessage(
  * @param type process message type or a ws message type
  * @param payload payload to attach
  */
-export function getStringifiedMessage(type: ProcessMessageType|WsMessageType, payload: any) {
+export function getStringifiedMessage(type: ProcessMessageType|WsMessageType, payload: any): any {
   return JSON.stringify([
     type,
     payload,

@@ -1,11 +1,19 @@
 import { cloneDeep } from 'lodash';
 import Blocks, { BlockMapping } from '../enums/Blocks';
-import User from '../interfaces/User';
-import { CollisionType, formatGameUser, GameStateChange, GameUserMapping, getDifference, getPreviewY, getStoneCollision, iterateOverMap } from './gameHelper';
+import {
+  CollisionType,
+  formatGameUser,
+  GameStateChange,
+  GameUserMapping,
+  getDifference,
+  getPreviewY,
+  getStoneCollision,
+  iterateOverMap,
+} from './gameHelper';
 import { getEmptyMap } from './mapHelper';
 
 // order to move turned blocks that get stuck out of the bounds or out of the docked mode
-const turnBlockEvades = [ 1, -1, 2, -2 ];
+const turnBlockEvades = [1, -1, 2, -2];
 
 /**
  * Gets a random between to numbers
@@ -15,7 +23,7 @@ const turnBlockEvades = [ 1, -1, 2, -2 ];
  * @param min min value
  * @param max max value
  */
-function getRandomNumber(min, max) { // min and max included
+function getRandomNumber(min: number, max: number) { // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
@@ -30,7 +38,7 @@ class GameUser {
   id: string;
 
   /** users currently displayed map */
-  map: number[][];
+  map: number[][] = [];
 
   /** current active block */
   block: number;
@@ -54,7 +62,7 @@ class GameUser {
   increaseLoopTimeout: any;
 
   /** is the user out of game? */
-  lost: boolean;
+  lost = false;
 
   /** amount of used blocks */
   blockCount: number;
@@ -67,12 +75,12 @@ class GameUser {
 
   constructor(
     user: {
-      id: string,
-      className: string,
+      id: string;
+      className: string;
     },
     gameUserIndex: number,
     config: {
-      userSpeed: number,
+      userSpeed: number;
     },
   ) {
     // save latest state
@@ -111,8 +119,8 @@ class GameUser {
       let evadeCounter = 0;
       // try to move blocks out of bounds / out of docked stones => will be max 2 in positive /
       // negative direction
-      while (turnBlockEvades[evadeCounter] &&
-        (collision === CollisionType.OUT_OF_BOUNDS_X || collision === CollisionType.DOCKED)) {
+      while (turnBlockEvades[evadeCounter]
+        && (collision === CollisionType.OUT_OF_BOUNDS_X || collision === CollisionType.DOCKED)) {
         this.x = xOrigin + turnBlockEvades[evadeCounter];
         collision = getStoneCollision(this.map, actualBlock, this.y, this.x);
         evadeCounter += 1;
@@ -135,7 +143,7 @@ class GameUser {
 
       // revert to the last state
       Object.keys(previousUser).forEach(
-        (change) => this[change] = cloneDeep(previousUser[change]),
+        (key: string) => (this as any)[key] = cloneDeep(previousUser[key]),
       );
 
       // "brand" the active stone into the map
@@ -157,6 +165,7 @@ class GameUser {
     });
 
     // check for resolved rows
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let clearedRows = 0; // TODO: use this for stacking mana and stuff
     for (let y = this.map.length - 1; y !== -1; y -= 1) {
       const filledCols = this.map[y].filter((col) => !!col).length;
@@ -257,15 +266,19 @@ class GameUser {
   }
 
   /** Start timeout to move blocks down. */
+  // eslint-disable-next-line class-methods-use-this
   gameLoop() { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
 
   /**  Stop timeout */
+  // eslint-disable-next-line class-methods-use-this
   stop() { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
 
   /** Use serialize to build a diff object and send it to the ui */
+  // eslint-disable-next-line class-methods-use-this
   sendUpdate() { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
 
   /** Triggered, when the user lost the game */
+  // eslint-disable-next-line class-methods-use-this
   onUserLost() { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
 }
 

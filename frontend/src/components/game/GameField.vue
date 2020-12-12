@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import {
-  onUnmounted, onMounted, ref, computed,
+  onUnmounted, onMounted, ref,
 } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 
@@ -43,32 +43,34 @@ interface GameFieldProps {
   props: {
     roomId: { type: String },
     userData: { },
-    userId: { type: String },
     userIndex: { type: Number },
   },
   setup(props) {
-    const {
-      userData, userId, userIndex,
-    } = props as unknown as GameFieldProps;
+    const { userData, userIndex } = props as unknown as GameFieldProps;
+
+    // vue param setup
+    const isCurrUser = ref<boolean>(false);
+    const container = ref();
+    // stat values
+    const blockCount = ref<number>();
+    const rowCount = ref<number>();
+    const speed = ref<number>();
+    const nextBlockMove = ref<number>();
+    const latency = ref<number>();
 
     // will be initialized after on mounted
     let gameRenderer: GameRenderer;
     const gameUser = new FrontendGameUser(
-      { id: userId, className: userData.className },
+      userData,
       userIndex,
-      { userSpeed: userData.speed },
+      (user) => {
+        blockCount.value = user.blockCount;
+        rowCount.value = user.rowCount;
+        speed.value = user.speed;
+        nextBlockMove.value = user.nextBlockMove;
+        latency.value = user.latency;
+      },
     );
-
-    // vue param setup
-    const isCurrUser = ref<boolean>(gameUser.isCurrUser);
-    const userElId = ref((userId).replace(/-/g, ''));
-    const container = ref();
-    // stat values
-    const blockCount = computed(() => gameUser.blockCount);
-    const rowCount = computed(() => gameUser.rowCount);
-    const speed = computed(() => gameUser.speed);
-    const nextBlockMove = computed(() => gameUser.nextBlockMove);
-    const latency = computed(() => gameUser.latency);
 
     onMounted(() => {
       gameRenderer = new GameRenderer(
@@ -95,7 +97,6 @@ interface GameFieldProps {
       nextBlockMove,
       rowCount,
       speed,
-      userElId,
     };
   },
 })

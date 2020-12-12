@@ -177,7 +177,7 @@ export const getPreviewY = (map: number[][], block: number[][], y: number, x: nu
   let previewY = y - 1;
 
   let collision;
-  while (collision !== CollisionType.DOCKED && previewY !== map.length) {
+  while (collision !== CollisionType.DOCKED && previewY !== map.length && previewY < 20) {
     previewY += 1;
     collision = getStoneCollision(map, block, previewY, x);
   }

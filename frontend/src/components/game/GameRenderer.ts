@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import { cloneDeep } from 'lodash';
 import {
-  formatGameUser, WsMessageType, Blocks, GameUser, gameHelper, mapHelper,
+  Blocks, gameHelper,
 } from '@battletris/shared';
 import FrontendGameUser from './GameUser';
 
@@ -85,8 +85,9 @@ export default class GameRenderer {
     this.updateLayerColors(this.mapLayer, this.user.map);
     this.gameStage.add(this.mapLayer);
 
-    // setup initial stone layers
+    // setup initial stone layers and react on changes
     this.onStoneChange();
+    this.watchForUserUpdates();
 
     // resize layers sizes, when the window size has changed
     window.addEventListener('resize', this.windowResizeWatch);
