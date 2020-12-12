@@ -1,4 +1,4 @@
-import * as mapHelper from './mapHelper';
+import { mapHelper } from '@battletris/shared';
 
 /**
  * Transforms a number into a block map and returns this one.

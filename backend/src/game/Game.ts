@@ -1,4 +1,4 @@
-import { formatGameUser, MatchStatsInterface, ProcessMessageType, WsMessageType } from '@battletris/shared';
+import { gameHelper, mapHelper, MatchStatsInterface, ProcessMessageType, WsMessageType } from '@battletris/shared';
 import { User } from '../db';
 import config from '../lib/config';
 import GameUser from './GameUser';
@@ -6,7 +6,6 @@ import numberToBlockMap from './helpers/numberToBlockMap';
 import logger from './logger';
 import processHandler from './processHandler';
 import wsHandler from './wsHandler';
-import * as mapHelper from './helpers/mapHelper';
 
 class Game {
   /** users ids mapped to the index to improve performance for incremental updates */
@@ -29,7 +28,7 @@ class Game {
    */
   async initLoop() {
     let counter = config.startCounter;
-    await new Promise((resolve) => {
+    await new Promise<void>((resolve) => {
       const updateMap = () => {
         if (counter === 0) {
           clearInterval(startLoop);
@@ -63,7 +62,9 @@ class Game {
     this.indexIdMap = {};
     // setup game users
     this.userIds.forEach((userId, index) => {
-      this.users.push(new GameUser(users[userId], index));
+      this.users.push(new GameUser(users[userId], index, {
+        userSpeed: config.userSpeed,
+      }));
       this.indexIdMap[index] = userId;
     });
 
@@ -83,7 +84,7 @@ class Game {
   serialize() {
     const serialized = {
       // do not use user serialize! user serialize will only send updates
-      users: this.users.map((user) => formatGameUser(user)),
+      users: this.users.map((user) => gameHelper.formatGameUser(user)),
       indexIdMap: this.indexIdMap,
     };
 

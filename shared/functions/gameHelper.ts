@@ -1,37 +1,5 @@
 import { Key } from 'ts-keycode-enum';
 
-export interface GameUserInterface {
-  /** db user class */
-  className: string;
-
-  /** db user id */
-  id: string;
-
-  /** users currently displayed map */
-  map: number[][];
-
-  /** current active block */
-  block: number;
-
-  /** active block rotation */
-  rotation: number;
-
-  /** active block x position */
-  x: number;
-
-  /** active block x position */
-  y: number;
-
-  /** amount of used blocks */
-  blockCount: number;
-
-  /** amount of cleared rows */
-  rowCount: number;
-
-  /** timeout, until the next block moves down */
-  speed: number;
-}
-
 export enum GameUserMapping {
   className = 0,
   id = 1,

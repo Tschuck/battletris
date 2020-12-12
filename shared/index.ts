@@ -5,11 +5,13 @@ import GameStatus from './enums/GameStatus';
 import GameUserStatus from './enums/GameUserStatus';
 import ProcessMessageType from './enums/ProcessMessageType';
 import WsMessageType from './enums/WsMessageType';
-import { formatGameUser } from './functions/gameHelper';
+import * as gameHelper from './functions/gameHelper';
+import GameUser from './functions/GameUser';
+import * as mapHelper from './functions/mapHelper';
 import {
   getStringifiedMessage,
   ParsedMessage,
-  parseMessage,
+  parseMessage
 } from './functions/messageHandler';
 import { MatchInterface, MatchStatsInterface } from './interfaces/MatchStats';
 import RoomWithDataInterface from './interfaces/RoomWithData';
@@ -20,10 +22,12 @@ export {
   Blocks,
   Classes,
   ErrorCodes,
-  formatGameUser,
+  gameHelper,
   GameStatus,
+  GameUser,
   GameUserStatus,
   getStringifiedMessage,
+  mapHelper,
   MatchInterface,
   MatchStatsInterface,
   ParsedMessage,
