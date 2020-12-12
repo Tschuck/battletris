@@ -65,7 +65,7 @@ class User implements UserInterface {
   async import(fileInput: { files: Blob[] }) {
     const reader = new FileReader();
 
-    return new Promise((resole, reject) => {
+    return new Promise<void>((resole, reject) => {
       reader.onload = async (event) => {
         try {
           const imported = JSON.parse(event?.target?.result as string);

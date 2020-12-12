@@ -14,11 +14,10 @@
 import { onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 
-import { formatGameUser, WsMessageType } from '@battletris/shared';
-import { GameUserInterface } from '@battletris/shared/functions/gameHelper';
+import { gameHelper, GameUser, WsMessageType } from '@battletris/shared';
 import ClassLogo from '../general/ClassLogo.vue';
-import GameConnection from '../../lib/GameConnection';
 import currUser from '../../lib/User';
+import GameConnection from '../../lib/GameConnection';
 import GameField from './GameField.vue';
 
 @Component({
@@ -31,7 +30,7 @@ import GameField from './GameField.vue';
   },
   setup(props) {
     const gameConn: GameConnection = new GameConnection(props.roomId as string);
-    const gameUsers = ref<GameUserInterface[]>([]);
+    const gameUsers = ref<GameUser[]>([]);
     const loading = ref(true);
     const messages = ref<any[]>([]);
     const activeIndex = ref<number>(-1);
@@ -39,7 +38,7 @@ import GameField from './GameField.vue';
     const messageHandler = gameConn.onMessage(async (type: WsMessageType, payload: any) => {
       switch (type) {
         case WsMessageType.GAME_UPDATE: {
-          gameUsers.value = payload.users.map((user: any) => formatGameUser(user));
+          gameUsers.value = payload.users.map((user: any) => gameHelper.formatGameUser(user));
           // check if the user is part of the game
           activeIndex.value = gameUsers.value.findIndex((user) => user.id === currUser.id);
           loading.value = false;
