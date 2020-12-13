@@ -1,5 +1,5 @@
 import { gameHelper, mapHelper, MatchStatsInterface, ProcessMessageType, WsMessageType } from '@battletris/shared';
-import { getDifference, HiddenGameUserMapping } from '@battletris/shared/functions/gameHelper';
+import { formatGameUser, getDifference, HiddenGameUserMapping } from '@battletris/shared/functions/gameHelper';
 import { User } from '../db';
 import config from '../lib/config';
 import GameUser from './GameUser';
@@ -32,6 +32,7 @@ class Game {
    */
   async initLoop() {
     let counter = config.startCounter;
+
     await new Promise<void>((resolve) => {
       const updateMap = () => {
         if (counter === 0) {
@@ -39,8 +40,9 @@ class Game {
           return resolve();
         }
 
+        // update the users map with the start counter and send only the map to the users
         this.users.forEach((user) => user.map = numberToBlockMap(counter));
-        this.sendGameUserUpdates();
+        this.sendFullUpdate();
         counter -= 1;
       };
 
@@ -49,7 +51,6 @@ class Game {
     });
 
     this.users.forEach((user) => user.map = mapHelper.getEmptyMap(20));
-    this.sendGameUserUpdates();
   }
 
   /**
@@ -75,11 +76,10 @@ class Game {
     logger.debug(`Game started with: ${this.userIds.join(', ')}`);
     // show countdown
     await this.initLoop();
-
     // start the actual game log
     this.users.forEach((user) => user.start());
     // directly show new blocks for the users
-    this.sendGameUserUpdates();
+    this.sendFullUpdate();
   }
 
   /**
@@ -93,6 +93,16 @@ class Game {
     };
 
     return serialized;
+  }
+
+  /**
+   * Sends an update to all users, including only the map property.
+   */
+  sendFullUpdate() {
+    wsHandler.wsBroadcast(
+      WsMessageType.GAME_USER_UPDATE,
+      this.users.map((user) => formatGameUser(user)),
+    );
   }
 
   /**
@@ -115,7 +125,7 @@ class Game {
 
         // apply all changes to the user
         while (user.userEvents.length) {
-          const [key] = user.userEvents.pop();
+          const [key] = user.userEvents.shift();
           // adjust the current game state for the key
           GameUser.handleKeyEvent(user, key);
           // check the latest move states for docked states
@@ -131,7 +141,7 @@ class Game {
       });
 
       wsHandler.wsBroadcast(WsMessageType.GAME_USER_UPDATE, update);
-    }, 500);
+    }, config.userUpdateInterval);
   }
 
   /**

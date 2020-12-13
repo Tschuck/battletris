@@ -96,6 +96,9 @@ class GameUser {
   /** current active block */
   block: number;
 
+  /** next active blocks */
+  nextBlocks: number[] = [];
+
   /** active block rotation */
   rotation: number;
 
@@ -156,6 +159,7 @@ class GameUser {
     this.y = 0;
     this.rotation = 0;
     this.speed = config.userSpeed;
+    this.fillNextBlocks();
   }
 
   /**
@@ -215,6 +219,12 @@ class GameUser {
     }
   }
 
+  fillNextBlocks() {
+    while (this.nextBlocks.length < 10) {
+      this.nextBlocks.push(getRandomNumber(1, 7));
+    }
+  }
+
   /** User stone dock collision was detected. Write it into the game map. */
   onDocked() {
     iterateOverMap(Blocks[this.block][this.getRotationBlockIndex()], (value, y, x) => {
@@ -249,7 +259,10 @@ class GameUser {
    */
   setNewBlock(block?: number) {
     this.blockCount += 1;
-    this.block = block === undefined ? getRandomNumber(1, 7) : block;
+    // use new block from the next block stack
+    this.block = block === undefined ? this.nextBlocks.shift() as number : block;
+    // ensure full stack of next blocks
+    this.fillNextBlocks();
     this.x = 3;
     // the block map for the long block and the square, starting with an empty zero row
     this.y = this.block === BlockMapping.BAR || this.block === BlockMapping.BLOCK ? -1 : 0;

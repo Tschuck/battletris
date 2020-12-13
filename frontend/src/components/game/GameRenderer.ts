@@ -104,7 +104,6 @@ export default class GameRenderer {
     };
     this.user.onStoneChange = () => this.onStoneChange();
     this.user.onStoneMove = () => {
-      console.log('positionStoneLayer');
       // set initial position
       this.positionStoneLayer(this.stoneLayer, false);
       this.positionStoneLayer(this.previewLayer, true);

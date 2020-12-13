@@ -63,9 +63,9 @@ export default class FrontendGameUser extends GameUser {
     this.isCurrUser = currUser.id === user.id;
     this.onUpdate = onUpdate;
 
+    // listen for backend updates
     this.onMessageListener = this.connection.onMessage((type: WsMessageType, data: any) => {
       if (type === WsMessageType.GAME_USER_UPDATE && data[this.gameUserIndex]) {
-        console.log('-----------------');
         // calculate the latest updates from backend (frontend could be already 10 clicks away)
         const backendState = gameHelper.formatGameUser(this.backendState, {});
         const backendUpdate = gameHelper.formatGameUser(data[this.gameUserIndex], {});
@@ -75,7 +75,6 @@ export default class FrontendGameUser extends GameUser {
         (userEvents || []).forEach(([, id]: number[]) => {
           const foundEvent = this.userEvents.findIndex(([frontendId]) => id === frontendId);
           this.userEvents.splice(foundEvent, 1);
-          console.log(foundEvent);
         });
         // apply now all new changes to the left backend states, that were not processed
         const newUiState = JSON.parse(JSON.stringify(backendState));
@@ -84,12 +83,6 @@ export default class FrontendGameUser extends GameUser {
         });
         // calculate update from the old ui state to the new ui state and apply it
         const uiUpdate = gameHelper.getDifference(newUiState, this);
-        // console.log(backendState);
-        // console.log(backendUpdate);
-        // console.log(userEvents);
-        // console.log(this.userEvents);
-        // console.log(this);
-        // console.log(newUiState);
         this.onUserUpdate(uiUpdate);
         // save latest backend state, diff is now applied
         backendState.userEvent = [];

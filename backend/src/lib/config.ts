@@ -31,8 +31,8 @@ export default {
   maxGameUsers: 6,
   /** game server starts on port */
   port: process.env.PORT || _('PORT', 2020),
-  /** run game loop every X ms */
-  gameLoopSpeed: _('GAME_LOOP_SPEED', 1000),
+  /** update the users each X ms */
+  userUpdateInterval: _('USER_UPDATE_INTERVAL', 100),
   /** "user speed", moves blocks down, ... */
   userSpeed: _('USER_SPEED', 1100),
   /** increase speed after X ms */

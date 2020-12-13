@@ -5,17 +5,18 @@ export enum GameUserMapping {
   id = 1,
   map = 2,
   block = 3,
-  rotation = 4,
-  x = 5,
-  y = 6,
-  blockCount = 7,
-  rowCount = 8,
-  speed = 9,
+  nextBlocks = 4,
+  rotation = 5,
+  x = 6,
+  y = 7,
+  blockCount = 8,
+  rowCount = 9,
+  speed = 10,
 }
 
 /** Contains user param mapping that should not affect the diff and parsing parameters */
 export enum HiddenGameUserMapping {
-  userEvents = 10,
+  userEvents = 20,
 }
 
 /**
