@@ -10,15 +10,15 @@ class BackendGameUser extends GameUser {
    */
   gameLoop() {
     this.gameLoopTimeout = setTimeout(() => {
-      this.y += 1;
+      // this.y += 1;
 
-      this.checkGameState(GameStateChange.DOWN);
+      // this.userEvents.push([GameStateChange.DOWN]);
 
-      // ensure users are up to date
-      this.sendUpdate();
+      // // ensure users are up to date
+      // this.sendUpdate();
 
-      // ensure next tick
-      this.gameLoop();
+      // // ensure next tick
+      // this.gameLoop();
     }, this.speed);
   }
 

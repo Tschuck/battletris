@@ -136,6 +136,13 @@ export function getDifference(
     }
 
     // build the diff
+    if ((key === 'nextBlocks' || key === `${GameUserMapping.nextBlocks}`)
+      && JSON.stringify(newObj[key]) !== JSON.stringify(oldObj[key])) {
+      diff[key] = newObj[key];
+      return;
+    }
+
+    // build the diff
     if (oldObj[key] !== newObj[key]) {
       diff[key] = newObj[key];
     }

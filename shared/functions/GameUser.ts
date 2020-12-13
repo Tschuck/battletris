@@ -34,53 +34,6 @@ interface GameUserEvent {
 }
 
 class GameUser {
-  /**
-   * Reacts on a key event and updates the game state. Does not send any updates, just applies the
-   * state.
-   *
-   * @param key key number that was pressed
-   */
-  static handleKeyEvent(user: GameUser, key: GameStateChange) {
-    switch (key) {
-      case GameStateChange.TURN: {
-        if (user.block !== 4) {
-          user.rotation += 1;
-        }
-        break;
-      }
-      case GameStateChange.LEFT: {
-        user.x -= 1;
-        break;
-      }
-      case GameStateChange.RIGHT: {
-        user.x += 1;
-        break;
-      }
-      case GameStateChange.DOWN: {
-        user.y += 1;
-        // reset move down timer
-        clearTimeout(user.gameLoopTimeout);
-        user.gameLoop();
-        break;
-      }
-      case GameStateChange.FALL_DOWN: {
-        user.y = getPreviewY(
-          user.map,
-          Blocks[user.block][user.getRotationBlockIndex()],
-          user.y,
-          user.x,
-        );
-        user.lastState[GameUserMapping.y] = user.y;
-        user.y += 1;
-        break;
-      }
-      case GameStateChange.NEXT_TARGET: {
-        // next user
-        break;
-      }
-    }
-  }
-
   /** db user class */
   className: string;
 
@@ -274,7 +227,7 @@ class GameUser {
   /** Serialize the game user into a json object. */
   serialize() {
     // get the new state and compare it with the previous one.
-    const newState = formatGameUser(this);
+    const newState = cloneDeep(formatGameUser(this));
     this.lastState = cloneDeep(newState);
     return newState;
   }
@@ -284,7 +237,7 @@ class GameUser {
    *
    * @param keyCode key number
    */
-  onKeyPress(key: GameStateChange) {
+  onNewStateChange(key: GameStateChange) {
     // save the user interaction to ensure to send the user, what was already processed by the
     // backend
     // !IMPORTANT: be careful to handle user event emptying within the backend / frontend state
@@ -299,6 +252,56 @@ class GameUser {
    */
   getRotationBlockIndex() {
     return this.rotation % 4;
+  }
+
+  /**
+   * Reacts on a key event and updates the game state. Does not send any updates, just applies the
+   * state.
+   *
+   * @param key key number that was pressed
+   */
+  handleKeyEvent(key: GameStateChange) {
+    switch (key) {
+      case GameStateChange.TURN: {
+        if (this.block !== 4) {
+          this.rotation += 1;
+        }
+        break;
+      }
+      case GameStateChange.LEFT: {
+        this.x -= 1;
+        break;
+      }
+      case GameStateChange.RIGHT: {
+        this.x += 1;
+        break;
+      }
+      case GameStateChange.DOWN: {
+        this.y += 1;
+        // reset move down timer
+        clearTimeout(this.gameLoopTimeout);
+        this.gameLoop();
+        break;
+      }
+      case GameStateChange.FALL_DOWN: {
+        this.y = getPreviewY(
+          this.map,
+          Blocks[this.block][this.getRotationBlockIndex()],
+          this.y,
+          this.x,
+        );
+        this.lastState[GameUserMapping.y] = this.y;
+        this.y += 1;
+        break;
+      }
+      case GameStateChange.NEXT_TARGET: {
+        // next user
+        break;
+      }
+    }
+
+    // check the latest move states for docked states
+    this.checkGameState(key);
   }
 
   /** Start timeout to move blocks down. */

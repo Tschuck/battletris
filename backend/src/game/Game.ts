@@ -127,9 +127,7 @@ class Game {
         while (user.userEvents.length) {
           const [key] = user.userEvents.shift();
           // adjust the current game state for the key
-          GameUser.handleKeyEvent(user, key);
-          // check the latest move states for docked states
-          user.checkGameState(key);
+          user.handleKeyEvent(key);
           // save the last state
           user.serialize();
         }

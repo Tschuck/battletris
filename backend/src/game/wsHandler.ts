@@ -59,7 +59,7 @@ class WsHandler {
 
       switch (type) {
         case WsMessageType.GAME_INPUT: {
-          game.users[game.userIds.indexOf(userId)].onKeyPress(payload);
+          game.users[game.userIds.indexOf(userId)].onNewStateChange(payload);
           break;
         }
       }

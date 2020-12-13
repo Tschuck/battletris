@@ -20,6 +20,8 @@ export default class StoneLayer extends Konva.Layer {
   }
 
   handleTween(key: 'rotationTween'|'positionTween', props: Konva.TweenConfig) {
+    // use custom tween and not layer .to! .to will destroy the last tween, what will cause
+    // stuttering
     this[key] = new Konva.Tween({
       easing: Konva.Easings.Linear,
       onFinish: () => {
@@ -29,5 +31,12 @@ export default class StoneLayer extends Konva.Layer {
       ...props,
     });
     this[key]?.play();
+  }
+
+  remove() {
+    super.remove();
+    this.rotationTween?.destroy();
+    this.positionTween?.destroy();
+    return this;
   }
 }

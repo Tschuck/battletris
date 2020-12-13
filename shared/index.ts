@@ -11,7 +11,7 @@ import * as mapHelper from './functions/mapHelper';
 import {
   getStringifiedMessage,
   ParsedMessage,
-  parseMessage
+  parseMessage,
 } from './functions/messageHandler';
 import { MatchInterface, MatchStatsInterface } from './interfaces/MatchStats';
 import RoomWithDataInterface from './interfaces/RoomWithData';
