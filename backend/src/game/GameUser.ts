@@ -1,4 +1,5 @@
 import { GameUser } from '@battletris/shared';
+import { GameStateChange } from '@battletris/shared/functions/gameHelper';
 import config from '../lib/config';
 import game from './game';
 import numberToBlockMap from './helpers/numberToBlockMap';
