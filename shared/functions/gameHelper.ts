@@ -1,5 +1,4 @@
 import { Key } from 'ts-keycode-enum';
-import GameUser from './GameUser';
 
 export enum GameUserMapping {
   className = 0,
@@ -12,6 +11,10 @@ export enum GameUserMapping {
   blockCount = 7,
   rowCount = 8,
   speed = 9,
+}
+
+/** Contains user param mapping that should not affect the diff and parsing parameters */
+export enum HiddenGameUserMapping {
   userEvents = 10,
 }
 
@@ -29,6 +32,7 @@ export enum CollisionType {
  * interaction (keys).
  */
 export enum GameStateChange {
+  LOST = -1,
   NEW_BLOCK = 0,
   TURN = Key.UpArrow,
   LEFT = Key.LeftArrow,
@@ -43,9 +47,10 @@ export enum GameStateChange {
  * logic when passing a already formatted user.
  *
  * @param gameUser game user object to format
+ * @param baseObject use array to reduce formatted size
  */
-export const formatGameUser = (gameUser: any): any => {
-  const formatted: any = [];
+export const formatGameUser = (gameUser: any, baseObject: []|{} = []): any => {
+  const formatted: any = baseObject;
 
   Object.keys(gameUser).forEach((key: any) => {
     // ignore not supported properties
@@ -113,7 +118,7 @@ export function getDifference(
 
   Object.keys(newObj).forEach((key) => {
     // check map changes separately
-    if (key === `${GameUserMapping.map}`) {
+    if (key === 'map' || key === `${GameUserMapping.map}`) {
       const map: number[][] = newObj[key];
       // check for map changes
       for (let y = 0; y < map.length; y += 1) {
@@ -129,11 +134,6 @@ export function getDifference(
       return;
     }
 
-    // always use the full list, because everything was processes and will be resetted
-    if (key === `${GameUserMapping.userEvents}`) {
-      return newObj[key];
-    }
-
     // build the diff
     if (oldObj[key] !== newObj[key]) {
       diff[key] = newObj[key];
@@ -142,6 +142,33 @@ export function getDifference(
 
   return diff;
 }
+
+/**
+ * Get the given value or the fallback default value
+ * @param value value to check
+ * @param previous fallback value
+ */
+export const updatedOrPrevious = (value: number|undefined, previous: number) => (value !== undefined
+  ? value : previous);
+
+/**
+ * Update game user state with and user update.
+ *
+ * @param state user state
+ * @param update partial user state
+ */
+export const applyStateUpdate = (state: any, update: any) => {
+  Object.keys(update).forEach((key) => {
+    if (key === 'map' || key === `${GameUserMapping.map}`) {
+      state[key] = state[key].map(
+        (row: number[], index: number) => (update[key][index] ? update[key][index] : row),
+      );
+      return;
+    }
+
+    state[key] = updatedOrPrevious(update[key], state[key]);
+  });
+};
 
 /**
  * Check if a block map overlaps with the underlying game map.
@@ -179,6 +206,14 @@ export const getStoneCollision = (
   return null;
 });
 
+/**
+ * Gets the lowest possible position for the given block.
+ *
+ * @param map to check
+ * @param block active, turned block
+ * @param y block y
+ * @param x block x
+ */
 export const getPreviewY = (map: number[][], block: number[][], y: number, x: number) => {
   // initially start with y minus one, that will be directly raised at the beginning
   let previewY = y - 1;
@@ -190,25 +225,4 @@ export const getPreviewY = (map: number[][], block: number[][], y: number, x: nu
   }
 
   return previewY - 1;
-};
-
-export const updatedOrPrevious = (value: number|undefined, previous: number) => (value !== undefined
-  ? value : previous);
-
-export const mergeStateWithUpdate = (state: GameUser, update: Partial<GameUser>) => {
-  Object.keys(update).forEach((key) => {
-    if (key === `${GameUserMapping.map}`) {
-      state.map = update.map.map(
-        (row: number[], index: number) => (update.map[index] ? update.map[index] : row),
-      );
-      return;
-    }
-
-    if (key === `${GameUserMapping.userEvents}`) {
-      // TODO: what will we return?
-      return [];
-    }
-
-    state[key] = updatedOrPrevious(update[key], state[key])
-  });
 };

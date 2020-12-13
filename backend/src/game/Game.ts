@@ -1,4 +1,5 @@
 import { gameHelper, mapHelper, MatchStatsInterface, ProcessMessageType, WsMessageType } from '@battletris/shared';
+import { getDifference, HiddenGameUserMapping } from '@battletris/shared/functions/gameHelper';
 import { User } from '../db';
 import config from '../lib/config';
 import GameUser from './GameUser';
@@ -22,6 +23,9 @@ class Game {
 
   /** all registered users */
   userIds: string[];
+
+  /** should a update be sent to the game? */
+  updateTriggered: NodeJS.Timeout;
 
   /**
    * Show countdown before starting the game loops of each user.
@@ -95,11 +99,39 @@ class Game {
    * Send a incremental update to all users.
    */
   sendGameUserUpdates() {
-    const update = this.users.map((user) => user.serialize());
-    wsHandler.wsBroadcast(
-      WsMessageType.GAME_USER_UPDATE,
-      update,
-    );
+    // allow updates only every X ms
+    if (this.updateTriggered) {
+      return;
+    }
+
+    this.updateTriggered = setTimeout(() => {
+      // allow next update
+      this.updateTriggered = null;
+
+      const update = this.users.map((user) => {
+        // keep before states, so we can calculate a diff to the state without applied key presses
+        const userEvents = [...user.userEvents];
+        const beforeState = [...user.lastState];
+
+        // apply all changes to the user
+        while (user.userEvents.length) {
+          const [key] = user.userEvents.pop();
+          // adjust the current game state for the key
+          GameUser.handleKeyEvent(user, key);
+          // check the latest move states for docked states
+          user.checkGameState(key);
+          // save the last state
+          user.serialize();
+        }
+
+        // build the delta and apply the userEvents
+        const difference = getDifference(user.lastState, beforeState);
+        difference[HiddenGameUserMapping.userEvents] = userEvents;
+        return difference;
+      });
+
+      wsHandler.wsBroadcast(WsMessageType.GAME_USER_UPDATE, update);
+    }, 500);
   }
 
   /**

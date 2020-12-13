@@ -1,3 +1,5 @@
+// eslint-disable class-methods-use-this
+
 import { cloneDeep } from 'lodash';
 import Blocks, { BlockMapping } from '../enums/Blocks';
 import {
@@ -5,7 +7,6 @@ import {
   formatGameUser,
   GameStateChange,
   GameUserMapping,
-  getDifference,
   getPreviewY,
   getStoneCollision,
   iterateOverMap,
@@ -33,6 +34,53 @@ interface GameUserEvent {
 }
 
 class GameUser {
+  /**
+   * Reacts on a key event and updates the game state. Does not send any updates, just applies the
+   * state.
+   *
+   * @param key key number that was pressed
+   */
+  static handleKeyEvent(user: GameUser, key: GameStateChange) {
+    switch (key) {
+      case GameStateChange.TURN: {
+        if (user.block !== 4) {
+          user.rotation += 1;
+        }
+        break;
+      }
+      case GameStateChange.LEFT: {
+        user.x -= 1;
+        break;
+      }
+      case GameStateChange.RIGHT: {
+        user.x += 1;
+        break;
+      }
+      case GameStateChange.DOWN: {
+        user.y += 1;
+        // reset move down timer
+        clearTimeout(user.gameLoopTimeout);
+        user.gameLoop();
+        break;
+      }
+      case GameStateChange.FALL_DOWN: {
+        user.y = getPreviewY(
+          user.map,
+          Blocks[user.block][user.getRotationBlockIndex()],
+          user.y,
+          user.x,
+        );
+        user.lastState[GameUserMapping.y] = user.y;
+        user.y += 1;
+        break;
+      }
+      case GameStateChange.NEXT_TARGET: {
+        // next user
+        break;
+      }
+    }
+  }
+
   /** db user class */
   className: string;
 
@@ -81,8 +129,8 @@ class GameUser {
   /** counter of key presses of the user */
   interactionCount = 0;
 
-  /** list of latest user events */
-  userEvents: GameUserEvent[] = [];
+  /** list of latest user events (use arrays in arrays to reduce sent payload) ([id, key]) */
+  userEvents: number[][] = [];
 
   constructor(
     user: {
@@ -145,7 +193,7 @@ class GameUser {
         this.block = BlockMapping.EMPTY;
         this.stop();
         this.onUserLost();
-        this.sendUpdate();
+        this.sendUpdate(GameStateChange.LOST);
         return;
       }
 
@@ -214,14 +262,12 @@ class GameUser {
   serialize() {
     // get the new state and compare it with the previous one.
     const newState = formatGameUser(this);
-    // build the delta and update the last state
-    const diff = getDifference(newState, this.lastState);
     this.lastState = cloneDeep(newState);
-
-    return diff;
+    return newState;
   }
 
   /**
+   * Add the key events to the user events array and trigger and update
    *
    * @param keyCode key number
    */
@@ -230,49 +276,9 @@ class GameUser {
     // backend
     // !IMPORTANT: be careful to handle user event emptying within the backend / frontend state
     this.interactionCount += 1;
-    this.userEvents.push({ key, id: this.interactionCount });
-
-    switch (key) {
-      case GameStateChange.TURN: {
-        if (this.block !== 4) {
-          this.rotation += 1;
-        }
-        break;
-      }
-      case GameStateChange.LEFT: {
-        this.x -= 1;
-        break;
-      }
-      case GameStateChange.RIGHT: {
-        this.x += 1;
-        break;
-      }
-      case GameStateChange.DOWN: {
-        this.y += 1;
-        // reset move down timer
-        clearTimeout(this.gameLoopTimeout);
-        this.gameLoop();
-        break;
-      }
-      case GameStateChange.FALL_DOWN: {
-        this.y = getPreviewY(
-          this.map,
-          Blocks[this.block][this.getRotationBlockIndex()],
-          this.y,
-          this.x,
-        );
-        this.lastState[GameUserMapping.y] = this.y;
-        this.y += 1;
-        break;
-      }
-      case GameStateChange.NEXT_TARGET: {
-        // next user
-        break;
-      }
-    }
-
-    this.checkGameState(key);
-    this.sendUpdate();
+    this.userEvents.push([key, this.interactionCount]);
+    // update the user
+    this.sendUpdate(key, this.interactionCount);
   }
 
   /**
@@ -283,19 +289,18 @@ class GameUser {
   }
 
   /** Start timeout to move blocks down. */
-  // eslint-disable-next-line class-methods-use-this
   gameLoop() { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
 
   /**  Stop timeout */
-  // eslint-disable-next-line class-methods-use-this
   stop() { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
 
   /** Use serialize to build a diff object and send it to the ui */
-  // eslint-disable-next-line class-methods-use-this
-  sendUpdate() { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  sendUpdate(key: GameStateChange, id?: number) {
+    /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */
+  }
 
   /** Triggered, when the user lost the game */
-  // eslint-disable-next-line class-methods-use-this
   onUserLost() { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
 }
 

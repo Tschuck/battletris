@@ -4,8 +4,10 @@ import {
   Blocks, gameHelper,
 } from '@battletris/shared';
 import FrontendGameUser from './GameUser';
+import StoneLayer from './StoneLayer';
 
-const animationSpeed = 0.07;
+const animationSpeed = 0.05;
+// const animationSpeed = 0;
 const colorMap = {
   STROKE: '#1a2024',
   STONES: [
@@ -51,10 +53,10 @@ export default class GameRenderer {
   mapLayer!: Konva.Layer;
 
   /** layer for block rendering */
-  stoneLayer!: Konva.Layer;
+  stoneLayer!: StoneLayer;
 
   /** layer for block preview rendering */
-  previewLayer!: Konva.Layer;
+  previewLayer!: StoneLayer;
 
   /** current user instance */
   user: FrontendGameUser;
@@ -102,6 +104,7 @@ export default class GameRenderer {
     };
     this.user.onStoneChange = () => this.onStoneChange();
     this.user.onStoneMove = () => {
+      console.log('positionStoneLayer');
       // set initial position
       this.positionStoneLayer(this.stoneLayer, false);
       this.positionStoneLayer(this.previewLayer, true);
@@ -193,9 +196,9 @@ export default class GameRenderer {
     );
 
     // create a new layer in the correct size
-    const layer = new Konva.Layer({
-      width: newBlock.length * this.colWidth,
-      height: newBlock.length * this.colHeight,
+    const layer = new StoneLayer({
+      // width: newBlock.length * this.colWidth,
+      // height: newBlock.length * this.colHeight,
     });
     const rotatingGroup = new Konva.Group({
       width: newBlock.length * this.colWidth,
@@ -211,9 +214,9 @@ export default class GameRenderer {
   }
 
   /** move a stone layer to a specific postion */
-  positionStoneLayer(layer: Konva.Layer, isPreview = false, duration = animationSpeed) {
+  positionStoneLayer(layer: StoneLayer, isPreview = false, duration = animationSpeed) {
     const x = this.user.x * this.colWidth;
-    let y;
+    let y: number;
 
     // if its not a preview stone, so we can just use user stone position
     if (!isPreview) {
@@ -228,17 +231,8 @@ export default class GameRenderer {
       ) * this.colHeight;
     }
 
-    layer.children[0].to({
-      duration: 0,
-      rotation: this.user.rotation * 90,
-    });
-
-    // animate the positioning and rotation
-    layer.to({
-      duration: this.config.animation ? duration : 0,
-      x,
-      y,
-    });
+    layer.transitionRotate(this.user.rotation * 90, duration);
+    layer.transitionMove(x, y, duration);
   }
 
   /** removes old stone layers, create new ones for the latest block and add them to the stage */

@@ -22,6 +22,7 @@ module.exports = {
     'prefer-destructuring': 'off',
     'typescript-eslint/no-explicit-any': 'off',
     'typescript-eslint/explicit-function-return-type': 'off',
-    ' @typescript-eslint/no-explicit-any': 'off'
+    '@typescript-eslint/no-explicit-any': 'off',
+    'no-param-reassign': 'off',
   },
 };

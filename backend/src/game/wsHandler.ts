@@ -71,9 +71,18 @@ class WsHandler {
    *
    * @param type type to send
    * @param payload payload to send
+   * @param parser custom parser to be able to adjust a message for specific users
    */
-  wsBroadcast(type: WsMessageType, payload?: any) {
-    Object.keys(this.users).forEach((userId: string) => this.wsSend(userId, type, payload));
+  wsBroadcast(
+    type: WsMessageType,
+    payload?: any,
+    parser?: (userId: string, index: number, payload: any) => any,
+  ) {
+    Object.keys(this.users).forEach((userId: string, index: number) => this.wsSend(
+      userId,
+      type,
+      parser ? parser(userId, index, { ...payload }) : payload,
+    ));
   }
 
   /**

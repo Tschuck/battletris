@@ -1,9 +1,7 @@
-import { GameUser, WsMessageType } from '@battletris/shared';
-import { GameStateChange } from '@battletris/shared/functions/gameHelper';
+import { GameUser } from '@battletris/shared';
 import config from '../lib/config';
-import wsHandler from './wsHandler';
-import numberToBlockMap from './helpers/numberToBlockMap';
 import game from './game';
+import numberToBlockMap from './helpers/numberToBlockMap';
 
 class BackendGameUser extends GameUser {
   /**
@@ -11,15 +9,15 @@ class BackendGameUser extends GameUser {
    */
   gameLoop() {
     this.gameLoopTimeout = setTimeout(() => {
-      this.y += 1;
+      // this.y += 1;
 
-      this.checkGameState(GameStateChange.DOWN);
+      // this.checkGameState(GameStateChange.DOWN);
 
-      // ensure users are up to date
-      this.sendUpdate();
+      // // ensure users are up to date
+      // this.sendUpdate();
 
-      // ensure next tick
-      this.gameLoop();
+      // // ensure next tick
+      // this.gameLoop();
     }, this.speed);
   }
 
@@ -32,16 +30,10 @@ class BackendGameUser extends GameUser {
   }
 
   /**
-   * Use serialize to build a diff object and send it to the ui
+   * Something was changed! Trigger game sending update.
    */
   sendUpdate() {
-    setTimeout(() => {
-      const updateArr = [];
-      updateArr[this.gameUserIndex] = this.serialize();
-      wsHandler.wsBroadcast(WsMessageType.GAME_USER_UPDATE, updateArr);
-      // clear user events, so we wont send them twice
-      this.userEvents = [];
-    }, 100);
+    game.sendGameUserUpdates();
   }
 
   start() {
