@@ -4,9 +4,7 @@ import { cloneDeep } from 'lodash';
 import Blocks, { BlockMapping } from '../enums/Blocks';
 import {
   CollisionType,
-  formatGameUser,
   GameStateChange,
-  GameUserMapping,
   getPreviewY,
   getStoneCollision,
   iterateOverMap,
@@ -28,41 +26,38 @@ function getRandomNumber(min: number, max: number) { // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-interface GameUserEvent {
-  key: GameStateChange;
-  id: number;
-}
+const neverUpdateProps = [
+  'userEvents',
+  'interactionCount',
+];
 
 class GameUser {
   /** db user class */
-  className: string;
+  className!: string;
 
   /** users index within the game */
-  gameUserIndex: number;
+  gameUserIndex!: number;
 
   /** db user id */
-  id: string;
+  id!: string;
 
   /** users currently displayed map */
   map: number[][] = [];
 
   /** current active block */
-  block: number;
+  block!: number;
 
   /** next active blocks */
   nextBlocks: number[] = [];
 
   /** active block rotation */
-  rotation: number;
+  rotation!: number;
 
   /** active block x position */
-  x: number;
+  x!: number;
 
   /** active block x position */
-  y: number;
-
-  /** last user backup to check for changes */
-  lastState: any;
+  y!: number;
 
   /** game loop timeout */
   gameLoopTimeout: any;
@@ -74,13 +69,13 @@ class GameUser {
   lost = false;
 
   /** amount of used blocks */
-  blockCount: number;
+  blockCount!: number;
 
   /** amount of cleared rows */
-  rowCount: number;
+  rowCount!: number;
 
   /** timeout, until the next block moves down */
-  speed: number;
+  speed!: number;
 
   /** counter of key presses of the user */
   interactionCount = 0;
@@ -89,30 +84,35 @@ class GameUser {
   userEvents: number[][] = [];
 
   constructor(
-    user: {
-      id: string;
-      className: string;
-    },
-    gameUserIndex: number,
-    config: {
-      userSpeed: number;
-    },
+    user: Partial<GameUser>|GameUser,
+    gameUserIndex = -1,
   ) {
-    // save latest state
-    this.lastState = formatGameUser(this);
-    // static values
-    this.id = user.id;
-    this.className = user.className;
+    // clone it
+    if (user instanceof GameUser) {
+      this.applyUserState(cloneDeep({ ...user }) as GameUser);
+      // update interaction count, will not be overwritte by
+      this.interactionCount = user.interactionCount;
+      return;
+    }
+
+    // initialize a new user
+    this.id = user.id || '';
+    this.className = user.className || '';
     this.gameUserIndex = gameUserIndex;
-    // game values
+    // setup initial game values
     this.blockCount = 0;
     this.rowCount = 0;
     this.x = 0;
     this.block = 0;
     this.y = 0;
     this.rotation = 0;
-    this.speed = config.userSpeed;
+    this.speed = user.speed || -1;
     this.fillNextBlocks();
+    // catch invalid param setup
+    if (this.speed === -1 || this.gameUserIndex === -1 || !this.id || !this.className) {
+      throw new Error(`params missing in game user setup: speed: ${this.speed},`
+        + ` index: ${this.gameUserIndex}, id: ${this.id}, className: ${this.className}`);
+    }
   }
 
   /**
@@ -121,7 +121,7 @@ class GameUser {
    *
    * @param key key that was executed
    */
-  checkGameState(change?: GameStateChange) {
+  checkGameState(lastState: GameUser, change?: GameStateChange) {
     // check for out of range
     const actualBlock = Blocks[this.block][this.getRotationBlockIndex()];
 
@@ -154,13 +154,8 @@ class GameUser {
         return;
       }
 
-      // use the last state of the user for revert logics
-      const previousUser = formatGameUser(this.lastState);
-
       // revert to the last state
-      Object.keys(previousUser).forEach(
-        (key: string) => (this as any)[key] = cloneDeep(previousUser[key]),
-      );
+      this.applyUserState(lastState);
 
       // "brand" the active stone into the map
       if (collision === CollisionType.DOCKED
@@ -172,6 +167,31 @@ class GameUser {
     }
   }
 
+  /** get a clone of the current user instance */
+  clone<UserType extends GameUser>(): UserType {
+    return new GameUser(this) as UserType;
+  }
+
+  /** Apply all parameters of a existing game user to this instance */
+  applyUserState(update: Partial<GameUser>) {
+    Object.keys(update).forEach((key: string) => {
+      if (key === 'map' && update?.map) {
+        for (let y = 0; y < 20; y += 1) {
+          this.map[y] = update.map[y] || this.map[y];
+        }
+        return;
+      }
+
+      // never overwrite userEvents
+      if (neverUpdateProps.indexOf(key) !== -1) {
+        return;
+      }
+
+      (this as any)[key] = (update as any)[key];
+    });
+  }
+
+  /** setup a list of next blocks */
   fillNextBlocks() {
     while (this.nextBlocks.length < 10) {
       this.nextBlocks.push(getRandomNumber(1, 7));
@@ -220,16 +240,8 @@ class GameUser {
     // the block map for the long block and the square, starting with an empty zero row
     this.y = this.block === BlockMapping.BAR || this.block === BlockMapping.BLOCK ? -1 : 0;
     this.rotation = 0;
-    // check for match end?
-    this.checkGameState(GameStateChange.NEW_BLOCK);
-  }
-
-  /** Serialize the game user into a json object. */
-  serialize() {
-    // get the new state and compare it with the previous one.
-    const newState = cloneDeep(formatGameUser(this));
-    this.lastState = cloneDeep(newState);
-    return newState;
+    // check for match end? (ps: we can use this here, when a collision happens, game is over)
+    this.checkGameState(this, GameStateChange.NEW_BLOCK);
   }
 
   /**
@@ -260,7 +272,9 @@ class GameUser {
    *
    * @param key key number that was pressed
    */
-  handleKeyEvent(key: GameStateChange) {
+  handleStateChange(key: GameStateChange) {
+    const beforeUser = this.clone();
+
     switch (key) {
       case GameStateChange.TURN: {
         if (this.block !== 4) {
@@ -290,7 +304,7 @@ class GameUser {
           this.y,
           this.x,
         );
-        this.lastState[GameUserMapping.y] = this.y;
+        beforeUser.y = this.y;
         this.y += 1;
         break;
       }
@@ -301,7 +315,7 @@ class GameUser {
     }
 
     // check the latest move states for docked states
-    this.checkGameState(key);
+    this.checkGameState(beforeUser, key);
   }
 
   /** Start timeout to move blocks down. */

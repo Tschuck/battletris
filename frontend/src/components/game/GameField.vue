@@ -24,7 +24,7 @@ import {
 } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 
-import { GameUser } from '@battletris/shared';
+import { gameHelper, GameUser } from '@battletris/shared';
 import ClassLogo from '../general/ClassLogo.vue';
 import FrontendGameUser from './GameUser';
 import GameRenderer from './GameRenderer';

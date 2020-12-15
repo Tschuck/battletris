@@ -3,15 +3,9 @@ import {
   gameHelper, GameUser, WsMessageType,
 } from '@battletris/shared';
 import {
-  formatGameUser, GameStateChange, GameUserMapping, getDifference, HiddenGameUserMapping,
+  GameStateChange, GameUserMapping, getDifference,
 } from '@battletris/shared/functions/gameHelper';
-import { cloneDeep } from 'lodash';
 import currUser from '../../lib/User';
-
-interface GameUserEvent {
-  key: GameStateChange;
-  id: number;
-}
 
 const isSet = (value: number|undefined) => value !== undefined;
 
@@ -40,7 +34,7 @@ export default class FrontendGameUser extends GameUser {
   keyDownListener: any;
 
   /** last user backup to check for changes with the backend */
-  backendState: any;
+  backendUser: FrontendGameUser;
 
   /** notifiy the using class, that something has changed */
   onUpdate: (frontendUser: FrontendGameUser, userUpdate: Partial<GameUser>) => void;
@@ -50,51 +44,60 @@ export default class FrontendGameUser extends GameUser {
     gameUserIndex: number,
     onUpdate: (frontendUser: FrontendGameUser, userUpdate: Partial<GameUser>) => void,
   ) {
-    super({ id: user.id, className: user.className }, gameUserIndex, { userSpeed: user.speed });
-
-    // !IMPORTANT: copy latest values the backend information to this instance. Otherwise, we don't
-    // have the latest data. Keep in mind, the incoming game user is just a value copy of the
-    // backend, so we can just iterate the keys
-    this.backendState = formatGameUser(user, {});
-    Object.keys(user).forEach((key: string) => {
-      (this as any)[key] = (user as any)[key];
-    });
+    super(user, gameUserIndex);
 
     this.connection = getCurrentConnection() as GameConnection;
     this.isCurrUser = currUser.id === user.id;
     this.onUpdate = onUpdate;
 
+    // !IMPORTANT: copy latest values the backend information to this instance. Otherwise, we don't
+    // have the latest data. Keep in mind, the incoming game user is just a value copy of the
+    // backend, so we can just iterate the keys
+    this.applyUserState(user);
+    this.interactionCount = user.interactionCount;
+    this.backendUser = this.clone();
+
     // listen for backend updates
     this.onMessageListener = this.connection.onMessage((type: WsMessageType, data: any) => {
-      if (type === WsMessageType.GAME_USER_UPDATE && data[this.gameUserIndex]) {
-        const previousUiState = gameHelper.formatGameUser(this.serialize());
+      const plainUpdate = data[this.gameUserIndex];
+
+      if (type === WsMessageType.GAME_USER_UPDATE && plainUpdate) {
+        const previousUIUser = this.clone();
+        const update = gameHelper.transformUserTransport(plainUpdate);
+        const userEvents = update.userEvents || [];
 
         // create the latest backend state out of the previous backend state and the new update
-        gameHelper.applyStateUpdate(this.backendState, data[this.gameUserIndex]);
-        // force overwrite the current ui state with the latest backend state
-        gameHelper.applyStateUpdate(this, gameHelper.formatGameUser(this.backendState));
-        // ensure to reset lastGamestate
-        this.serialize();
+        this.backendUser.applyUserState(update);
+        // delete user events before they will overwrite the ui userEvents
+        this.applyUserState(this.backendUser);
+        // save latest backend state, diff is now applied
+        this.backendUser = this.clone();
+        this.backendUser.userEvents = [];
 
         // remove old user events from the frontend user
-        const userEvents = data[this.gameUserIndex][HiddenGameUserMapping.userEvents] || [];
-        (userEvents || []).forEach(([, id]: number[]) => {
+        userEvents.forEach(([, id]: number[]) => {
           const foundEvent = this.userEvents.findIndex(([, frontendId]) => id === frontendId);
           if (foundEvent !== -1) {
             this.userEvents.splice(foundEvent, 1);
           }
         });
+        console.log('----');
+        console.log(JSON.stringify(userEvents));
+        console.log(JSON.stringify(this.userEvents));
+        console.log(this.userEvents.length);
         // apply now all new changes to the left backend states, that were not processed
-        this.userEvents.forEach(([key]) => this.handleKeyEvent(key));
+        this.userEvents.forEach(([key]) => {
+          console.log(`reapply key ${GameStateChange[key]}`);
+          this.handleStateChange(key);
+          if (!key) {
+            debugger;
+          }
+        });
 
         // calculate update from the old ui state to the new ui state and apply it
-        const uiUpdate = gameHelper.getDifference(this, previousUiState);
-        console.log(gameHelper.formatGameUser(uiUpdate));
-
+        const uiUpdate = gameHelper.getDifference(this, previousUIUser);
         // render it
         this.onUserUpdate(uiUpdate);
-        // save latest backend state, diff is now applied
-        this.backendState[HiddenGameUserMapping.userEvents] = [];
       }
     });
 
@@ -126,7 +129,7 @@ export default class FrontendGameUser extends GameUser {
     }
 
     // update the instance with the new values
-    gameHelper.applyStateUpdate(this, updatedUser);
+    this.applyUserState(updatedUser);
 
     // checkup what should be rendered
     const {
@@ -139,7 +142,7 @@ export default class FrontendGameUser extends GameUser {
     }
 
     // if block was updated, redraw the stone layer
-    if (isSet(block) || isSet(x) || isSet(y) || isSet(rotation)) {
+    if (isSet(block) || isSet(x) || isSet(y) || isSet(rotation) || Array.isArray(map)) {
       if (isSet(block)) {
         this.onStoneChange();
       // update next block move timer
@@ -169,11 +172,15 @@ export default class FrontendGameUser extends GameUser {
    * @param $event keyboard event
    */
   userKeyEvent($event: KeyboardEvent) {
+    // ignore unknown key events
+    if (!GameStateChange[$event.keyCode]) {
+      return;
+    }
     this.lastKeyPressTime.push(Date.now());
     this.onNewStateChange($event.keyCode);
     setTimeout(() => {
       this.connection.send(WsMessageType.GAME_INPUT, $event.keyCode);
-    }, 50 + (Math.random() * 100));
+    }, 1000 + (Math.random() * 100));
   }
 
   /**
@@ -181,14 +188,13 @@ export default class FrontendGameUser extends GameUser {
    */
   sendUpdate(key: GameStateChange) {
     // keep the last state
-    const lastState = cloneDeep(formatGameUser(this));
+    const lastState = this.clone();
     // adjust the current game state for the key
-    this.handleKeyEvent(key);
+    this.handleStateChange(key);
     // get the new state including the changes and persist them to the user lastState
-    const newState = this.serialize();
-    const diff = getDifference(newState, lastState);
+    const diff = getDifference(this, lastState);
     // calculate the difference and trigger a re-render
-    this.onUserUpdate(gameHelper.formatGameUser(diff));
+    this.onUserUpdate(diff);
   }
 
   onMapChange() { /** will be overwritten by gameRenderer */ }

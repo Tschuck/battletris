@@ -14,6 +14,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/camelcase': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
+    'array-callback-return': 'off',
     'class-methods-use-this': 'off',
     'consistent-return': 'off',
     'default-case': 'off',
@@ -21,11 +22,11 @@ module.exports = {
     'max-len': 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-param-reassign': 'off',
     'no-return-assign': 'off',
     'no-unused-expressions': 'off',
     'prefer-destructuring': 'off',
-    'typescript-eslint/no-explicit-any': 'off',
     'typescript-eslint/explicit-function-return-type': 'off',
-    'no-param-reassign': 'off',
+    'typescript-eslint/no-explicit-any': 'off',
   },
 };

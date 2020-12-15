@@ -38,7 +38,9 @@ import GameField from './GameField.vue';
     const messageHandler = gameConn.onMessage(async (type: WsMessageType, payload: any) => {
       switch (type) {
         case WsMessageType.GAME_UPDATE: {
-          gameUsers.value = payload.users.map((user: any) => gameHelper.formatGameUser(user));
+          gameUsers.value = payload.users.map(
+            (user: any) => gameHelper.transformUserTransport(user, {}),
+          );
           // check if the user is part of the game
           activeIndex.value = gameUsers.value.findIndex((user) => user.id === currUser.id);
           loading.value = false;

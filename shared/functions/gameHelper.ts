@@ -12,11 +12,8 @@ export enum GameUserMapping {
   blockCount = 8,
   rowCount = 9,
   speed = 10,
-}
-
-/** Contains user param mapping that should not affect the diff and parsing parameters */
-export enum HiddenGameUserMapping {
-  userEvents = 20,
+  userEvents = 11,
+  interactionCount = 12,
 }
 
 /**
@@ -50,12 +47,12 @@ export enum GameStateChange {
  * @param gameUser game user object to format
  * @param baseObject use array to reduce formatted size
  */
-export const formatGameUser = (gameUser: any, baseObject: []|{} = []): any => {
-  const formatted: any = baseObject;
+export const transformUserTransport = (gameUser: any, baseObj: []|{} = []): any => {
+  const formatted: any = baseObj;
 
   Object.keys(gameUser).forEach((key: any) => {
     // ignore not supported properties
-    if (GameUserMapping[key]
+    if (typeof GameUserMapping[key] !== 'undefined'
       && gameUser[key] !== undefined
       && gameUser[key] !== null) {
       formatted[GameUserMapping[key]] = gameUser[key];
@@ -150,33 +147,6 @@ export function getDifference(
 
   return diff;
 }
-
-/**
- * Get the given value or the fallback default value
- * @param value value to check
- * @param previous fallback value
- */
-export const updatedOrPrevious = (value: number|undefined, previous: number) => (value !== undefined
-  ? value : previous);
-
-/**
- * Update game user state with and user update.
- *
- * @param state user state
- * @param update partial user state
- */
-export const applyStateUpdate = (state: any, update: any) => {
-  Object.keys(update).forEach((key) => {
-    if (key === 'map' || key === `${GameUserMapping.map}`) {
-      state[key] = state[key].map(
-        (row: number[], index: number) => (update[key][index] ? update[key][index] : row),
-      );
-      return;
-    }
-
-    state[key] = updatedOrPrevious(update[key], state[key]);
-  });
-};
 
 /**
  * Check if a block map overlaps with the underlying game map.

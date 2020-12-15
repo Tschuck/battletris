@@ -1,5 +1,5 @@
 import { gameHelper, mapHelper, MatchStatsInterface, ProcessMessageType, WsMessageType } from '@battletris/shared';
-import { formatGameUser, getDifference, HiddenGameUserMapping } from '@battletris/shared/functions/gameHelper';
+import { transformUserTransport, getDifference } from '@battletris/shared/functions/gameHelper';
 import { User } from '../db';
 import config from '../lib/config';
 import GameUser from './GameUser';
@@ -49,8 +49,6 @@ class Game {
       updateMap();
       const startLoop = setInterval(() => updateMap(), 1000);
     });
-
-    this.users.forEach((user) => user.map = mapHelper.getEmptyMap(20));
   }
 
   /**
@@ -67,9 +65,10 @@ class Game {
     this.indexIdMap = {};
     // setup game users
     this.userIds.forEach((userId, index) => {
-      this.users.push(new GameUser(users[userId], index, {
-        userSpeed: config.userSpeed,
-      }));
+      this.users.push(new GameUser({
+        ...users[userId],
+        speed: config.userSpeed,
+      }, index));
       this.indexIdMap[index] = userId;
     });
 
@@ -88,7 +87,7 @@ class Game {
   serialize() {
     const serialized = {
       // do not use user serialize! user serialize will only send updates
-      users: this.users.map((user) => gameHelper.formatGameUser(user)),
+      users: this.users.map((user) => gameHelper.transformUserTransport(user)),
       indexIdMap: this.indexIdMap,
     };
 
@@ -101,7 +100,7 @@ class Game {
   sendFullUpdate() {
     wsHandler.wsBroadcast(
       WsMessageType.GAME_USER_UPDATE,
-      this.users.map((user) => formatGameUser(user)),
+      this.users.map((user) => transformUserTransport(user)),
     );
   }
 
@@ -121,21 +120,19 @@ class Game {
       const update = this.users.map((user) => {
         // keep before states, so we can calculate a diff to the state without applied key presses
         const userEvents = [...user.userEvents];
-        const beforeState = [...user.lastState];
+        const beforeState = user.clone();
 
         // apply all changes to the user
         while (user.userEvents.length) {
           const [key] = user.userEvents.shift();
           // adjust the current game state for the key
-          user.handleKeyEvent(key);
-          // save the last state
-          user.serialize();
+          user.handleStateChange(key);
         }
 
         // build the delta and apply the userEvents
-        const difference = getDifference(user.lastState, beforeState);
-        difference[HiddenGameUserMapping.userEvents] = userEvents;
-        return difference;
+        const difference = getDifference(user, beforeState);
+        difference.userEvents = userEvents;
+        return gameHelper.transformUserTransport(difference);
       });
 
       wsHandler.wsBroadcast(WsMessageType.GAME_USER_UPDATE, update);

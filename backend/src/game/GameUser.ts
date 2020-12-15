@@ -1,4 +1,4 @@
-import { GameUser } from '@battletris/shared';
+import { GameUser, mapHelper } from '@battletris/shared';
 import { GameStateChange } from '@battletris/shared/functions/gameHelper';
 import config from '../lib/config';
 import game from './game';
@@ -10,15 +10,15 @@ class BackendGameUser extends GameUser {
    */
   gameLoop() {
     this.gameLoopTimeout = setTimeout(() => {
-      // this.y += 1;
+      this.y += 1;
 
-      // this.userEvents.push([GameStateChange.DOWN]);
+      this.userEvents.push([GameStateChange.DOWN]);
 
-      // // ensure users are up to date
-      // this.sendUpdate();
+      // ensure users are up to date
+      this.sendUpdate();
 
-      // // ensure next tick
-      // this.gameLoop();
+      // ensure next tick
+      this.gameLoop();
     }, this.speed);
   }
 
@@ -38,6 +38,7 @@ class BackendGameUser extends GameUser {
   }
 
   start() {
+    this.map = mapHelper.getEmptyMap(20);
     // ensure random game block
     this.setNewBlock();
     // start game loop iteration
