@@ -9,9 +9,9 @@ class BackendGameUser extends GameUser {
    * Start timeout to move blocks down.
    */
   gameLoop() {
+    // ensure that only one is running
+    clearTimeout(this.gameLoopTimeout);
     this.gameLoopTimeout = setTimeout(() => {
-      this.y += 1;
-
       this.userEvents.push([GameStateChange.DOWN]);
 
       // ensure users are up to date

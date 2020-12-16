@@ -106,6 +106,7 @@ export default class GameRenderer {
     this.user.onStoneMove = () => {
       // set initial position
       this.positionStoneLayer(this.stoneLayer, false);
+      // only render preview for acting user
       this.positionStoneLayer(this.previewLayer, true);
     };
   }
@@ -214,6 +215,10 @@ export default class GameRenderer {
 
   /** move a stone layer to a specific postion */
   positionStoneLayer(layer: StoneLayer, isPreview = false, duration = animationSpeed) {
+    if (!layer) {
+      return;
+    }
+
     const x = this.user.x * this.colWidth;
     let y: number;
 
@@ -245,21 +250,27 @@ export default class GameRenderer {
     }
     // create new layers
     this.stoneLayer = this.createStoneLayer();
-    this.previewLayer = this.createStoneLayer({ opacity: 0.2 });
+    // only show preview layer for the acting user
+    if (this.user.isCurrUser) {
+      this.previewLayer = this.createStoneLayer({ opacity: 0.2 });
+    }
+
     // apply offset for correct rotation
     [this.stoneLayer, this.previewLayer].forEach((layer) => {
-      // in case of a block, children null will be always the group for rotating
-      const offsetX = layer.children[0].getClientRect().width / 2;
-      const offsetY = layer.children[0].getClientRect().height / 2;
-      layer.children[0].position({ x: offsetX, y: offsetY });
-      layer.children[0].offset({ x: offsetX, y: offsetY });
+      if (layer) {
+        // in case of a block, children null will be always the group for rotating
+        const offsetX = layer.children[0].getClientRect().width / 2;
+        const offsetY = layer.children[0].getClientRect().height / 2;
+        layer.children[0].position({ x: offsetX, y: offsetY });
+        layer.children[0].offset({ x: offsetX, y: offsetY });
+      }
     });
     // set initial position
     this.positionStoneLayer(this.stoneLayer, false, 0);
     this.positionStoneLayer(this.previewLayer, true, 0);
     // add them to the stage
     this.gameStage.add(this.stoneLayer);
-    this.gameStage.add(this.previewLayer);
+    this.user.isCurrUser && this.gameStage.add(this.previewLayer);
   }
 
   // declar resize watcher here, so we can use all game update functions

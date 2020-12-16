@@ -3,7 +3,7 @@ import {
   gameHelper, GameUser, WsMessageType,
 } from '@battletris/shared';
 import {
-  GameStateChange, GameUserMapping, getDifference,
+  GameStateChange, getDifference,
 } from '@battletris/shared/functions/gameHelper';
 import currUser from '../../lib/User';
 
@@ -44,70 +44,88 @@ export default class FrontendGameUser extends GameUser {
     gameUserIndex: number,
     onUpdate: (frontendUser: FrontendGameUser, userUpdate: Partial<GameUser>) => void,
   ) {
+    // keep in mind to apply the latest user state again to the user with applyUserState. Incoming
+    // game user is NOT a GameUser instance, so copy logic will not work
     super(user, gameUserIndex);
-
-    this.connection = getCurrentConnection() as GameConnection;
-    this.isCurrUser = currUser.id === user.id;
-    this.onUpdate = onUpdate;
-
-    // !IMPORTANT: copy latest values the backend information to this instance. Otherwise, we don't
-    // have the latest data. Keep in mind, the incoming game user is just a value copy of the
-    // backend, so we can just iterate the keys
     this.applyUserState(user);
     this.interactionCount = user.interactionCount;
     this.backendUser = this.clone();
 
-    // listen for backend updates
-    this.onMessageListener = this.connection.onMessage((type: WsMessageType, data: any) => {
-      const plainUpdate = data[this.gameUserIndex];
+    // bind specific properties
+    this.connection = getCurrentConnection() as GameConnection;
+    this.isCurrUser = currUser.id === user.id;
+    this.onUpdate = onUpdate;
 
-      if (type === WsMessageType.GAME_USER_UPDATE && plainUpdate) {
-        const previousUIUser = this.clone();
-        const update = gameHelper.transformUserTransport(plainUpdate);
-        const userEvents = update.userEvents || [];
-
-        // create the latest backend state out of the previous backend state and the new update
-        this.backendUser.applyUserState(update);
-        // delete user events before they will overwrite the ui userEvents
-        this.applyUserState(this.backendUser);
-        // save latest backend state, diff is now applied
-        this.backendUser = this.clone();
-        this.backendUser.userEvents = [];
-
-        // remove old user events from the frontend user
-        userEvents.forEach(([, id]: number[]) => {
-          const foundEvent = this.userEvents.findIndex(([, frontendId]) => id === frontendId);
-          if (foundEvent !== -1) {
-            this.userEvents.splice(foundEvent, 1);
-          }
-        });
-        console.log('----');
-        console.log(JSON.stringify(userEvents));
-        console.log(JSON.stringify(this.userEvents));
-        console.log(this.userEvents.length);
-        // apply now all new changes to the left backend states, that were not processed
-        this.userEvents.forEach(([key]) => {
-          console.log(`reapply key ${GameStateChange[key]}`);
-          this.handleStateChange(key);
-          if (!key) {
-            debugger;
-          }
-        });
-
-        // calculate update from the old ui state to the new ui state and apply it
-        const uiUpdate = gameHelper.getDifference(this, previousUIUser);
-        // render it
-        this.onUserUpdate(uiUpdate);
-      }
-    });
-
+    // bind key handler and listen for backend updates with specific merging logic
     if (this.isCurrUser) {
       this.keyDownListener = ($event: KeyboardEvent) => this.userKeyEvent($event);
       window.addEventListener('keydown', this.keyDownListener);
+
+      // only run heavy merging logic for the user that is interacting. For all other players,
+      // we can just update the ui
+      this.onMessageListener = this.connection.onMessage((type: WsMessageType, data: any) => {
+        if (type === WsMessageType.GAME_USER_UPDATE && data[this.gameUserIndex]) {
+          const update = gameHelper.transformUserTransport(data[this.gameUserIndex]);
+          this.handleBackendUpdate(update);
+        }
+      });
+    } else {
+      this.onMessageListener = this.connection.onMessage((type: WsMessageType, data: any) => {
+        if (type === WsMessageType.GAME_USER_UPDATE && data[this.gameUserIndex]) {
+          const update = gameHelper.transformUserTransport(data[this.gameUserIndex]);
+          this.onUserUpdate(update);
+        }
+      });
     }
 
     // lets update the initial values
     onUpdate(this, this);
+  }
+
+  /**
+   * Does magic:
+   *
+   *  1. copy current UI state
+   *  2. use the last known backend state and apply the new backend update and overwrite the
+   *     current ui state with the last backend state
+   *  3. clears processed user events from the user events array
+   *  4. reapply all unprocessed user events again the the new user event
+   *  5. calculate the diff between the old ui state and the new backend synced ui state
+   *  6. render updates
+   *
+   * @param update update that is sent from the backend
+   */
+  handleBackendUpdate(update: Partial<GameUser>) {
+    const previousUIUser = this.clone();
+    const userEvents = update.userEvents || [];
+
+    // create the latest backend state out of the previous backend state and the new update
+    this.backendUser.applyUserState(update);
+    // delete user events before they will overwrite the ui userEvents
+    this.applyUserState(this.backendUser);
+    // save latest backend state, diff is now applied
+    this.backendUser = this.clone();
+    this.backendUser.userEvents = [];
+
+    // remove old user events from the frontend user
+    userEvents.forEach(([, id]: number[]) => {
+      const foundEvent = this.userEvents.findIndex(([, frontendId]) => id === frontendId);
+      if (foundEvent !== -1) {
+        this.userEvents.splice(foundEvent, 1);
+      }
+    });
+    // apply now all new changes to the left backend states, that were not processed
+    this.userEvents.forEach(([key]) => {
+      this.handleStateChange(key);
+      if (!key) {
+        debugger;
+      }
+    });
+
+    // calculate update from the old ui state to the new ui state and apply it
+    const uiUpdate = gameHelper.getDifference(this, previousUIUser);
+    // render it
+    this.onUserUpdate(uiUpdate);
   }
 
   /**
@@ -142,6 +160,7 @@ export default class FrontendGameUser extends GameUser {
     }
 
     // if block was updated, redraw the stone layer
+    //  - keep in mind to redraw the y preview when the map has changed
     if (isSet(block) || isSet(x) || isSet(y) || isSet(rotation) || Array.isArray(map)) {
       if (isSet(block)) {
         this.onStoneChange();
@@ -178,9 +197,11 @@ export default class FrontendGameUser extends GameUser {
     }
     this.lastKeyPressTime.push(Date.now());
     this.onNewStateChange($event.keyCode);
-    setTimeout(() => {
-      this.connection.send(WsMessageType.GAME_INPUT, $event.keyCode);
-    }, 1000 + (Math.random() * 100));
+    this.connection.send(WsMessageType.GAME_INPUT, $event.keyCode);
+    // use this for latency debugging: TODO: test would be rly. awesome for this stuff :D
+    // setTimeout(() => {
+    //   this.connection.send(WsMessageType.GAME_INPUT, $event.keyCode);
+    // }, 1000 + (Math.random() * 100));
   }
 
   /**
