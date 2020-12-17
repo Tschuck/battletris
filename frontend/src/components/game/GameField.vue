@@ -25,7 +25,6 @@ import {
 import { Component, Vue } from 'vue-property-decorator';
 
 import { gameHelper, GameUser } from '@battletris/shared';
-import ClassLogo from '../general/ClassLogo.vue';
 import FrontendGameUser from './GameUser';
 import GameRenderer from './GameRenderer';
 
@@ -37,9 +36,6 @@ interface GameFieldProps {
 }
 
 @Component({
-  components: {
-    ClassLogo,
-  },
   props: {
     roomId: { type: String },
     userData: { },
@@ -102,3 +98,9 @@ interface GameFieldProps {
 })
 export default class Game extends Vue {}
 </script>
+
+<style lang="postcss">
+  svg {
+    background-color: (--bg-2);
+  }
+</style>

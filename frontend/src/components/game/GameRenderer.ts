@@ -270,7 +270,7 @@ export default class GameRenderer {
     this.positionStoneLayer(this.previewLayer, true, 0);
     // add them to the stage
     this.gameStage.add(this.stoneLayer);
-    this.user.isCurrUser && this.gameStage.add(this.previewLayer);
+    this.gameStage.add(this.previewLayer);
   }
 
   // declar resize watcher here, so we can use all game update functions

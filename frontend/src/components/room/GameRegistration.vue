@@ -17,7 +17,6 @@
               :className="user.className"
               width="100px"
               height="100px"
-              color="#fff"
             />
           </div>
           <h2 class="mt-6 overflow-hidden text-xl font-bold text-center">
@@ -62,9 +61,9 @@ import { onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 import { GameUserStatus, UserInterface, WsMessageType } from '@battletris/shared';
 
-import ClassLogo from '../general/ClassLogo.vue';
 import RoomConnection, { getCurrentConnection } from '../../lib/RoomConnection';
 import currUser from '../../lib/User';
+import ClassLogo from '../../icons/ClassLogo.vue';
 
 @Component({
   components: {

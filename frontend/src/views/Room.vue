@@ -1,23 +1,18 @@
 <template>
-  <ViewWrapper
-    :loading="loading"
-    :route-name="roomName"
-    :show-header="!isJoined || !isMatchRunning"
-  >
-    <template v-if="!loading">
-      <div class="grid h-full grid-cols-4 gap-6">
-        <div
-          class="border-r border-solid bg-2"
-          v-if="!isJoined || !isMatchRunning"
-        >
-          <Chat />
-        </div>
-        <div class="col-span-3">
-          <GameRegistration v-if="!isMatchRunning" />
-          <Game v-else :room-id="roomId" />
-        </div>
+  <ViewWrapper backRoute="/multi-player">
+    <Loading v-if="loading" />
+    <div class="grid w-full h-full grid-cols-4 gap-6" v-else>
+      <div
+        class="border-r border-solid"
+        v-if="!isJoined || !isMatchRunning"
+      >
+        <Chat />
       </div>
-    </template>
+      <div class="col-span-3">
+        <GameRegistration v-if="!isMatchRunning" />
+        <Game v-else :room-id="roomId" />
+      </div>
+    </div>
   </ViewWrapper>
 </template>
 
@@ -27,12 +22,12 @@ import { onUnmounted, ref } from '@vue/composition-api';
 import { WsMessageType } from '@battletris/shared';
 
 import Chat from '../components/room/Chat.vue';
+import currUser from '../lib/User';
 import Game from '../components/game/Game.vue';
 import GameRegistration from '../components/room/GameRegistration.vue';
-import Loading from '../components/general/Loading.vue';
+import Loading from '../components/Loading.vue';
 import RoomConnection from '../lib/RoomConnection';
 import ViewWrapper from '../components/ViewWrapper.vue';
-import currUser from '../lib/User';
 
 @Component({
   components: {

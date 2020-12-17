@@ -4,19 +4,17 @@ import VueRouter, { RouteConfig } from 'vue-router';
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
+  { path: '/', component: () => import('./views/StartPage.vue') },
+  { path: '/mode', component: () => import('./views/Mode.vue') },
+  { path: '/tutorial', component: () => import('./views/Tutorial.vue') },
+  { path: '/single-player', component: () => import('./views/SinglePlayer.vue') },
+  { path: '/multi-player', component: () => import('./views/MultiPlayer.vue') },
   {
-    path: '/',
-    component: () => import('./views/StartPage.vue'),
-  }, {
-    path: '/mode',
-    component: () => import('./views/Mode.vue'),
-  },
-  {
+    path: '/multi-player/:roomId',
     component: () => import('./views/Room.vue'),
-    name: 'room',
-    path: '/:roomId',
     props: true,
   },
+  { path: '/settings', component: () => import('./views/Settings.vue') },
 ];
 
 const router = new VueRouter({

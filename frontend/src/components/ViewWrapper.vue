@@ -1,49 +1,22 @@
 <template>
-  <div class="flex flex-col">
-    <nav class="flex flex-wrap items-center justify-between p-3 header-bg" v-if="showHeader">
-      <router-link to="/" class="flex items-center flex-shrink-0">
-        <img width="42" height="42" src="battletris.svg" />
-        <span class="ml-6 text-xl font-semibold">{{
-          $t("battletris")
-        }}</span>
-      </router-link>
-      <div v-if="$route.name === 'room'">
-        <span class="ml-6 text-xl font-semibold">></span>
-        <span class="ml-6 text-xl font-semibold">
-          {{ routeName }}
-        </span>
-      </div>
-      <div class="flex-grow block w-full lg:flex lg:items-center lg:w-auto">
-        <div class="text-sm lg:flex-grow" />
-        <div>
-          <UserPreview v-if="!loading" />
-        </div>
-      </div>
-    </nav>
-    <Loading v-if="loading" />
-    <div class="overflow-y-auto" v-else
-      :style="`height: ${showHeader ? 'calc(100vh - 63px)' : '100vh'}`">
-      <slot />
-    </div>
+  <div class="flex flex-col items-center overflow-y-auto" style="height: 100vh">
+    <router-link class="absolute left-0 right-0 mt-6 text-center" :to="backRoute">
+      <font-awesome-icon class="text-4xl bounce" icon="chevron-up" />
+    </router-link>
+
+    <slot />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import ClassLogo from './general/ClassLogo.vue';
-import UserPreview from './general/UserPreview.vue';
-import Loading from './general/Loading.vue';
 
 @Component({
-  components: {
-    ClassLogo,
-    Loading,
-    UserPreview,
-  },
   props: {
-    loading: { type: Boolean },
-    showHeader: { type: Boolean, default: true },
-    routeName: { type: String },
+    backRoute: {
+      type: String,
+      default: '/mode',
+    },
   },
 })
 export default class RootNav extends Vue {}

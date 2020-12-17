@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="flex flex-col h-full py-3 pl-3"
-    style="max-height: calc(100vh - 66px)"
-  >
+  <div class="flex flex-col h-full py-3 pl-3 bg-2">
     <h2 class="pr-3 font-bold">{{ $t("lobby.title") }}</h2>
 
     <div class="p-1 mt-3 mr-3 overflow-y-auto border">
@@ -14,7 +11,7 @@
     <div class="flex-grow pr-3 overflow-y-auto">
       <div v-for="(message, index) in chat" :key="index" class="mt-3">
         <p class="text-sm">{{ message.message }}</p>
-        <div class="flex text-xs italic opacity-25">
+        <div class="flex text-xs italic opacity-50">
           <p class="overflow-hidden">{{ getUserName(message.id) }}</p>
           <p class="flex-grow" />
           <p>{{ message.date }}</p>
@@ -23,13 +20,13 @@
     </div>
     <div class="flex pr-3">
       <input
-        class="flex-grow w-full px-3 py-2 mr-3 leading-tight border rounded shadow appearance-none bg-3 focus:outline-none focus:shadow-outline"
+        class="flex-grow w-full px-3 py-2 mr-3 leading-tight border rounded shadow appearance-none bg-1 focus:outline-none focus:shadow-outline"
         v-model="newMessage"
         @keyup.enter="sendMessage"
         :placeholder="$t('lobby.chat-message')"
       />
       <button
-        class="button"
+        class="button bg-1"
         @click="sendMessage"
         :disabled="sending"
       >

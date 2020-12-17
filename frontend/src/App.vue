@@ -1,36 +1,31 @@
 <template>
   <div class="overflow-hidden text-gray-300 bg-1" style="height: 100vh">
-    <Loading v-if="loading" />
-    <transition :name="transitionName" v-else>
-      <router-view></router-view>
-    </transition>
+    <!-- <transition :name="transitionName" v-if="!loading"> -->
+    <router-view></router-view>
+    <!-- </transition> -->
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { ref, SetupContext } from '@vue/composition-api';
-import router from './router';
+import { ref } from '@vue/composition-api';
+// import router from './router';
 
 import user from './lib/User';
-import Loading from './components/general/Loading.vue';
 
 @Component({
-  components: {
-    Loading,
-  },
-  setup(_, vm: SetupContext) {
+  setup() {
     const loading = ref(true);
-    const transitionName = ref('appear');
-    const transitions = [
-      { from: '/', to: '/mode', transition: 'slide-down' },
-    ];
+    // const transitionName = ref('appear');
+    // const transitions = [{ from: '/', to: '/mode', transition: 'slide-down' }];
 
-    router.beforeEach((to, from, next) => {
-      const transition = transitions.find(({ from: a, to: b }) => a === from.path && b === to.path);
-      transitionName.value = transition?.transition || 'appear';
-      next();
-    });
+    // router.beforeEach((to, from, next) => {
+    //   const transition = transitions.find(
+    //     ({ from: a, to: b }) => a === from.path && b === to.path,
+    //   );
+    //   transitionName.value = transition?.transition || 'appear';
+    //   next();
+    // });
 
     (async () => {
       await user.init();
@@ -39,7 +34,6 @@ import Loading from './components/general/Loading.vue';
 
     return {
       loading,
-      transitionName,
     };
   },
 })
@@ -66,6 +60,13 @@ export default class Home extends Vue {}
 .bg-2,
 .bg-hover-2:hover {
   background-color: var(--bg-2);
+
+  button {
+    background-color: var(--bg-1);
+    &:hover {
+      background-color: var(--bg-3);
+    }
+  }
 }
 
 .bg-3,
@@ -80,10 +81,10 @@ export default class Home extends Vue {}
 
 .button {
   @apply px-4 py-2 font-bold rounded;
-  background-color: var(--bg-3);
+  background-color: var(--bg-2);
 
   &:hover {
-    background-color: var(--bg-1);
+    background-color: var(--bg-3);
   }
 }
 

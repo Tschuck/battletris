@@ -11,7 +11,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 export const iconProps = {
-  color: { type: String, default: '#000' },
+  color: { type: String, default: '#e2e8f0' },
   width: { type: String, default: '100%' },
   height: { type: String, default: 'auto' },
 };

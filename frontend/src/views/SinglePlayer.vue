@@ -1,15 +1,16 @@
 <template>
-  <div class="flex flex-col">
-  </div>
+  <ViewWrapper>
+    todo
+  </ViewWrapper>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import Loading from '../components/general/Loading.vue';
+import ViewWrapper from '../components/ViewWrapper.vue';
 
 @Component({
   components: {
-    Loading,
+    ViewWrapper,
   },
 })
 export default class SinglePlayer extends Vue {}

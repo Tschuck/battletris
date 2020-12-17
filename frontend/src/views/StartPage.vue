@@ -12,46 +12,37 @@
       <a
         href="https://github.com/tschuck/battletris"
         target="_blank"
-        :title="$t('dashboard.github')"
+        class="tooltip-box"
       >
         <font-awesome-icon class="mr-4 text-3xl" :icon="['fab', 'github']" />
+        <Tooltip :value="$t('start-page.github')" />
       </a>
       <a
         href="https://www.buymeacoffee.com/eo3m4BAyO"
         target="_blank"
-        :title="$t('dashboard.github')"
+        class="tooltip-box"
       >
-        <font-awesome-icon
-          class="text-3xl"
-          icon="coffee"
-          :title="$t('dashboard.buy-me-a-coffee')"
-        />
+        <font-awesome-icon class="text-3xl" icon="coffee" />
+        <Tooltip :value="$t('start-page.buy-me-a-coffee')" />
       </a>
     </div>
 
-    <div
-      class="absolute bottom-0 left-0 right-0 flex justify-center mb-6"
-    >
-      <router-link to="/tutorial" class="mx-2">
-        <TargetDummyIcon
-          :title="$t('start-page.tutorial')"
-          width="30px"
-          color="#e2e8f0"
-        />
+    <div class="absolute bottom-0 left-0 right-0 flex justify-center mb-6">
+      <router-link to="/tutorial" class="mx-2 tooltip-box">
+        <TargetDummyIcon width="30px" />
+        <Tooltip :value="$t('start-page.tutorial')" />
       </router-link>
-      <router-link to="/single-player" class="mx-2">
-        <KimonoIcon
-          :title="$t('start-page.single-player')"
-          width="30px"
-          color="#e2e8f0"
-        />
+      <router-link to="/single-player" class="mx-2 tooltip-box">
+        <KimonoIcon width="30px" />
+        <Tooltip :value="$t('start-page.single-player')" />
       </router-link>
-      <router-link to="/multi-player" class="mx-2">
-        <CrossedSowrdsIcon
-          :title="$t('start-page.multi-player')"
-          width="30px"
-          color="#e2e8f0"
-        />
+      <router-link to="/multi-player" class="mx-2 tooltip-box">
+        <CrossedSowrdsIcon width="30px" />
+        <Tooltip :value="$t('start-page.multi-player')" />
+      </router-link>
+      <router-link to="/settings" class="mx-2 tooltip-box">
+        <ScrollBookIcon width="30px" />
+        <Tooltip :value="$t('start-page.settings')" />
       </router-link>
     </div>
 
@@ -65,19 +56,21 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import Loading from '../components/general/Loading.vue';
 
 import BattletrisIcon from '../icons/battletris.vue';
-import KimonoIcon from '../icons/kimono.vue';
 import CrossedSowrdsIcon from '../icons/crossed-swords.vue';
+import KimonoIcon from '../icons/kimono.vue';
+import ScrollBookIcon from '../icons/scroll-book.vue';
 import TargetDummyIcon from '../icons/target-dummy.vue';
+import Tooltip from '../components/Tooltip.vue';
 
 @Component({
   components: {
-    Loading,
     BattletrisIcon,
-    KimonoIcon,
     CrossedSowrdsIcon,
+    KimonoIcon,
+    ScrollBookIcon,
+    Tooltip,
     TargetDummyIcon,
   },
 })
