@@ -1,34 +1,70 @@
 <template>
   <ViewWrapper :loading="loading">
     <div class="grid grid-cols-3 gap-6 p-4">
-      <div class="card">
-        <h2 class="header">{{ $t("dashboard.title") }}</h2>
-        <p class="content">{{ $t("dashboard.desc") }}</p>
+      <div>
+        <div class="mb-4 card">
+          <h2 class="header">{{ $t("dashboard.tschuck.title") }}</h2>
+          <div class="content">
+            <p v-html="$t('dashboard.tschuck.desc')" />
 
-        <h3 class="px-3 mt-2 text-sm font-bold">
-          {{ $t("dashboard.tavern.title") }}
-        </h3>
-        <p class="pt-0 content" v-html="$t('dashboard.tavern.desc')" />
+            <div class="p-5 text-center">
+              <a
+                href="https://github.com/tschuck/battletris"
+                target="_blank"
+                :title="$t('dashboard.github')"
+              >
+                <font-awesome-icon
+                  class="mr-4 text-3xl"
+                  :icon="['fab', 'github']"
+                />
+              </a>
+              <a
+                href="https://www.buymeacoffee.com/eo3m4BAyO"
+                target="_blank"
+                :title="$t('dashboard.github')"
+              >
+                <font-awesome-icon
+                  class="text-3xl"
+                  icon="coffee"
+                  :title="$t('dashboard.buy-me-a-coffee')"
+                />
+              </a>
+            </div>
+          </div>
+        </div>
 
-        <h3 class="px-3 mt-2 text-sm font-bold">
-          {{ $t("dashboard.battle-control.title") }}
-        </h3>
-        <p class="pt-0 content" v-html="$t('dashboard.battle-control.desc')" />
+        <div class="card">
+          <h2 class="header">{{ $t("dashboard.title") }}</h2>
+          <p class="content">{{ $t("dashboard.desc") }}</p>
 
-        <h3 class="px-3 mt-2 text-sm font-bold">
-          {{ $t("dashboard.how-to-play.title") }}
-        </h3>
-        <p class="pt-0 content" v-html="$t('dashboard.how-to-play.desc')" />
+          <h3 class="px-3 mt-2 text-sm font-bold">
+            {{ $t("dashboard.tavern.title") }}
+          </h3>
+          <p class="pt-0 content" v-html="$t('dashboard.tavern.desc')" />
 
-        <h3 class="px-3 mt-2 text-sm font-bold">
-          {{ $t("dashboard.abilities.title") }}
-        </h3>
-        <p class="pt-0 content" v-html="$t('dashboard.abilities.desc')" />
+          <h3 class="px-3 mt-2 text-sm font-bold">
+            {{ $t("dashboard.battle-control.title") }}
+          </h3>
+          <p
+            class="pt-0 content"
+            v-html="$t('dashboard.battle-control.desc')"
+          />
 
-        <h3 class="px-3 mt-2 text-sm font-bold">
-          {{ $t("dashboard.targets.title") }}
-        </h3>
-        <p class="pt-0 content" v-html="$t('dashboard.targets.desc')" />
+          <h3 class="px-3 mt-2 text-sm font-bold">
+            {{ $t("dashboard.how-to-play.title") }}
+          </h3>
+          <p class="pt-0 content" v-html="$t('dashboard.how-to-play.desc')" />
+
+          <h3 class="px-3 mt-2 text-sm font-bold">
+            {{ $t("dashboard.abilities.title") }}
+          </h3>
+          <p class="pt-0 content" v-html="$t('dashboard.abilities.desc')" />
+
+          <h3 class="px-3 mt-2 text-sm font-bold">
+            {{ $t("dashboard.targets.title") }}
+          </h3>
+          <p class="pt-0 content" v-html="$t('dashboard.targets.desc')" />
+        </div>
       </div>
 
       <div class="col-span-2">
@@ -81,15 +117,23 @@
               :to="`/${room.id}`"
             >
               <h3 class="text-xs font-bold">{{ room.name }}</h3>
-              <i class="text-xs">{{ room.connectionCount }} {{ $t('room.users-joined') }}</i>
-              <i class="text-xs" v-if="room.isMatchRunning">{{ $t('game.running') }}</i>
+              <i class="text-xs"
+                >{{ room.connectionCount }} {{ $t("room.users-joined") }}</i
+              >
+              <i class="text-xs" v-if="room.isMatchRunning">{{
+                $t("game.running")
+              }}</i>
             </router-link>
           </div>
         </div>
         <div class="card">
           <h2 class="header">{{ $t("history.title") }}</h2>
           <div class="flex flex-row flex-wrap content">
-            <div class="p-3 mt-3 overflow-hidden border" v-for="(match, index) in matches" :key="index">
+            <div
+              class="p-3 mt-3 overflow-hidden border"
+              v-for="(match, index) in matches"
+              :key="index"
+            >
               {{ match }}
             </div>
           </div>

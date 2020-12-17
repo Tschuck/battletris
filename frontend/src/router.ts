@@ -6,7 +6,10 @@ Vue.use(VueRouter);
 const routes: Array<RouteConfig> = [
   {
     path: '/',
-    component: () => import('./views/Dashboard.vue'),
+    component: () => import('./views/StartPage.vue'),
+  }, {
+    path: '/mode',
+    component: () => import('./views/Mode.vue'),
   },
   {
     component: () => import('./views/Room.vue'),

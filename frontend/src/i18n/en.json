@@ -110,7 +110,9 @@
       "desc": "Once you have joined a Battlefield, you can see the battle controls on the left and the overview of the different players on the right. If a battle is already running, you can simply watch the action. As soon as no battle has started and there is still free space available, you can join the battle at the bottom of the Battle Controls. After you are joined and ready, use the \"Start Battle\" button to start the battle. As soon as all joined Warriors have started the battle, start a 10 second timer after the actual game starts.",
       "title": "Battle Control"
     },
+    "buy-me-a-coffee": "Buy me a coffee - Tschuck",
     "desc": "Welcome to Battletris, a multiplayer block stacking game for up to 6 players. You are currently in the tavern, a place where everyone can hang around to search for opponents. Checkup the Battlefields and join a match.",
+    "github": "Github - battletris",
     "how-to-play": {
       "desc": "I hope everyone knows the game principle of good old Tetris. The goal is to stack the opponent's Battlefield with blocks up to the top, so that the opponent is eliminated from the battle. The last player with free spaces wins the battle. <br>With the arrow keys (←, →), the active block can be changed to the right and to the left. The arrow up key (↑) rotates the active tile. With the arrow down key (↓) you can move the block down faster. <br>By pressing the space bar the active block is docked directly to the existing Battlefield, so you save a lot of time.",
       "title": "How to play"
@@ -123,17 +125,21 @@
       "desc": "In the beginning you will find yourself in the \"Tavern\", a kind of lobby where players can find each other and join different battles. Once you have decided on a Battlefield, you can join it with the small icon (<i class=\"mdi mdi-login-variant\"></i>) in the upper right corner.",
       "title": "Tavern"
     },
-    "title": "Whats Battletris?"
+    "title": "Whats Battletris?",
+    "tschuck": {
+      "desc": "If you have ideas or found bugs, please have a look at the github repository. If you want to support me, consider to buy me a coffee. :)",
+      "title": "Source Code"
+    }
   },
   "game": {
+    "ends": "Game ended. Winner is \"{winner}\"",
     "join": "Join",
     "leave": "Leave",
     "not-joined": "No one joined...",
     "running": "Game is running",
     "slot": "Slot",
     "start": "Start",
-    "stop": "Stop",
-    "ends": "Game ended. Winner is \"{winner}\""
+    "stop": "Stop"
   },
   "history": {
     "title": "Match History"
@@ -155,5 +161,13 @@
     "import": "Import user file",
     "import-invalid": "Not a battletris user id file.",
     "title": "User export / import"
+  },
+  "start-page": {
+    "tutorial": "Tutorial",
+    "single-player": "Single-Player",
+    "single-player-desc": "Play a match alone in the browser, without server connection.",
+    "multi-player": "Multi-Player",
+    "multi-player-desc": "Join a battle room and play against 5 other players.",
+    "tutorial-desc": "How Battletris works"
   }
 }

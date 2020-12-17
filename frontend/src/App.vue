@@ -1,23 +1,16 @@
 <template>
-  <div class="flex flex-col overflow-hidden text-gray-300 bg-3" style="height: 100vh">
-    <nav
-      class="flex flex-wrap items-center justify-between p-3 header-bg"
-      v-if="loading"
-    >
-      <img width="42" height="42" src="battletris.svg" />
-      <span class="ml-6 text-xl font-semibold">{{
-        $t("battletris")
-      }}</span>
-      <div class="flex-grow" />
-    </nav>
+  <div class="overflow-hidden text-gray-300 bg-1" style="height: 100vh">
     <Loading v-if="loading" />
-    <router-view v-else />
+    <transition :name="transitionName" v-else>
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { ref } from '@vue/composition-api';
+import { ref, SetupContext } from '@vue/composition-api';
+import router from './router';
 
 import user from './lib/User';
 import Loading from './components/general/Loading.vue';
@@ -26,8 +19,18 @@ import Loading from './components/general/Loading.vue';
   components: {
     Loading,
   },
-  setup() {
+  setup(_, vm: SetupContext) {
     const loading = ref(true);
+    const transitionName = ref('appear');
+    const transitions = [
+      { from: '/', to: '/mode', transition: 'slide-down' },
+    ];
+
+    router.beforeEach((to, from, next) => {
+      const transition = transitions.find(({ from: a, to: b }) => a === from.path && b === to.path);
+      transitionName.value = transition?.transition || 'appear';
+      next();
+    });
 
     (async () => {
       await user.init();
@@ -36,6 +39,7 @@ import Loading from './components/general/Loading.vue';
 
     return {
       loading,
+      transitionName,
     };
   },
 })
@@ -49,20 +53,23 @@ export default class Home extends Vue {}
 
 :root {
   --bg-1: #1a2024;
-  --bg-2:  #242c31;
+  --bg-2: #242c31;
   --bg-3: #3e4649;
   --border: #4b4d4e;
 }
 
-.bg-1, .bg-hover-1:hover {
+.bg-1,
+.bg-hover-1:hover {
   background-color: var(--bg-1);
 }
 
-.bg-2, .bg-hover-2:hover {
+.bg-2,
+.bg-hover-2:hover {
   background-color: var(--bg-2);
 }
 
-.bg-3, .bg-hover-3:hover {
+.bg-3,
+.bg-hover-3:hover {
   background-color: var(--bg-3);
 }
 
@@ -76,7 +83,7 @@ export default class Home extends Vue {}
   background-color: var(--bg-3);
 
   &:hover {
-    background-color:  var(--bg-1);
+    background-color: var(--bg-1);
   }
 }
 
@@ -85,26 +92,13 @@ export default class Home extends Vue {}
   border: 1px solid var(--bg-3);
 
   &:hover {
-    background-color:  var(--bg-1);
+    background-color: var(--bg-1);
   }
 }
 
-.card {
-  @apply overflow-hidden rounded;
-  background-color: var(--bg-2);
-
-  box-shadow: 2px 5px 3px 0 rgb(0 0 0 / 20%);
-
-  .header {
-    @apply p-3 font-bold text-sm header-bg;
-  }
-
-  .content {
-    @apply px-3 py-3 text-sm;
-
-    &.pt-0 {
-      padding-top: 0;
-    }
-  }
+.bounce {
+  -moz-animation: bounce 1s infinite;
+  -webkit-animation: bounce 1s infinite;
+  animation: bounce 1s infinite;
 }
 </style>
