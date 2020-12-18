@@ -285,7 +285,7 @@ export default class RoomHandler {
             if (this.gameRegistration[userId]) {
               throw new Error(ErrorCodes.CONNECTION_ID_ALREADY_REGISTERED);
             }
-            if (Object.keys(this.gameRegistration).length === 6) {
+            if (Object.keys(this.gameRegistration).length === 5) {
               throw new Error(ErrorCodes.MAX_USERS);
             }
             this.gameRegistration[userId] = GameUserStatus.JOINED;

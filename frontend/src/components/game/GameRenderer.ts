@@ -81,7 +81,7 @@ export default class GameRenderer {
     // setup initial field
     this.mapLayer = this.getNewGridLayer(new Konva.Layer(), 20, 10, {
       stroke: colorMap.STROKE,
-      strokeWidth: 0.1,
+      strokeWidth: 0.2,
     }) as Konva.Layer;
 
     this.updateLayerColors(this.mapLayer, this.user.map);
@@ -92,7 +92,7 @@ export default class GameRenderer {
     this.watchForUserUpdates();
 
     // resize layers sizes, when the window size has changed
-    window.addEventListener('resize', this.windowResizeWatch);
+    window.addEventListener('resize', this.windowResizeWatch.bind(this));
   }
 
   watchForUserUpdates() {
@@ -159,16 +159,19 @@ export default class GameRenderer {
   }
 
   updateGameStage() {
-    this.width = this.element.clientWidth;
-    this.height = this.element.clientHeight;
-    this.colHeight = this.height / 20;
-    this.colWidth = this.width / 10;
+    const width = this.element.clientWidth;
+    const height = this.element.clientHeight;
+    this.colHeight = height / 20;
+    this.colWidth = width / 10;
     // ensure squares
     if (this.colWidth > this.colHeight) {
       this.colWidth = this.colHeight;
     } else if (this.colHeight > this.colWidth) {
       this.colHeight = this.colWidth;
     }
+    // set width and height with the correct calculated values
+    this.width = this.colWidth * 10;
+    this.height = this.colHeight * 20;
 
     this.gameStage.width(this.width);
     this.gameStage.height(this.height);
@@ -270,11 +273,12 @@ export default class GameRenderer {
     this.positionStoneLayer(this.previewLayer, true, 0);
     // add them to the stage
     this.gameStage.add(this.stoneLayer);
-    this.gameStage.add(this.previewLayer);
+    this.previewLayer && this.gameStage.add(this.previewLayer);
   }
 
   // declar resize watcher here, so we can use all game update functions
   windowResizeWatch() {
+    console.log(this.user.id);
     this.updateGameStage();
     this.updateLayerSize(this.mapLayer);
     this.updateLayerSize(this.stoneLayer.children[0] as Konva.Group);

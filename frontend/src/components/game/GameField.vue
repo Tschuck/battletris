@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 100%;" class="flex flex-col">
+  <div style="width: 100%; height: 100%;" class="flex flex-col p-3 bg-2">
     <div ref="container" class="flex-grow" />
 
     <div>
@@ -24,22 +24,24 @@ import {
 } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 
-import { gameHelper, GameUser } from '@battletris/shared';
+import { GameUser } from '@battletris/shared';
 import FrontendGameUser from './GameUser';
+import SingeGameUser from './SingleGameUser';
 import GameRenderer from './GameRenderer';
 
 interface GameFieldProps {
-  roomId: string;
   userData: GameUser;
-  userId: string;
   userIndex: number;
 }
 
 @Component({
   props: {
-    roomId: { type: String },
     userData: { },
     userIndex: { type: Number },
+    offline: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props) {
     const { userData, userIndex } = props as unknown as GameFieldProps;
@@ -56,7 +58,8 @@ interface GameFieldProps {
 
     // will be initialized after on mounted
     let gameRenderer: GameRenderer;
-    const gameUser = new FrontendGameUser(
+    const UserClass = props.offline ? SingeGameUser : FrontendGameUser;
+    const gameUser = new UserClass(
       userData,
       userIndex,
       (user) => {
@@ -102,5 +105,12 @@ export default class Game extends Vue {}
 <style lang="postcss">
   svg {
     background-color: (--bg-2);
+  }
+
+  canvas {
+    border: 3px solid var(--bg-1) !important;
+    margin: auto !important;
+    left: 0;
+    right: 0;
   }
 </style>

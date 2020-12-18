@@ -1,7 +1,7 @@
 <template>
   <div class="tooltip">
     <span class="triangle"></span>
-    {{ value }}
+    <span class="text-gray-300">{{ value }}</span>
   </div>
 </template>
 

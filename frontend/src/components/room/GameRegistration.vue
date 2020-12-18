@@ -1,56 +1,64 @@
 <template>
-  <div class="grid h-full grid-cols-3 gap-6 p-6">
+  <div
+    class="items-center w-full px-8 md:flex md:justify-center md:flex-row"
+  >
     <div
-      class="flex flex-col flex-grow-0 flex-shrink-0 card"
-      v-for="(user, index) in users"
-      :key="user.id"
+      div
+      class="relative border-8 selection-card"
+      v-for="(slot, index) in userSlots"
+      :key="slot"
     >
-      <h2 class="header">{{ $t("game.slot") }} {{ index + 1 }}</h2>
+      <div
+        class="absolute top-0 left-0 right-0 opacity-50"
+        style="height: 10px;"
+        :class="{
+          'bg-green-600': registrations[index] === 'ACCEPTED',
+          'bg-yellow-600': registrations[index] === 'JOINED',
+        }"
+      />
+      <h2 class="mb-20 font-bold text-center">
+        {{ $t("game.slot") }} {{ index + 1 }}
+      </h2>
 
-      <div class="flex items-center justify-center flex-grow content">
-        <div>
-          <div
-            class="flex items-center justify-center rounded-full"
-          >
-            <ClassLogo
-              v-if="user"
-              :className="user.className"
-              width="100px"
-              height="100px"
-            />
-          </div>
-          <h2 class="mt-6 overflow-hidden text-xl font-bold text-center">
-            {{ user.name }}
-          </h2>
+      <div v-if="!users[slot]">
+        <div
+          class="flex items-center justify-center flex-grow content"
+          v-if="!isJoined"
+        >
+          <button class="button" @click="join()">
+            {{ $t("game.join") }}
+          </button>
         </div>
       </div>
-      <div class="flex p-3" v-if="user.id === activeUserId">
-        <button class="button-outline" @click="leave()">
-          {{ $t("game.leave") }}
-        </button>
-        <div class="flex-grow" />
-        <button class="button" @click="start()" v-if="registrations[index] === 'JOINED'">
-          {{ $t("game.start") }}
-        </button>
-        <button class="button" @click="stop()" v-if="registrations[index] === 'ACCEPTED'">
-          {{ $t("game.stop") }}
-        </button>
-      </div>
-    </div>
-
-    <div
-      class="flex flex-col flex-grow-0 flex-shrink-0 card"
-      v-if="users.length < 6 && !isJoined"
-    >
-      <h2 class="header">{{ $t("game.slot") }} {{ users.length + 1 }}</h2>
-
-      <div class="flex items-center justify-center flex-grow content">
-        <button
-          class="button"
-          @click="join()"
-        >
-          {{ $t("game.join") }}
-        </button>
+      <div v-else>
+        <div class="flex items-center justify-center flex-grow content">
+          <UserSetting
+            v-if="!rerender || users[slot].id === activeUserId"
+            :minimal="true"
+            :user="users[slot]"
+          />
+        </div>
+        <div class="flex mt-20" v-if="users[slot].id === activeUserId">
+          <button class="button-outline" @click="leave()">
+            {{ $t("game.leave") }}
+          </button>
+          <div class="flex-grow" />
+          <button
+            class="button"
+            @click="start()"
+            v-if="registrations[index] === 'JOINED'"
+          >
+            {{ $t("game.start") }}
+          </button>
+          <button
+            class="button"
+            @click="stop()"
+            v-if="registrations[index] === 'ACCEPTED'"
+          >
+            {{ $t("game.stop") }}
+          </button>
+        </div>
+        <div class="flex mt-20" style="height: 42px" v-else />
       </div>
     </div>
   </div>
@@ -59,15 +67,21 @@
 <script lang="ts">
 import { onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
-import { GameUserStatus, UserInterface, WsMessageType } from '@battletris/shared';
+import {
+  GameUserStatus,
+  UserInterface,
+  WsMessageType,
+} from '@battletris/shared';
 
 import RoomConnection, { getCurrentConnection } from '../../lib/RoomConnection';
 import currUser from '../../lib/User';
 import ClassLogo from '../../icons/ClassLogo.vue';
+import UserSetting from '../UserSetting.vue';
 
 @Component({
   components: {
     ClassLogo,
+    UserSetting,
   },
   props: {
     isOpen: { type: String },
@@ -79,12 +93,19 @@ import ClassLogo from '../../icons/ClassLogo.vue';
     const loading = ref(true);
     const registrations = ref<GameUserStatus[]>([]);
     const users = ref<UserInterface[]>([]);
+    const userSlots = ref([0, 1, 2, 3, 4]);
+    const rerender = ref(false);
 
     const updateGameUsers = () => {
       const userIds = Object.keys(conn.gameRegistration);
       users.value = userIds.map((userId) => conn.users[userId]);
-      registrations.value = userIds.map((userId) => conn.gameRegistration[userId]);
+      registrations.value = userIds.map(
+        (userId) => conn.gameRegistration[userId],
+      );
       isJoined.value = userIds.includes(currUser.id);
+      // force update of other players
+      rerender.value = true;
+      setTimeout(() => (rerender.value = false), 0);
     };
     updateGameUsers();
 
@@ -110,9 +131,11 @@ import ClassLogo from '../../icons/ClassLogo.vue';
       leave,
       loading,
       registrations,
+      rerender,
       start,
       stop,
       users,
+      userSlots,
     };
   },
 })

@@ -1,6 +1,6 @@
 <template>
-  <ViewWrapper>
-    <div class="px-8 pb-8 mt-20" style="max-width: 600px;">
+  <ViewWrapper :title="$t('start-page.tutorial')">
+    <div style="max-width: 600px;">
       <h2 class="font-bold">{{ $t("tutorial.interactive") }}</h2>
       <p class="p-4 mt-4 text-xs bg-2">{{ $t("tutorial.interactive-desc") }}</p>
 

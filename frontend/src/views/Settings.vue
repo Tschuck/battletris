@@ -1,58 +1,10 @@
 <template>
-  <ViewWrapper>
-    <Loading class="mt-20" v-if="loading" />
+  <ViewWrapper :title="$t('start-page.settings')">
+    <Loading v-if="loading" />
 
-    <div class="grid grid-cols-1 gap-4 mt-20 md:grid-cols-2" v-else>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2" v-else>
       <div class="p-8" style="max-width: 600px">
-        <p class="mb-3 font-bold">{{ $t('settings.name') }}</p>
-        <input
-          v-model="name"
-          id="battletrisname"
-          placeholder="username"
-          class="w-full px-3 py-2 leading-tight border rounded outline-none bg-2"
-          @change="updateUser"
-        />
-
-        <div class="mt-8">
-          <p class="mb-3 font-bold">{{ $t('settings.class') }}</p>
-
-          <div class="flex flex-row items-center justify-center">
-            <font-awesome-icon class="text-4xl cursor-pointer" icon="chevron-left" @click="selectClass(-1)" />
-            <component
-              :is="classes[activeClassIndex].icon"
-              height="80px"
-              width="80px"
-            />
-            <font-awesome-icon class="text-4xl cursor-pointer" icon="chevron-right" @click="selectClass(1)" />
-          </div>
-
-          <p class="my-3 font-bold text-center">{{ $t(`classes.${className}.title`) }}</p>
-          <p class="p-3 italic bg-2">{{ $t(`classes.${className}.desc`) }}</p>
-
-          <div
-            v-for="(_, index) in abilityIterator"
-            :key="`value-${className}-${index}`"
-            class="flex items-center mt-4"
-          >
-            <div>
-              <AbilityLogo
-                :abilityIndex="index"
-                :className="className"
-                width="32px"
-                height="32px"
-              />
-            </div>
-            <div class="ml-3">
-              <h2 class="text-xs font-bold">
-                {{ $t(`classes.${className}.ability${index}.title`) }}
-              </h2>
-              <p
-                class="text-xs text-justify text-gray-400"
-                v-html="$t(`classes.${className}.ability${index}.desc`)"
-              ></p>
-            </div>
-          </div>
-        </div>
+        <UserSetting :user="user" />
       </div>
 
       <div class="p-8" style="max-width: 600px">
@@ -98,11 +50,30 @@
         </div>
         <div v-else>
           <div
-            class="p-3 mt-3 overflow-hidden border"
+            class="p-3 mt-3 text-sm bg-2"
             v-for="(match, index) in matches"
             :key="index"
           >
-            {{ match }}
+            <p class="mb-2">
+              <span class="font-bold">{{ $t('settings.history.time') }}: </span>
+              <span>{{ match.started }} - {{ match.stopped }}</span>
+            </p>
+            <p class="mb-2" v-if="match.users[userId]">
+              <span class="font-bold">{{ $t('settings.history.className') }}: </span>
+              <span>{{ $t(`classes.${match.users[userId].className}.title`) }}</span>
+            </p>
+            <p class="mb-2" v-if="match.users[userId]">
+              <span class="font-bold">{{ $t('settings.history.blocks') }}: </span>
+              <span>{{ match.users[userId].blockCount }}</span>
+            </p>
+            <p class="mb-2" v-if="match.users[userId]">
+              <span class="font-bold">{{ $t('settings.history.rows') }}: </span>
+              <span>{{ match.users[userId].rowCount }}</span>
+            </p>
+            <p class="mb-2">
+              <span class="font-bold">{{ $t('settings.history.status') }}: </span>
+              <span>{{ match.winner === userId ? $t('settings.history.won') : $t('settings.history.lost') }}</span>
+            </p>
           </div>
         </div>
       </div>
@@ -122,6 +93,7 @@ import AbilityLogo from '../icons/AbilityLogo.vue';
 import Loading from '../components/Loading.vue';
 import SorcererIcon from '../icons/sorcerer.vue';
 import UnknownIcon from '../icons/unknown.vue';
+import UserSetting from '../components/UserSetting.vue';
 import user from '../lib/User';
 import WarriorIcon from '../icons/warrior.vue';
 
@@ -131,12 +103,14 @@ import WarriorIcon from '../icons/warrior.vue';
     Loading,
     SorcererIcon,
     UnknownIcon,
+    UserSetting,
     ViewWrapper,
     WarriorIcon,
   },
   setup() {
     const name = ref<string>(user.name);
     const className = ref(user.className);
+    const userId = ref(user.id);
     const classes = [
       { name: 'unknown', icon: UnknownIcon },
       { name: 'warrior', icon: WarriorIcon },
@@ -214,6 +188,7 @@ import WarriorIcon from '../icons/warrior.vue';
       updateUser,
       uploadIdRef,
       user,
+      userId,
       workingOnBattletrisId,
     };
   },

@@ -1,8 +1,7 @@
 <template>
-  <ViewWrapper>
+  <ViewWrapper :title="$t('room.join')">
     <Loading v-if="loading" />
-    <div class="mt-20" style="max-width: 1200px;" v-else>
-      <h2 class="mb-8 font-bold text-center">{{ $t("room.join") }}</h2>
+    <div style="max-width: 1200px;" v-else>
       <div class="flex flex-row flex-wrap justify-center mt-8">
         <router-link
           class="flex-shrink-0 w-40 p-8 mb-2 mr-3 border rounded min-w-xs bg-hover-3 bg-2"

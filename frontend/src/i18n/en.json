@@ -109,6 +109,7 @@
     "running": "Game is running",
     "slot": "Slot",
     "start": "Start",
+    "start-game": "Start Game",
     "stop": "Stop"
   },
   "lobby": {
@@ -126,7 +127,14 @@
     "class": "Class",
     "history": {
       "no-matches": "No Matches found...",
-      "title": "Match History"
+      "title": "Match History",
+      "time": "Time",
+      "className": "Class",
+      "blocks": "Blocks",
+      "rows": "Rows",
+      "won": "won",
+      "lost": "lost",
+      "status": "Status"
     },
     "name": "Name",
     "user-id-handling": {
@@ -141,7 +149,8 @@
     "buy-me-a-coffee": "Buy me a coffee - Tschuck",
     "github": "Github - battletris",
     "multi-player": "Multi-Player",
-    "multi-player-desc": "Join a battle room and play against 5 other players.",
+    "mode-selection": "Mode Selection",
+    "multi-player-desc": "Join a battle room and play against 4 other players.",
     "settings": "Settings & History",
     "settings-desc": "Manage user name, class and view game history.",
     "single-player": "Single-Player",

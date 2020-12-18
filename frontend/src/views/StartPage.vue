@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col justify-center" style="height: 100vh">
+  <div class="flex flex-col justify-center vh-100">
     <div class="flex justify-center mb-8">
       <div
         class="flex items-center justify-center block w-40 h-40 p-5 rounded rounded-full bg-2"
@@ -28,22 +28,7 @@
     </div>
 
     <div class="absolute bottom-0 left-0 right-0 flex justify-center mb-6">
-      <router-link to="/tutorial" class="mx-2 tooltip-box">
-        <TargetDummyIcon width="30px" />
-        <Tooltip :value="$t('start-page.tutorial')" />
-      </router-link>
-      <router-link to="/single-player" class="mx-2 tooltip-box">
-        <KimonoIcon width="30px" />
-        <Tooltip :value="$t('start-page.single-player')" />
-      </router-link>
-      <router-link to="/multi-player" class="mx-2 tooltip-box">
-        <CrossedSowrdsIcon width="30px" />
-        <Tooltip :value="$t('start-page.multi-player')" />
-      </router-link>
-      <router-link to="/settings" class="mx-2 tooltip-box">
-        <ScrollBookIcon width="30px" />
-        <Tooltip :value="$t('start-page.settings')" />
-      </router-link>
+
     </div>
 
     <div class="mt-12 text-center cursor-pointer">
@@ -51,6 +36,8 @@
         <font-awesome-icon class="text-4xl bounce" icon="chevron-down" />
       </router-link>
     </div>
+
+    <QuickLinks />
   </div>
 </template>
 
@@ -58,20 +45,14 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 import BattletrisIcon from '../icons/battletris.vue';
-import CrossedSowrdsIcon from '../icons/crossed-swords.vue';
-import KimonoIcon from '../icons/kimono.vue';
-import ScrollBookIcon from '../icons/scroll-book.vue';
-import TargetDummyIcon from '../icons/target-dummy.vue';
 import Tooltip from '../components/Tooltip.vue';
+import QuickLinks from '../components/QuickLinks.vue';
 
 @Component({
   components: {
     BattletrisIcon,
-    CrossedSowrdsIcon,
-    KimonoIcon,
-    ScrollBookIcon,
+    QuickLinks,
     Tooltip,
-    TargetDummyIcon,
   },
 })
 export default class Tutorial extends Vue {}

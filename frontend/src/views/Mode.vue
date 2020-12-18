@@ -1,40 +1,36 @@
 <template>
-  <div class="text-center">
-    <router-link class="absolute mt-6" to="/">
-      <font-awesome-icon class="text-4xl bounce" icon="chevron-up" />
-    </router-link>
-
-    <div class="px-8 pt-16 overflow-y-auto md:flex md:justify-center md:py-48 md:flex-row" style="height: 100vh;">
-      <router-link class="border-8 selection" to="/tutorial">
+  <ViewWrapper backRoute="/" class="text-center" :title="$t('start-page.mode-selection')">
+    <div class="items-center px-8 md:flex md:justify-center md:flex-row">
+      <router-link class="border-8 selection-card" to="/tutorial">
         <div>
-          <TargetDummyIcon width="250px" color="var(--bg-1)" />
-          <p class="mt-4 font-bold">{{ $t('start-page.tutorial') }}</p>
-          <p>{{ $t('start-page.tutorial-desc') }}</p>
+          <TargetDummyIcon width="250px" />
+          <h2 class="mt-4 font-bold">{{ $t('start-page.tutorial') }}</h2>
+          <h3>{{ $t('start-page.tutorial-desc') }}</h3>
         </div>
       </router-link>
-      <router-link class="border-8 selection" to="/single-player">
+      <router-link class="border-8 selection-card" to="/single-player">
         <div>
-          <KimonoIcon width="250px" color="var(--bg-1)" />
-          <p class="mt-4 font-bold">{{ $t('start-page.single-player') }}</p>
-          <p>{{ $t('start-page.single-player-desc') }}</p>
+          <KimonoIcon width="250px" />
+          <h2 class="mt-4 font-bold">{{ $t('start-page.single-player') }}</h2>
+          <h3>{{ $t('start-page.single-player-desc') }}</h3>
         </div>
       </router-link>
-      <router-link class="border-8 selection" to="/multi-player">
+      <router-link class="border-8 selection-card" to="/multi-player">
         <div>
-          <CrossedSowrdsIcon width="250px" color="var(--bg-1)" />
-          <p class="mt-4 font-bold">{{ $t('start-page.multi-player') }}</p>
-          <p>{{ $t('start-page.multi-player-desc') }}</p>
+          <CrossedSowrdsIcon width="250px" />
+          <h2 class="mt-4 font-bold">{{ $t('start-page.multi-player') }}</h2>
+          <h3>{{ $t('start-page.multi-player-desc') }}</h3>
         </div>
       </router-link>
-      <router-link class="border-8 selection" to="/settings">
+      <router-link class="border-8 selection-card" to="/settings">
         <div>
-          <ScrollBookIcon width="250px" color="var(--bg-1)" />
-          <p class="mt-4 font-bold">{{ $t('start-page.settings') }}</p>
-          <p>{{ $t('start-page.settings-desc') }}</p>
+          <ScrollBookIcon width="250px" />
+          <h2 class="mt-4 font-bold">{{ $t('start-page.settings') }}</h2>
+          <h3>{{ $t('start-page.settings-desc') }}</h3>
         </div>
       </router-link>
     </div>
-  </div>
+  </ViewWrapper>
 </template>
 
 <script lang="ts">
@@ -45,6 +41,7 @@ import CrossedSowrdsIcon from '../icons/crossed-swords.vue';
 import KimonoIcon from '../icons/kimono.vue';
 import ScrollBookIcon from '../icons/scroll-book.vue';
 import TargetDummyIcon from '../icons/target-dummy.vue';
+import ViewWrapper from '../components/ViewWrapper.vue';
 
 @Component({
   components: {
@@ -53,33 +50,8 @@ import TargetDummyIcon from '../icons/target-dummy.vue';
     KimonoIcon,
     ScrollBookIcon,
     TargetDummyIcon,
+    ViewWrapper,
   },
 })
 export default class Tutorial extends Vue {}
 </script>
-
-<style lang="postcss" >
-  @tailwind base;
-
-  .selection {
-    @apply flex flex-col justify-center w-full p-10 cursor-pointer ;
-    background-color: var(--bg-2);
-    transition: 0.2s background-color ease-out;
-
-    @media (min-width: 768px) {
-      @apply w-1/4;
-    }
-
-    &:hover {
-      @apply bg-gray-400;
-
-      * {
-        color: var(--bg-2);
-      }
-    }
-
-    svg {
-      max-width: 100%;
-    }
-  }
-</style>

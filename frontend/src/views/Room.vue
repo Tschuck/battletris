@@ -1,18 +1,24 @@
 <template>
-  <ViewWrapper backRoute="/multi-player">
-    <Loading v-if="loading" />
-    <div class="grid w-full h-full grid-cols-4 gap-6" v-else>
-      <div
+  <ViewWrapper backRoute="/multi-player" :title="roomName" :showNav="!(isJoined && isMatchRunning)">
+    <Loading class="mt-20" v-if="loading" />
+    <template class="w-full vh-100" v-else>
+      <!-- <div
         class="border-r border-solid"
         v-if="!isJoined || !isMatchRunning"
       >
         <Chat />
-      </div>
-      <div class="col-span-3">
-        <GameRegistration v-if="!isMatchRunning" />
-        <Game v-else :room-id="roomId" />
-      </div>
-    </div>
+      </div> -->
+      <!-- <div class="col-span-3"> -->
+      <GameRegistration v-if="!isMatchRunning" />
+      <Game v-else :room-id="roomId" />
+      <!-- <div
+        class="border-r border-solid"
+        v-if="!isJoined || !isMatchRunning"
+      >
+        <Chat />
+      </div> -->
+      <!-- </div> -->
+    </template>
   </ViewWrapper>
 </template>
 
@@ -62,6 +68,8 @@ import ViewWrapper from '../components/ViewWrapper.vue';
       }
     };
     roomConn.onMessage((type) => handleMessage(type), onUnmounted);
+
+    onUnmounted(() => roomConn.disconnect());
 
     (async () => {
       await roomConn.connect();

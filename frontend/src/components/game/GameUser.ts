@@ -16,7 +16,7 @@ export default class FrontendGameUser extends GameUser {
   isCurrUser: boolean;
 
   /** used unbind to watch for new game message events */
-  onMessageListener: Function;
+  onMessageListener!: Function;
 
   /** list of feedbacks from the server */
   latencies: number[] = [];
@@ -56,11 +56,22 @@ export default class FrontendGameUser extends GameUser {
     this.isCurrUser = currUser.id === user.id;
     this.onUpdate = onUpdate;
 
-    // bind key handler and listen for backend updates with specific merging logic
+    // lets update the initial values
+    onUpdate(this, this);
+
+    // bind key handler
     if (this.isCurrUser) {
       this.keyDownListener = ($event: KeyboardEvent) => this.userKeyEvent($event);
       window.addEventListener('keydown', this.keyDownListener);
+    }
 
+    // support single player
+    if (!this.connection) {
+      return;
+    }
+
+    // listen for backend updates with specific merging logic
+    if (this.isCurrUser) {
       // only run heavy merging logic for the user that is interacting. For all other players,
       // we can just update the ui
       this.onMessageListener = this.connection.onMessage((type: WsMessageType, data: any) => {
@@ -77,9 +88,6 @@ export default class FrontendGameUser extends GameUser {
         }
       });
     }
-
-    // lets update the initial values
-    onUpdate(this, this);
   }
 
   /**

@@ -1,7 +1,7 @@
 <template>
-  <div class="overflow-hidden text-gray-300 bg-1" style="height: 100vh">
+  <div class="overflow-hidden text-gray-300 bg-1 vh-100">
     <!-- <transition :name="transitionName" v-if="!loading"> -->
-    <router-view></router-view>
+    <router-view v-if="!loading"></router-view>
     <!-- </transition> -->
   </div>
 </template>
@@ -48,8 +48,8 @@ export default class Home extends Vue {}
 :root {
   --bg-1: #1a2024;
   --bg-2: #242c31;
-  --bg-3: #3e4649;
-  --border: #4b4d4e;
+  --bg-3: #e2e8f0;
+  --border: var(--bg-1);
 }
 
 .bg-1,
@@ -60,18 +60,15 @@ export default class Home extends Vue {}
 .bg-2,
 .bg-hover-2:hover {
   background-color: var(--bg-2);
-
-  button {
-    background-color: var(--bg-1);
-    &:hover {
-      background-color: var(--bg-3);
-    }
-  }
 }
 
 .bg-3,
 .bg-hover-3:hover {
   background-color: var(--bg-3);
+
+  &:hover {
+    @apply text-gray-900;
+  }
 }
 
 .header-bg {
@@ -85,21 +82,66 @@ export default class Home extends Vue {}
 
   &:hover {
     background-color: var(--bg-3);
+    color: var(--bg-1);
   }
 }
 
 .button-outline {
   @apply px-4 py-2 font-bold border rounded;
-  border: 1px solid var(--bg-3);
+  border: 1px solid var(--border);
 
   &:hover {
     background-color: var(--bg-1);
   }
 }
 
+.vh-100 {
+  height: 100vh;
+}
+
 .bounce {
   -moz-animation: bounce 1s infinite;
   -webkit-animation: bounce 1s infinite;
   animation: bounce 1s infinite;
+}
+
+.selection-card {
+  @apply flex flex-col justify-center w-full p-10 cursor-pointer;
+  background-color: var(--bg-2);
+  transition: 0.2s background-color ease-out;
+  height: 600px;
+
+  @media (min-width: 768px) {
+    @apply w-1/4;
+  }
+
+  &:hover {
+    background-color: var(--bg-3);
+
+    h1, h2, h3 {
+      color: var(--bg-2);
+    }
+
+    .button-outline {
+      color: var(--bg-1);
+
+      &:hover {
+        @apply text-gray-300;
+      }
+    }
+
+    svg path {
+      fill: var(--bg-1);
+    }
+  }
+
+  svg {
+    max-width: 100%;
+  }
+
+  .button {
+    background-color: var(--bg-1);
+    @apply text-gray-300;
+  }
 }
 </style>
