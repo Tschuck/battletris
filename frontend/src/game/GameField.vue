@@ -1,9 +1,9 @@
 <template>
-  <div style="width: 100%; height: 100%;" class="flex flex-col p-3 bg-2">
-    <div ref="container" class="flex-grow" />
+  <div style="width: 100%; height: 100%;" class="flex flex-col bg-2">
+    <div ref="container" class="flex justify-center flex-grow" />
 
-    <div>
-      <div>blockCount: {{blockCount}}</div>
+    <div class="p-3" style="border-top: 2px solid var(--bg-1)">
+   <!--    <div>blockCount: {{blockCount}}</div>
       <div>rowCount: {{rowCount}}</div>
       <div>speed: {{speed}}</div>
 
@@ -13,7 +13,8 @@
 
       <countdown :interval="100" :time="nextBlockMove">
         <template slot-scope="props">next down move: {{ props.milliseconds }}</template>
-      </countdown>
+      </countdown> -->
+      <Controls />
     </div>
   </div>
 </template>
@@ -28,6 +29,7 @@ import { GameUser } from '@battletris/shared';
 import FrontendGameUser from './GameUser';
 import SingeGameUser from './SingleGameUser';
 import GameRenderer from './GameRenderer';
+import Controls from '../components/Controls.vue';
 
 interface GameFieldProps {
   userData: GameUser;
@@ -35,6 +37,9 @@ interface GameFieldProps {
 }
 
 @Component({
+  components: {
+    Controls,
+  },
   props: {
     userData: { },
     userIndex: { type: Number },

@@ -3,12 +3,13 @@ import {
   faGithub,
 } from '@fortawesome/free-brands-svg-icons';
 import {
-  faArrowDown, faArrowLeft, faArrowRight, faArrowUp,
+  faAngleDoubleDown, faArrowDown, faArrowLeft, faArrowRight, faArrowUp,
   faChevronCircleRight, faChevronDown, faChevronLeft, faChevronRight, faChevronUp, faCoffee,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Vue from 'vue';
 
+library.add(faAngleDoubleDown);
 library.add(faArrowDown);
 library.add(faArrowLeft);
 library.add(faArrowRight);
