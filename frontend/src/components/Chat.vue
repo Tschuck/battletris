@@ -41,7 +41,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { onUnmounted, ref } from '@vue/composition-api';
 import { WsMessageType } from '@battletris/shared';
 
-import { getCurrentConnection } from '../../lib/RoomConnection';
+import { getCurrentConnection } from '../lib/RoomConnection';
 
 @Component({
   setup(props, { root }) {

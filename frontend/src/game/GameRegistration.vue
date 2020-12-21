@@ -73,10 +73,10 @@ import {
   WsMessageType,
 } from '@battletris/shared';
 
-import RoomConnection, { getCurrentConnection } from '../../lib/RoomConnection';
-import currUser from '../../lib/User';
-import ClassLogo from '../../icons/ClassLogo.vue';
-import UserSetting from '../UserSetting.vue';
+import UserSetting from '../components/UserSetting.vue';
+import RoomConnection, { getCurrentConnection } from '../lib/RoomConnection';
+import currUser from '../lib/User';
+import ClassLogo from '../icons/ClassLogo.vue';
 
 @Component({
   components: {

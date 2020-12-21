@@ -19,7 +19,7 @@ import { onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 import ViewWrapper from '../components/ViewWrapper.vue';
 import user from '../lib/User';
-import GameField from '../components/game/GameField.vue';
+import GameField from '../game/GameField.vue';
 
 @Component({
   components: {

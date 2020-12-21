@@ -1,11 +1,11 @@
-import GameConnection, { getCurrentConnection } from '@/lib/GameConnection';
 import {
   gameHelper, GameUser, WsMessageType,
 } from '@battletris/shared';
 import {
   GameStateChange, getDifference,
 } from '@battletris/shared/functions/gameHelper';
-import currUser from '../../lib/User';
+import GameConnection, { getCurrentConnection } from '../lib/GameConnection';
+import currUser from '../lib/User';
 
 const isSet = (value: number|undefined) => value !== undefined;
 
