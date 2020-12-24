@@ -1,6 +1,6 @@
 <template>
   <div class="vh-100">
-    <div class="absolute left-0 right-0 mt-6 text-center" v-if="showNav">
+    <div class="fixed left-0 right-0 mt-6 text-center" v-if="showNav">
       <router-link :to="$route.query.back || backRoute">
         <font-awesome-icon class="text-4xl bounce" icon="chevron-up" />
 

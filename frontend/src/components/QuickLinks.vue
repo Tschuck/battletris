@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute bottom-0 left-0 right-0 flex justify-center mb-6">
+  <div class="fixed bottom-0 left-0 right-0 flex justify-center mb-6">
     <router-link :to="`/tutorial?back=${$route.path}`" class="mx-2 tooltip-box">
       <TargetDummyIcon width="30px" />
       <Tooltip :value="$t('start-page.tutorial')" />

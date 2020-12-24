@@ -2,12 +2,39 @@
   <div class="flex flex-col items-center">
     <div class="flex justify-center mb-2">
       <Control
+        ref="q"
+        class="mr-3"
+        :value="81"
+        @keydown="$emit('keydown', $event)"
+        >Q</Control
+      >
+      <Control
         ref="w"
         class="mr-3"
         :value="87"
         @keydown="$emit('keydown', $event)"
         >W</Control
       >
+      <Control
+        ref="e"
+        :value="69"
+        class="mr-3"
+        @keydown="$emit('keydown', $event)"
+        >E</Control
+      >
+      <Control ref="r" :value="83" @keydown="$emit('keydown', $event)"
+        >R</Control
+      >
+    </div>
+    <div class="flex justify-center mb-2">
+      <Control
+        ref="tab"
+        class="mr-3"
+        :value="9"
+        @keydown="$emit('keydown', $event)"
+      >
+        <font-awesome-icon class="text-lg" icon="crosshairs" />
+      </Control>
       <Control
         ref="up"
         class="mr-3"
@@ -16,18 +43,15 @@
       >
         <font-awesome-icon class="text-lg" icon="arrow-up" />
       </Control>
-      <Control ref="e" :value="69" @keydown="$emit('keydown', $event)"
-        >E</Control
+      <Control
+        ref="space"
+        :value="32"
+        @keydown="$emit('keydown', $event)"
       >
+        <font-awesome-icon class="text-lg" icon="angle-double-down" />
+      </Control>
     </div>
     <div class="flex justify-center mb-2">
-      <Control
-        ref="q"
-        class="mr-3"
-        :value="81"
-        @keydown="$emit('keydown', $event)"
-        >Q</Control
-      >
       <Control
         ref="left"
         class="mr-3"
@@ -46,33 +70,10 @@
       </Control>
       <Control
         ref="right"
-        class="mr-3"
         :value="39"
         @keydown="$emit('keydown', $event)"
       >
         <font-awesome-icon class="text-lg" icon="arrow-right" />
-      </Control>
-      <Control ref="r" :value="83" @keydown="$emit('keydown', $event)"
-        >R</Control
-      >
-    </div>
-    <div class="flex justify-center" style="width: 200px">
-      <Control
-        ref="tab"
-        class="mr-3 full-w"
-        :value="9"
-        style="width: 100%"
-        @keydown="$emit('keydown', $event)"
-      >
-        <font-awesome-icon class="text-lg" icon="crosshairs" />
-      </Control>
-      <Control
-        ref="space"
-        :value="32"
-        style="width: 100%; width"
-        @keydown="$emit('keydown', $event)"
-      >
-        <font-awesome-icon class="text-lg" icon="angle-double-down" />
       </Control>
     </div>
   </div>
