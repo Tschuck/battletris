@@ -52,12 +52,12 @@ export default class SingleGameUser extends FrontendGameUser {
    *
    * @param $event keyboard event
    */
-  userKeyEvent($event: KeyboardEvent) {
+  userKeyEvent(keyCode: number) {
     // ignore unknown key events
-    if (!GameStateChange[$event.keyCode]) {
+    if (!GameStateChange[keyCode]) {
       return;
     }
-    this.onNewStateChange($event.keyCode);
+    this.onNewStateChange(keyCode);
   }
 
   onUserLost() {

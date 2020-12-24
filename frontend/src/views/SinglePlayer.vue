@@ -5,9 +5,9 @@
         {{ $t("game.start-game") }}
       </button>
     </div>
-    <div class="grid h-full grid-cols-3 gap-6 p-6" v-else>
+    <div class="h-full grid-cols-3 gap-6 p-6 md:grid" v-else>
       <div />
-      <div class="flex flex-shrink-0 row-span-2 bg-2">
+      <div class="flex flex-shrink-0 h-full row-span-2 bg-2">
         <GameField :userData="userData" :userIndex="0" :offline="true" />
       </div>
     </div>

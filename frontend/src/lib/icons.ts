@@ -5,6 +5,7 @@ import {
 import {
   faAngleDoubleDown, faArrowDown, faArrowLeft, faArrowRight, faArrowUp,
   faChevronCircleRight, faChevronDown, faChevronLeft, faChevronRight, faChevronUp, faCoffee,
+  faCrosshairs,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Vue from 'vue';
@@ -20,6 +21,7 @@ library.add(faChevronLeft);
 library.add(faChevronRight);
 library.add(faChevronUp);
 library.add(faCoffee);
+library.add(faCrosshairs);
 library.add(faGithub);
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);

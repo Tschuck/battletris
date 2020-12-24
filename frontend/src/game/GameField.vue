@@ -14,7 +14,7 @@
       <countdown :interval="100" :time="nextBlockMove">
         <template slot-scope="props">next down move: {{ props.milliseconds }}</template>
       </countdown> -->
-      <Controls />
+      <Controls @keydown="onKeyDown($event)" />
     </div>
   </div>
 </template>
@@ -76,6 +76,10 @@ interface GameFieldProps {
       },
     );
 
+    const onKeyDown = (keyCode: number) => {
+      gameUser.userKeyEvent(keyCode);
+    };
+
     onMounted(() => {
       gameRenderer = new GameRenderer(
         container.value,
@@ -99,6 +103,7 @@ interface GameFieldProps {
       isCurrUser,
       latency,
       nextBlockMove,
+      onKeyDown,
       rowCount,
       speed,
     };

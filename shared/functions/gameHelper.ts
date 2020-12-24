@@ -39,6 +39,10 @@ export enum GameStateChange {
   DOWN = Key.DownArrow,
   NEXT_TARGET = Key.Tab,
   FALL_DOWN = Key.Space,
+  Q = Key.Q,
+  W = Key.W,
+  E = Key.E,
+  R = Key.R,
 }
 
 /**

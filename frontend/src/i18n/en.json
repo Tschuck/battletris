@@ -110,7 +110,8 @@
     "slot": "Slot",
     "start": "Start",
     "start-game": "Start Game",
-    "stop": "Stop"
+    "stop": "Stop",
+    "space": "Space"
   },
   "lobby": {
     "chat-message": "Chat message",

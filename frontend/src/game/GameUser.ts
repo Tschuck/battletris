@@ -59,12 +59,6 @@ export default class FrontendGameUser extends GameUser {
     // lets update the initial values
     onUpdate(this, this);
 
-    // bind key handler
-    if (this.isCurrUser) {
-      this.keyDownListener = ($event: KeyboardEvent) => this.userKeyEvent($event);
-      window.addEventListener('keydown', this.keyDownListener);
-    }
-
     // support single player
     if (!this.connection) {
       return;
@@ -198,17 +192,17 @@ export default class FrontendGameUser extends GameUser {
    *
    * @param $event keyboard event
    */
-  userKeyEvent($event: KeyboardEvent) {
+  userKeyEvent(keyCode: number) {
     // ignore unknown key events
-    if (!GameStateChange[$event.keyCode]) {
+    if (!GameStateChange[keyCode]) {
       return;
     }
     this.lastKeyPressTime.push(Date.now());
-    this.onNewStateChange($event.keyCode);
-    this.connection.send(WsMessageType.GAME_INPUT, $event.keyCode);
+    this.onNewStateChange(keyCode);
+    this.connection.send(WsMessageType.GAME_INPUT, keyCode);
     // use this for latency debugging: TODO: test would be rly. awesome for this stuff :D
     // setTimeout(() => {
-    //   this.connection.send(WsMessageType.GAME_INPUT, $event.keyCode);
+    //   this.connection.send(WsMessageType.GAME_INPUT, keyCode);
     // }, 1000 + (Math.random() * 100));
   }
 
