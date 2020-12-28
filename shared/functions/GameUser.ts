@@ -2,6 +2,7 @@
 
 import { cloneDeep } from 'lodash';
 import Blocks, { BlockMapping } from '../enums/Blocks';
+import { AbilityInterface, classes } from './classes';
 import {
   CollisionType,
   GameStateChange,
@@ -29,6 +30,19 @@ function getRandomNumber(min: number, max: number): number { // min and max incl
 const neverUpdateProps = [
   'userEvents',
   'interactionCount',
+];
+
+const uiKeys = [
+  GameStateChange.TURN,
+  GameStateChange.LEFT,
+  GameStateChange.RIGHT,
+  GameStateChange.DOWN,
+  GameStateChange.FALL_DOWN,
+  GameStateChange.NEXT_TARGET,
+  GameStateChange.Q,
+  GameStateChange.W,
+  GameStateChange.E,
+  GameStateChange.R,
 ];
 
 class GameUser {
@@ -266,6 +280,12 @@ class GameUser {
    * @param keyCode key number
    */
   onNewStateChange(key: GameStateChange): void {
+    // only allow user keys that can be activated (prevent from accessing effect / new block logic
+    // or something else)
+    if (uiKeys.indexOf(key) === -1) {
+      return;
+    }
+
     // save the user interaction to ensure to send the user, what was already processed by the
     // backend
     // !IMPORTANT: be careful to handle user event emptying within the backend / frontend state
@@ -287,8 +307,9 @@ class GameUser {
    * state.
    *
    * @param key key number that was pressed
+   * @param userEvent array of numbers [key, id, ...optionalStuff ]
    */
-  handleStateChange(key: GameStateChange): void {
+  handleStateChange(key: GameStateChange, userEvent: number[]): void {
     const beforeUser = this.clone();
 
     switch (key) {
@@ -333,6 +354,12 @@ class GameUser {
       case GameStateChange.E:
       case GameStateChange.R: {
         this.onAbility(key);
+        break;
+      }
+      case GameStateChange.EFFECT: {
+        const abilityKey = GameStateChange[userEvent[3]].toLowerCase();
+        const ability: AbilityInterface = classes[userEvent[2]].abilities[abilityKey];
+        ability.tick(this);
         break;
       }
     }

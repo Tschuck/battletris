@@ -124,10 +124,9 @@ class Game {
 
         // apply all changes to the user
         while (user.userEvents.length) {
-          const [key] = user.userEvents.shift();
-          if ()
+          const userEvent = user.userEvents.shift();
           // adjust the current game state for the key
-          user.handleStateChange(key);
+          user.handleStateChange(userEvent[0], userEvent);
         }
 
         // build the delta and apply the userEvents

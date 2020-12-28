@@ -14,7 +14,7 @@ interface AbilityInterface {
   mana: number;
 
   /** function that is executed, on each effect loop tick */
-  tick: (user: GameUser, executionTime: number) => void;
+  tick: (user: GameUser) => void;
 }
 
 interface ClassInterface {

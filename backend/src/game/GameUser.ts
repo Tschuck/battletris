@@ -104,9 +104,13 @@ class BackendGameUser extends GameUser {
     const ability: AbilityInterface = classes[classIndex].abilities[abilityKey];
     let timeout;
 
+    // add the effect to the user events and increase the ticks count
     const execute = () => {
       // increase execution amount
       effect[3] += 1;
+
+      // execute the ability logic for the effect
+      this.userEvents.push([GameStateChange.EFFECT, null, classIndex, key ]);
 
       // can be removed
       if (executes > ability.ticks) {
