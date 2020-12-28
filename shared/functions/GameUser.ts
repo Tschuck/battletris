@@ -109,9 +109,6 @@ class GameUser {
   /** list of latest user events (use arrays in arrays to reduce sent payload) ([id, key]) */
   userEvents: number[][] = [];
 
-  /** list of fields that should be synced with the ui */
-  forceFieldUpdates: string[] = [];
-
   constructor(
     user: Partial<GameUser>|GameUser,
     gameUserIndex = -1,

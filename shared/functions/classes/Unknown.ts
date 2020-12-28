@@ -18,7 +18,6 @@ export default class Unknown implements ClassInterface {
       },
     },
     {
-      duration: 0,
       tickTimeout: 0,
       ticks: 0,
       mana: 20,
@@ -27,7 +26,6 @@ export default class Unknown implements ClassInterface {
       },
     },
     {
-      duration: 5000,
       tickTimeout: 500,
       ticks: 10,
       mana: 50,
@@ -36,7 +34,6 @@ export default class Unknown implements ClassInterface {
       },
     },
     {
-      duration: 0,
       tickTimeout: 0,
       ticks: 0,
       mana: 20,

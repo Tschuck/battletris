@@ -9,7 +9,6 @@ export default class Sorcerer implements ClassInterface {
 
   abilities = [
     {
-      duration: 0,
       tickTimeout: 0,
       ticks: 0,
       mana: 20,
@@ -18,7 +17,6 @@ export default class Sorcerer implements ClassInterface {
       },
     },
     {
-      duration: 0,
       tickTimeout: 0,
       ticks: 0,
       mana: 20,
@@ -27,7 +25,6 @@ export default class Sorcerer implements ClassInterface {
       },
     },
     {
-      duration: 0,
       tickTimeout: 0,
       ticks: 0,
       mana: 20,
@@ -36,7 +33,6 @@ export default class Sorcerer implements ClassInterface {
       },
     },
     {
-      duration: 0,
       tickTimeout: 0,
       ticks: 0,
       mana: 20,

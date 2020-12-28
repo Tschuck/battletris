@@ -2,9 +2,6 @@
 import GameUser from '../GameUser';
 
 interface AbilityInterface {
-  /** how long is the ability active? (just for displaying) */
-  duration?: number;
-
   /** timeout to activate ticks */
   tickTimeout?: number;
 
