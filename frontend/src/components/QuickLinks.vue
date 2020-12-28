@@ -2,19 +2,25 @@
   <div class="fixed bottom-0 left-0 right-0 flex justify-center mb-6">
     <router-link :to="`/tutorial?back=${$route.path}`" class="mx-2 tooltip-box">
       <TargetDummyIcon width="30px" />
-      <Tooltip :value="$t('start-page.tutorial')" />
+      <Tooltip :value="$t('start-page.tutorial')" style="width: 100px" />
     </router-link>
-    <router-link :to="`/single-player?back=${$route.path}`" class="mx-2 tooltip-box">
+    <router-link
+      :to="`/single-player?back=${$route.path}`"
+      class="mx-2 tooltip-box"
+    >
       <KimonoIcon width="30px" />
-      <Tooltip :value="$t('start-page.single-player')" />
+      <Tooltip :value="$t('start-page.single-player')" style="width: 150px" />
     </router-link>
-    <router-link :to="`/multi-player?back=${$route.path}`" class="mx-2 tooltip-box">
+    <router-link
+      :to="`/multi-player?back=${$route.path}`"
+      class="mx-2 tooltip-box"
+    >
       <CrossedSowrdsIcon width="30px" />
-      <Tooltip :value="$t('start-page.multi-player')" />
+      <Tooltip :value="$t('start-page.multi-player')" style="width: 150px" />
     </router-link>
     <router-link :to="`/settings?back=${$route.path}`" class="mx-2 tooltip-box">
       <ScrollBookIcon width="30px" />
-      <Tooltip :value="$t('start-page.settings')" />
+      <Tooltip :value="$t('start-page.settings')" style="width: 200px" />
     </router-link>
   </div>
 </template>

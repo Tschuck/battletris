@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col items-center">
-    <div class="flex justify-center mb-2">
+    <div class="flex justify-center mb-2" v-if="showAbilities">
       <Control
         ref="q"
         class="mr-3"
@@ -26,7 +26,7 @@
         >R</Control
       >
     </div>
-    <div class="flex justify-center mb-2">
+    <div class="flex justify-center mb-2 md:hidden" v-if="showKeys">
       <Control
         ref="tab"
         class="mr-3"
@@ -51,7 +51,7 @@
         <font-awesome-icon class="text-lg" icon="angle-double-down" />
       </Control>
     </div>
-    <div class="flex justify-center mb-2">
+    <div class="flex justify-center mb-2 md:hidden" v-if="showKeys">
       <Control
         ref="left"
         class="mr-3"
@@ -88,6 +88,16 @@ import Control from './Control.vue';
 @Component({
   components: {
     Control,
+  },
+  props: {
+    showAbilities: {
+      type: Boolean,
+      default: true,
+    },
+    showKeys: {
+      type: Boolean,
+      default: true,
+    },
   },
   setup() {
     // ability keys

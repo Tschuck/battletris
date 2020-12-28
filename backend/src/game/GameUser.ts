@@ -2,7 +2,6 @@ import { Classes, GameUser, mapHelper } from '@battletris/shared';
 // eslint-disable-next-line import/no-cycle
 import { classes, AbilityInterface } from '@battletris/shared/functions/classes';
 import { GameStateChange } from '@battletris/shared/functions/gameHelper';
-import { exec } from 'child_process';
 import config from '../lib/config';
 import game from './game';
 import numberToBlockMap from './helpers/numberToBlockMap';
@@ -15,7 +14,11 @@ const abilityKeys = [
 ];
 
 class BackendGameUser extends GameUser {
+  /** list of looping effects */
   effectTimeouts: NodeJS.Timeout[] = [];
+
+  /** list of fields that should be synced with the ui */
+  forceFieldUpdates: string[] = [];
 
   /**
    * Start timeout to move blocks down.
@@ -77,53 +80,60 @@ class BackendGameUser extends GameUser {
 
   /** Activate an ability. */
   onAbility(key: GameStateChange) {
-    const classIndex = Classes[this.className];
-    const ability = classes[classIndex].abilities[key];
+    const classIndex = Classes[this.className.toUpperCase()];
+    const abilityIndex = abilityKeys.indexOf(key);
+    const ability = classes[classIndex].abilities[abilityIndex];
     // check if enough mana is available, otherwise the key press can be ignored
-    if (this.mana >= ability.mana) {
+    if (parseInt('1') || this.mana >= ability.mana) {
       // reduce current users mana
       this.mana -= ability.mana;
       // add the ability effect to the target user
       const targetUser = game.users[this.target];
-      const effect = [
+      targetUser.effectLoop([
         classIndex, // class index
         key, // activated key
         Date.now(), // activation time
         0, // execution time
-      ];
-      targetUser.effects.push(effect);
-      targetUser.effectLoop(effect);
+      ]);
     }
   }
 
   /** Executes an effect for a specific class and ability. */
   effectLoop(effect: number[]) {
-    const effectIndex = this.effects.indexOf(effect);
-    const [ classIndex, key, activationTime, executes ] = effect;
-    const abilityKey = GameStateChange[key].toLowerCase();
-    const ability: AbilityInterface = classes[classIndex].abilities[abilityKey];
+    const [ classIndex, key ] = effect;
+    const abilityIndex = abilityKeys.indexOf(key);
+    const ability: AbilityInterface = classes[classIndex].abilities[abilityIndex];
     let timeout;
+
+    // display the effect
+    this.effects.push(effect);
+    this.forceFieldUpdates = ['effects'];
 
     // add the effect to the user events and increase the ticks count
     const execute = () => {
-      // increase execution amount
+      // add a effect execution to the user event queue
+      this.userEvents.push([GameStateChange.EFFECT, null, classIndex, abilityIndex ]);
+
+      // can be removed, when ticks are reached
       effect[3] += 1;
-
-      // execute the ability logic for the effect
-      this.userEvents.push([GameStateChange.EFFECT, null, classIndex, key ]);
-
-      // can be removed
-      if (executes > ability.ticks) {
-        this.effects.splice(effectIndex, 1);
+      if (!ability.ticks || effect[3] > ability.ticks) {
+        // force effect update if we remove the effect at this position, the diff logic
+        // will not update the ui
+        this.forceFieldUpdates = ['effects'];
+        this.effects.splice(this.effects.indexOf(effect), 1);
         if (timeout) {
-          clearInterval(this.effectTimeouts[effectIndex]);
+          this.effectTimeouts.splice(this.effectTimeouts.indexOf(timeout), 1);
+          clearInterval(timeout);
         }
       }
+
+      this.sendUpdate();
     };
 
     // start execution loop, if ticks are configured
     if (ability.ticks) {
-      this.effectTimeouts[effectIndex] = timeout = setInterval(execute, ability.tickTimeout);
+      timeout = setInterval(execute, ability.tickTimeout);
+      this.effectTimeouts.push(timeout);
     }
 
     // execute the effect initially

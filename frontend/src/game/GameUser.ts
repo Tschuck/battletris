@@ -101,6 +101,8 @@ export default class FrontendGameUser extends GameUser {
     const previousUIUser = this.clone();
     const userEvents = update.userEvents || [];
 
+    console.log(update.effects);
+
     // create the latest backend state out of the previous backend state and the new update
     this.backendUser.applyUserState(update);
     // delete user events before they will overwrite the ui userEvents
@@ -117,11 +119,8 @@ export default class FrontendGameUser extends GameUser {
       }
     });
     // apply now all new changes to the left backend states, that were not processed
-    this.userEvents.forEach(([key]) => {
-      this.handleStateChange(key);
-      if (!key) {
-        debugger;
-      }
+    this.userEvents.forEach((userEvent: number[]) => {
+      this.handleStateChange(userEvent[0], userEvent);
     });
 
     // calculate update from the old ui state to the new ui state and apply it
@@ -213,7 +212,7 @@ export default class FrontendGameUser extends GameUser {
     // keep the last state
     const lastState = this.clone();
     // adjust the current game state for the key
-    this.handleStateChange(key);
+    this.handleStateChange(key, [key]);
     // get the new state including the changes and persist them to the user lastState
     const diff = getDifference(this, lastState);
     // calculate the difference and trigger a re-render

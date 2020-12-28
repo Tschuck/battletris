@@ -132,6 +132,14 @@ class Game {
         // build the delta and apply the userEvents
         const difference = getDifference(user, beforeState);
         difference.userEvents = userEvents;
+
+        // update fiels that were updated by side logic
+        user.forceFieldUpdates.forEach((field) => {
+          difference[field] = user[field];
+        });
+        // reset custom field updates
+        user.forceFieldUpdates = [];
+
         return gameHelper.transformUserTransport(difference);
       });
 

@@ -1,14 +1,15 @@
+// eslint-disable-next-line import/no-cycle
 import GameUser from '../GameUser';
 
 interface AbilityInterface {
   /** how long is the ability active? (just for displaying) */
-  duration: number;
+  duration?: number;
 
   /** timeout to activate ticks */
-  tickTimeout: number;
+  tickTimeout?: number;
 
   /** how often the ability should be activated? */
-  ticks: number;
+  ticks?: number;
 
   /** amount of needed mana */
   mana: number;
@@ -24,15 +25,7 @@ interface ClassInterface {
   /** maximum amount of mana */
   maxMana: number;
 
-  abilities: {
-    q: AbilityInterface;
-
-    w: AbilityInterface;
-
-    e: AbilityInterface;
-
-    r: AbilityInterface;
-  };
+  abilities: AbilityInterface[];
 }
 
 export {

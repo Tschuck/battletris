@@ -35,7 +35,8 @@ export enum CollisionType {
  * interaction (keys).
  */
 export enum GameStateChange {
-  LOST = -2,
+  LOST = -3,
+  EFFECT_FINISHED = -2,
   EFFECT = -1,
   NEW_BLOCK = 0,
   TURN = Key.UpArrow,

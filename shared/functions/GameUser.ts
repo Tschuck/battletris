@@ -1,7 +1,7 @@
 // eslint-disable class-methods-use-this
-
 import { cloneDeep } from 'lodash';
 import Blocks, { BlockMapping } from '../enums/Blocks';
+// eslint-disable-next-line import/no-cycle
 import { AbilityInterface, classes } from './classes';
 import {
   CollisionType,
@@ -108,6 +108,9 @@ class GameUser {
 
   /** list of latest user events (use arrays in arrays to reduce sent payload) ([id, key]) */
   userEvents: number[][] = [];
+
+  /** list of fields that should be synced with the ui */
+  forceFieldUpdates: string[] = [];
 
   constructor(
     user: Partial<GameUser>|GameUser,
@@ -309,7 +312,7 @@ class GameUser {
    * @param key key number that was pressed
    * @param userEvent array of numbers [key, id, ...optionalStuff ]
    */
-  handleStateChange(key: GameStateChange, userEvent: number[]): void {
+  handleStateChange(key: GameStateChange, userEvent?: number[]): void {
     const beforeUser = this.clone();
 
     switch (key) {
@@ -357,9 +360,12 @@ class GameUser {
         break;
       }
       case GameStateChange.EFFECT: {
-        const abilityKey = GameStateChange[userEvent[3]].toLowerCase();
-        const ability: AbilityInterface = classes[userEvent[2]].abilities[abilityKey];
-        ability.tick(this);
+        if (userEvent) {
+          const ability: AbilityInterface = classes[userEvent[2]].abilities[userEvent[3]];
+          ability.tick(this);
+        } else {
+          throw new Error('tried to execute effect without specifying params');
+        }
         break;
       }
     }

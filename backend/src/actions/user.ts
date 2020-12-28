@@ -66,7 +66,7 @@ createEndpoint(
     if (!user) {
       user = await User.create({
         id: userId,
-        className: Classes.UNKNOWN,
+        className: 'unknown',
         matches: [],
         name: nameGenerator.toString(),
       }).save();

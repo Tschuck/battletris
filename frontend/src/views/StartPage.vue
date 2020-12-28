@@ -15,7 +15,7 @@
         class="tooltip-box"
       >
         <font-awesome-icon class="mr-4 text-3xl" :icon="['fab', 'github']" />
-        <Tooltip :value="$t('start-page.github')" />
+        <Tooltip :value="$t('start-page.github')" style="width: 200px" />
       </a>
       <a
         href="https://www.buymeacoffee.com/eo3m4BAyO"
@@ -23,12 +23,8 @@
         class="tooltip-box"
       >
         <font-awesome-icon class="text-3xl" icon="coffee" />
-        <Tooltip :value="$t('start-page.buy-me-a-coffee')" />
+        <Tooltip :value="$t('start-page.buy-me-a-coffee')" style="width: 200px" />
       </a>
-    </div>
-
-    <div class="absolute bottom-0 left-0 right-0 flex justify-center mb-6">
-
     </div>
 
     <div class="mt-12 text-center cursor-pointer">

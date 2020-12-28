@@ -1,10 +1,14 @@
-// eslint-disable-next-line import/no-cycle
+/* eslint-disable import/no-cycle */
 import { AbilityInterface, ClassInterface } from './ClassInterface';
-// import Sorcerer from './Sorcerer';
-// import Unknown from './Unknown';
-// import Warrior from './Warrior';
+import Sorcerer from './Sorcerer';
+import Unknown from './Unknown';
+import Warrior from './Warrior';
 
-const classes: ClassInterface[] = [];
+const classes: ClassInterface[] = [
+  new Unknown(),
+  new Sorcerer(),
+  new Warrior(),
+];
 
 export {
   AbilityInterface,
