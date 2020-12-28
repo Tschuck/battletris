@@ -52,6 +52,11 @@ export default class Home extends Vue {}
   --border: var(--bg-1);
 }
 
+/** disble ios double tap */
+* {
+  touch-action: manipulation;
+}
+
 .bg-1,
 .bg-hover-1:hover {
   background-color: var(--bg-1);

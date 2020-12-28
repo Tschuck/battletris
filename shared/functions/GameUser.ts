@@ -22,7 +22,7 @@ const turnBlockEvades = [1, -1, 2, -2];
  * @param min min value
  * @param max max value
  */
-function getRandomNumber(min: number, max: number) { // min and max included
+function getRandomNumber(min: number, max: number): number { // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
@@ -32,6 +32,18 @@ const neverUpdateProps = [
 ];
 
 class GameUser {
+  /** users left armor, until a line will be added */
+  armor!: number;
+
+  /** mana for activating abilities */
+  mana!: number;
+
+  /** list of active effects and their activation time */
+  effects: number[][] = [];
+
+  /** targeted user */
+  target!: number;
+
   /** db user class */
   className!: string;
 
@@ -100,13 +112,17 @@ class GameUser {
     this.className = user.className || '';
     this.gameUserIndex = gameUserIndex;
     // setup initial game values
-    this.blockCount = 0;
-    this.rowCount = 0;
-    this.x = 0;
+    this.armor = user.armor || 100;
     this.block = 0;
-    this.y = 0;
+    this.blockCount = 0;
+    this.effects = user.effects || [];
+    this.mana = 0;
     this.rotation = 0;
+    this.rowCount = 0;
     this.speed = user.speed || -1;
+    this.target = user.target || gameUserIndex;
+    this.x = 0;
+    this.y = 0;
     this.fillNextBlocks();
     // catch invalid param setup
     if (this.speed === -1 || this.gameUserIndex === -1 || !this.id || !this.className) {
@@ -121,7 +137,7 @@ class GameUser {
    *
    * @param key key that was executed
    */
-  checkGameState(lastState: GameUser, change?: GameStateChange) {
+  checkGameState(lastState: GameUser, change?: GameStateChange): void {
     // check for out of range
     const actualBlock = Blocks[this.block][this.getRotationBlockIndex()];
 
@@ -173,7 +189,7 @@ class GameUser {
   }
 
   /** Apply all parameters of a existing game user to this instance */
-  applyUserState(update: Partial<GameUser>) {
+  applyUserState(update: Partial<GameUser>): void {
     Object.keys(update).forEach((key: string) => {
       if (key === 'map' && update?.map) {
         for (let y = 0; y < 20; y += 1) {
@@ -192,14 +208,14 @@ class GameUser {
   }
 
   /** setup a list of next blocks */
-  fillNextBlocks() {
+  fillNextBlocks(): void{
     while (this.nextBlocks.length < 10) {
       this.nextBlocks.push(getRandomNumber(1, 7));
     }
   }
 
   /** User stone dock collision was detected. Write it into the game map. */
-  onDocked() {
+  onDocked(): void {
     iterateOverMap(Blocks[this.block][this.getRotationBlockIndex()], (value, y, x) => {
       if (value) {
         this.map[this.y + y][this.x + x] = this.block;
@@ -230,7 +246,7 @@ class GameUser {
   /**
    * Reset x, y and rotation values and set a random or given block.
    */
-  setNewBlock(block?: number) {
+  setNewBlock(block?: number): void {
     this.blockCount += 1;
     // use new block from the next block stack
     this.block = block === undefined ? this.nextBlocks.shift() as number : block;
@@ -249,7 +265,7 @@ class GameUser {
    *
    * @param keyCode key number
    */
-  onNewStateChange(key: GameStateChange) {
+  onNewStateChange(key: GameStateChange): void {
     // save the user interaction to ensure to send the user, what was already processed by the
     // backend
     // !IMPORTANT: be careful to handle user event emptying within the backend / frontend state
@@ -262,7 +278,7 @@ class GameUser {
   /**
    * Transforms the current rotation counter into a block index
    */
-  getRotationBlockIndex() {
+  getRotationBlockIndex(): number {
     return this.rotation % 4;
   }
 
@@ -272,7 +288,7 @@ class GameUser {
    *
    * @param key key number that was pressed
    */
-  handleStateChange(key: GameStateChange) {
+  handleStateChange(key: GameStateChange): void {
     const beforeUser = this.clone();
 
     switch (key) {
@@ -309,7 +325,14 @@ class GameUser {
         break;
       }
       case GameStateChange.NEXT_TARGET: {
-        // next user
+        this.onNextTarget();
+        break;
+      }
+      case GameStateChange.Q:
+      case GameStateChange.W:
+      case GameStateChange.E:
+      case GameStateChange.R: {
+        this.onAbility(key);
         break;
       }
     }
@@ -319,19 +342,28 @@ class GameUser {
   }
 
   /** Start timeout to move blocks down. */
-  gameLoop() { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
+  gameLoop(): void { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
 
   /**  Stop timeout */
-  stop() { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
+  stop(): void { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
 
   /** Use serialize to build a diff object and send it to the ui */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  sendUpdate(key: GameStateChange, id?: number) {
+  sendUpdate(key: GameStateChange, id?: number): void {
     /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */
   }
 
   /** Triggered, when the user lost the game */
-  onUserLost() { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
+  onUserLost(): void { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
+
+  /** Triggered, when the user selected the next target */
+  onNextTarget(): void { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
+
+  /** Triggered, when the user activated an ability */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onAbility(key: GameStateChange): void {
+    /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */
+  }
 }
 
 export default GameUser;

@@ -45,7 +45,8 @@
   "name": "battletris",
   "private": true,
   "scripts": {
-    "build": "vue-cli-service build --modern",
+    "build": "vue-cli-service build --modern && yarn build:copy-statics",
+    "build:copy-statics": "cp ./public/battletris.svg ./dist && cp ./public/manifest.json ./dist",
     "lint": "vue-cli-service lint",
     "postinstall": "cd ../shared && yarn link && cd ../frontend && yarn link @battletris/shared",
     "start": "vue-cli-service serve --modern --port 1984"

@@ -13,8 +13,12 @@ export enum GameUserMapping {
   blockCount = 8,
   rowCount = 9,
   speed = 10,
-  userEvents = 11,
-  interactionCount = 12,
+  armor = 11,
+  mana = 12,
+  effects = 13,
+  target = 14,
+  userEvents = 15,
+  interactionCount = 16,
 }
 
 /**

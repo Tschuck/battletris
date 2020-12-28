@@ -1,8 +1,41 @@
 {
-  "name": "BATTLETRIS",
-  "short_name": "BATTLETRIS",
-  "start_url": ".",
-  "display": "standalone",
   "background_color": "#1a2024",
-  "description": "RPG based multiplayer tetris"
+  "description": "RPG based multiplayer tetris",
+  "display": "standalone",
+  "icons": [
+    {
+      "sizes": "48x48",
+      "src": "/app/battletris.svg",
+      "type": "image/png"
+    },
+    {
+      "sizes": "72x72",
+      "src": "/app/battletris.svg",
+      "type": "image/png"
+    },
+    {
+      "sizes": "96x96",
+      "src": "/app/battletris.svg",
+      "type": "image/png"
+    },
+    {
+      "sizes": "144x144",
+      "src": "/app/battletris.svg",
+      "type": "image/png"
+    },
+    {
+      "sizes": "168x168",
+      "src": "/app/battletris.svg",
+      "type": "image/png"
+    },
+    {
+      "sizes": "192x192",
+      "src": "/app/battletris.svg",
+      "type": "image/png"
+    }
+  ],
+  "name": "BATTLETRIS",
+  "scope": "/",
+  "short_name": "BATTLETRIS",
+  "start_url": "/"
 }

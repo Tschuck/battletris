@@ -1,5 +1,5 @@
 import { gameHelper, mapHelper, MatchStatsInterface, ProcessMessageType, WsMessageType } from '@battletris/shared';
-import { transformUserTransport, getDifference } from '@battletris/shared/functions/gameHelper';
+import { transformUserTransport, getDifference, GameStateChange } from '@battletris/shared/functions/gameHelper';
 import { User } from '../db';
 import config from '../lib/config';
 import GameUser from './GameUser';
@@ -125,6 +125,7 @@ class Game {
         // apply all changes to the user
         while (user.userEvents.length) {
           const [key] = user.userEvents.shift();
+          if ()
           // adjust the current game state for the key
           user.handleStateChange(key);
         }
