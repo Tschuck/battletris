@@ -14,32 +14,30 @@
     <div class="p-5">
       <div
         class="p-3"
-        style="border-top: 2px solid var(--bg-1)"
+        style="border: 2px solid var(--bg-1)"
         :class="{
           'md:hidden': offline,
         }"
       >
-        <div>mana: {{ mana }}</div>
+        <!-- <div>mana: {{ mana }}</div>
         <div>armor: {{ armor }}</div>
         <div>blockCount: {{ blockCount }}</div>
         <div>rowCount: {{ rowCount }}</div>
         <div>speed: {{ speed }}</div>
         <div>effects: {{ effects }}</div>
         <div>effectsString: {{ effectsString }}</div>
-        <div>target: {{ target }}</div>
+        <div>target: {{ target }}</div> -->
 
-        <div v-if="isCurrUser">
-          <div>latency: ~{{ latency }}ms</div>
-        </div>
-
-        <countdown :interval="100" :time="nextBlockMove">
+        <!-- <countdown :interval="100" :time="nextBlockMove">
           <template slot-scope="props"
             >next down move: {{ props.milliseconds }}</template
           >
-        </countdown>
+        </countdown> -->
         <Controls
           @keydown="onKeyDown($event)"
+          :className="className"
           :showAbilities="!offline"
+          :userMana="mana"
           v-if="isCurrUser"
         />
       </div>
@@ -88,12 +86,11 @@ interface GameFieldProps {
     // vue param setup
     const isCurrUser = ref<boolean>(currUser.id === userData.id);
     const container = ref();
+    const className = ref(userData.className);
     // stat values
     const blockCount = ref<number>();
     const rowCount = ref<number>();
     const speed = ref<number>();
-    const nextBlockMove = ref<number>();
-    const latency = ref<number>();
     const armor = ref<number>();
     const mana = ref<number>();
     const target = ref<number>();
@@ -139,9 +136,7 @@ interface GameFieldProps {
         blockCount.value = user.blockCount;
         effects.value = user.effects;
         effectsString.value = JSON.stringify(user.effects);
-        latency.value = user.latency;
         mana.value = user.mana;
-        nextBlockMove.value = user.nextBlockMove;
         rowCount.value = user.rowCount;
         speed.value = user.speed;
 
@@ -173,13 +168,12 @@ interface GameFieldProps {
     return {
       armor,
       blockCount,
+      className,
       container,
       effects,
       effectsString,
       isCurrUser,
-      latency,
       mana,
-      nextBlockMove,
       onKeyDown,
       rowCount,
       speed,

@@ -54,7 +54,8 @@ export default class Controls extends Vue {}
   @apply border text-center flex justify-center items-center;
 
   background-color: var(--bg-1);
-  border: 1px sloid var(--bg-2);
+  border: 1px solid var(--bg-2);
+  position: relative;
   height: 80px;
   width: 80px;
   -webkit-user-select: none; /* Safari */
@@ -73,8 +74,15 @@ export default class Controls extends Vue {}
   }
 
   @media (min-width: 760px) {
-    width: 50px;;
+    width: 50px;
     height: 50px;
+  }
+}
+
+.control-square.medium {
+  @media (min-width: 760px) {
+    width: 70px;
+    height: 70px;
   }
 }
 </style>

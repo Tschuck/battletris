@@ -116,7 +116,6 @@ import WarriorIcon from '../icons/warrior.vue';
       { name: 'warrior', icon: WarriorIcon },
       { name: 'sorcerer', icon: SorcererIcon },
     ];
-    const abilityIterator = ref([1, 2, 3, 4]);
     const activeClassIndex = ref(classes.findIndex(({ name: n }) => className.value === n));
     const matches = ref();
     const loading = ref(true);
@@ -175,7 +174,6 @@ import WarriorIcon from '../icons/warrior.vue';
     init();
 
     return {
-      abilityIterator,
       activeClassIndex,
       classes,
       className,

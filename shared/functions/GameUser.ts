@@ -3,7 +3,7 @@ import { cloneDeep } from 'lodash';
 import Blocks, { BlockMapping } from '../enums/Blocks';
 // eslint-disable-next-line import/no-cycle
 import {
-  AbilityInterface, classes, ClassInterface, getClassIndex,
+  AbilityInterface, classList, ClassInterface, getClassIndex,
 } from './classes';
 import {
   CollisionType,
@@ -164,7 +164,7 @@ class GameUser {
    */
   checkGameState(lastState: GameUser, change?: GameStateChange): void {
     // check max mana and armor
-    const classInstance = classes[getClassIndex(this.className)];
+    const classInstance = classList[getClassIndex(this.className)];
     if (this.mana > classInstance.maxMana) {
       this.mana = classInstance.maxMana;
     }
@@ -282,7 +282,7 @@ class GameUser {
     }
 
     if (clearedRows !== 0) {
-      const classInstance: ClassInterface = classes[getClassIndex(this.className)];
+      const classInstance: ClassInterface = classList[getClassIndex(this.className)];
       // stack percentage of mana accordingly to the amount of cleared rows
       this.mana += (classInstance.maxMana / 10) * clearedRows;
       if (this.mana > classInstance.maxMana) {
@@ -403,7 +403,7 @@ class GameUser {
       }
       case GameStateChange.EFFECT: {
         if (userEvent) {
-          const ability: AbilityInterface = classes[userEvent[2]].abilities[userEvent[3]];
+          const ability: AbilityInterface = classList[userEvent[2]].abilities[userEvent[3]];
           ability.tick(this);
         } else {
           throw new Error('tried to execute effect without specifying params');

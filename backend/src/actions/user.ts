@@ -1,4 +1,4 @@
-import { Classes, ErrorCodes, WsMessageType } from '@battletris/shared';
+import { ErrorCodes, WsMessageType } from '@battletris/shared';
 import cookieSignature from 'cookie-signature';
 import config from '../lib/config';
 import { v4 as uuidv4 } from 'uuid';

@@ -1,5 +1,5 @@
 import Blocks, { BlockMapping } from './enums/Blocks';
-import Classes from './enums/Classes';
+import { ClassesIndex } from './functions/classes';
 import ErrorCodes from './enums/ErrorCodes';
 import GameStatus from './enums/GameStatus';
 import GameUserStatus from './enums/GameUserStatus';
@@ -20,7 +20,7 @@ import UserInterface from './interfaces/User';
 export {
   BlockMapping,
   Blocks,
-  Classes,
+  ClassesIndex,
   ErrorCodes,
   gameHelper,
   GameStatus,

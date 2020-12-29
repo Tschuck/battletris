@@ -1,32 +1,48 @@
 <template>
   <div class="flex flex-col items-center">
-    <div class="flex justify-center mb-2" v-if="showAbilities">
-      <Control
+    <div class="flex justify-center" v-if="showAbilities">
+      <AbilityControl
         ref="q"
-        class="mr-3"
-        :value="81"
+        class="mr-3 medium tooltip-box"
+        :className="className"
+        :abilityIndex="0"
+        :keyValue="81"
+        :userMana="userMana"
+        keyText="Q"
         @keydown="$emit('keydown', $event)"
-        >Q</Control
-      >
-      <Control
+      />
+      <AbilityControl
         ref="w"
-        class="mr-3"
-        :value="87"
+        class="mr-3 medium tooltip-box"
+        :className="className"
+        :abilityIndex="1"
+        :keyValue="87"
+        :userMana="userMana"
+        keyText="W"
         @keydown="$emit('keydown', $event)"
-        >W</Control
-      >
-      <Control
+      />
+      <AbilityControl
         ref="e"
-        :value="69"
-        class="mr-3"
+        class="mr-3 medium tooltip-box"
+        :className="className"
+        :abilityIndex="2"
+        :keyValue="69"
+        :userMana="userMana"
+        keyText="E"
         @keydown="$emit('keydown', $event)"
-        >E</Control
-      >
-      <Control ref="r" :value="83" @keydown="$emit('keydown', $event)"
-        >R</Control
-      >
+      />
+      <AbilityControl
+        ref="R"
+        class="mr-3 medium tooltip-box"
+        :className="className"
+        :abilityIndex="3"
+        :keyValue="83"
+        :userMana="userMana"
+        keyText="R"
+        @keydown="$emit('keydown', $event)"
+      />
     </div>
-    <div class="flex justify-center mb-2 md:hidden" v-if="showKeys">
+    <div class="flex justify-center mt-2 md:hidden" v-if="showKeys">
       <Control
         ref="tab"
         class="mr-3"
@@ -43,15 +59,11 @@
       >
         <font-awesome-icon class="text-lg" icon="arrow-up" />
       </Control>
-      <Control
-        ref="space"
-        :value="32"
-        @keydown="$emit('keydown', $event)"
-      >
+      <Control ref="space" :value="32" @keydown="$emit('keydown', $event)">
         <font-awesome-icon class="text-lg" icon="angle-double-down" />
       </Control>
     </div>
-    <div class="flex justify-center mb-2 md:hidden" v-if="showKeys">
+    <div class="flex justify-center mt-2 md:hidden" v-if="showKeys">
       <Control
         ref="left"
         class="mr-3"
@@ -68,11 +80,7 @@
       >
         <font-awesome-icon class="text-lg" icon="arrow-down" />
       </Control>
-      <Control
-        ref="right"
-        :value="39"
-        @keydown="$emit('keydown', $event)"
-      >
+      <Control ref="right" :value="39" @keydown="$emit('keydown', $event)">
         <font-awesome-icon class="text-lg" icon="arrow-right" />
       </Control>
     </div>
@@ -84,10 +92,18 @@ import { GameStateChange } from '@battletris/shared/functions/gameHelper';
 import { onBeforeUnmount, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 import Control from './Control.vue';
+import AbilityLogo from '../icons/AbilityLogo.vue';
+import Tooltip from './Tooltip.vue';
+import AbilityTooltip from './AbilityTooltip.vue';
+import AbilityControl from './AbilityControl.vue';
 
 @Component({
   components: {
+    AbilityControl,
+    AbilityLogo,
+    AbilityTooltip,
     Control,
+    Tooltip,
   },
   props: {
     showAbilities: {
@@ -97,6 +113,12 @@ import Control from './Control.vue';
     showKeys: {
       type: Boolean,
       default: true,
+    },
+    className: {
+      type: String,
+    },
+    userMana: {
+      type: Number,
     },
   },
   setup() {

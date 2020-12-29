@@ -1,14 +1,15 @@
 # Battletris V2
 
 ## Todos
-- [x] server
-- [x] game process handling
-- [x] room handling
-- [x] uesr import / export
-- [ ] match history and statistics
-- [ ] self user room management
-- [ ] game logic
-  - ...
+
+- [x] target displaying
+- [] ability displaying
+- [] effect displaying
+- [] mana / armor display
+- [] max amor / mana display to class
+- [] mana display to abilities
+- [] implement abilities
+- [] readme
 
 1 - red
 2 - blue

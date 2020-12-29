@@ -1,6 +1,6 @@
-import { Classes, GameUser, mapHelper } from '@battletris/shared';
+import { GameUser, mapHelper } from '@battletris/shared';
 // eslint-disable-next-line import/no-cycle
-import { classes, AbilityInterface } from '@battletris/shared/functions/classes';
+import { classList, AbilityInterface } from '@battletris/shared/functions/classes';
 import { GameStateChange } from '@battletris/shared/functions/gameHelper';
 import config from '../lib/config';
 import game from './game';
@@ -73,7 +73,7 @@ class BackendGameUser extends GameUser {
 
   /** Activate an ability. */
   onAbility(classIndex: number, abilityIndex: number) {
-    const ability = classes[classIndex].abilities[abilityIndex];
+    const ability = classList[classIndex].abilities[abilityIndex];
     // check if enough mana is available, otherwise the key press can be ignored
     if (this.mana >= ability.mana) {
       // reduce current users mana
@@ -92,7 +92,7 @@ class BackendGameUser extends GameUser {
   /** Executes an effect for a specific class and ability. */
   effectLoop(effect: number[]) {
     const [ classIndex, abilityIndex ] = effect;
-    const ability: AbilityInterface = classes[classIndex].abilities[abilityIndex];
+    const ability: AbilityInterface = classList[classIndex].abilities[abilityIndex];
     let timeout;
 
     // display the effect
