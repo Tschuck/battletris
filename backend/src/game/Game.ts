@@ -181,8 +181,13 @@ class Game {
       user.stop();
     });
 
+    // clear update triggers
+    clearTimeout(this.updateTriggered);
+
+    // send out game stop message
     processHandler.send(ProcessMessageType.GAME_STOP, stats);
-    processHandler.exit();
+    // wait with closing the process, until everything has finished
+    setTimeout(() => processHandler.exit(), 3_000);
   }
 }
 

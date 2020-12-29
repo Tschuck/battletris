@@ -39,9 +39,13 @@ export default class FrontendGameUser extends GameUser {
   /** notifiy the using class, that something has changed */
   onUpdate: (frontendUser: FrontendGameUser, userUpdate: Partial<GameUser>) => void;
 
+  /** amount of playing users */
+  gameUserCount: number;
+
   constructor(
     user: GameUser,
     gameUserIndex: number,
+    gameUserCount: number,
     onUpdate: (frontendUser: FrontendGameUser, userUpdate: Partial<GameUser>) => void,
   ) {
     // keep in mind to apply the latest user state again to the user with applyUserState. Incoming
@@ -49,6 +53,7 @@ export default class FrontendGameUser extends GameUser {
     super(user, gameUserIndex);
     this.applyUserState(user);
     this.interactionCount = user.interactionCount;
+    this.gameUserCount = gameUserCount;
     this.backendUser = this.clone();
 
     // bind specific properties
@@ -224,4 +229,12 @@ export default class FrontendGameUser extends GameUser {
   onStoneMove() { /** will be overwritten by gameRenderer */ }
 
   onStoneChange() { /** will be overwritten by gameRenderer */ }
+
+  onNextTarget() {
+    this.target += 1;
+    if (this.target > this.gameUserCount - 1) {
+      this.target = 0;
+    }
+    this.onUserUpdate(this);
+  }
 }

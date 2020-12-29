@@ -1,5 +1,9 @@
 <template>
-  <div style="width: 100%; height: 100%" class="flex flex-col bg-2">
+  <div
+    style="width: 100%; height: 100%"
+    class="flex flex-col bg-2 game-field"
+    :id="`game-field-${userIndex}`"
+  >
     <div class="flex justify-center flex-grow p-5">
       <div
         ref="container"
@@ -33,7 +37,11 @@
             >next down move: {{ props.milliseconds }}</template
           >
         </countdown>
-        <Controls @keydown="onKeyDown($event)" :showAbilities="!offline" v-if="isCurrUser" />
+        <Controls
+          @keydown="onKeyDown($event)"
+          :showAbilities="!offline"
+          v-if="isCurrUser"
+        />
       </div>
     </div>
   </div>
@@ -60,8 +68,15 @@ interface GameFieldProps {
     Controls,
   },
   props: {
+    // total amount of playing users
+    gameUserCount: { type: Number },
+    // initial user data
     userData: {},
+    // displayed users game index
     userIndex: { type: Number },
+    // index of the currUser in the game
+    activeUserIndex: { type: Number },
+    // are we playing alone? (disable abilities and stuff)
     offline: {
       type: Boolean,
       default: false,
@@ -85,21 +100,56 @@ interface GameFieldProps {
     const effects = ref<number[][]>([]);
     const effectsString = ref<string>('');
 
+    /**
+     * if this is the handler of the activly playing user, we can handle the active target focus
+     * quite hacky to do it here, but all other ways are strange
+     *   - in Game.vue we need to handle all users and format them again
+     *   - event handlers are complexer than this
+     */
+    const updateTargetRendering = (newTargetIndex: number) => {
+      target.value = newTargetIndex;
+
+      // use direct css class accessor, vue will renrender the field and will cause flickering
+      const gameField = document.getElementById(`game-field-${userIndex}`);
+      gameField?.classList.remove('is-targeting');
+      gameField?.classList.remove('is-self-targeting');
+      if (target.value === props.activeUserIndex) {
+        gameField?.classList.add(!isCurrUser.value ? 'is-targeting' : 'is-self-targeting');
+      }
+
+      if (isCurrUser.value) {
+        // remove targeted active game fields
+        const previousTargeted = Array.from(document.getElementsByClassName('targeted-game-field'));
+        previousTargeted.forEach((el) => el.classList.remove('targeted-game-field'));
+        // select the new target and add the targeted game field
+        const newTarget = document.getElementById(`game-field-${target.value}`);
+        newTarget?.classList.add('targeted-game-field');
+      }
+    };
+
     // will be initialized after on mounted
     let gameRenderer: GameRenderer;
     const UserClass = props.offline ? SingeGameUser : FrontendGameUser;
-    const gameUser = new UserClass(userData, userIndex, (user) => {
-      armor.value = user.armor;
-      blockCount.value = user.blockCount;
-      effects.value = user.effects;
-      effectsString.value = JSON.stringify(user.effects);
-      latency.value = user.latency;
-      mana.value = user.mana;
-      nextBlockMove.value = user.nextBlockMove;
-      rowCount.value = user.rowCount;
-      speed.value = user.speed;
-      target.value = user.target;
-    });
+    const gameUser = new UserClass(
+      userData,
+      userIndex,
+      props.gameUserCount as number,
+      (user) => {
+        armor.value = user.armor;
+        blockCount.value = user.blockCount;
+        effects.value = user.effects;
+        effectsString.value = JSON.stringify(user.effects);
+        latency.value = user.latency;
+        mana.value = user.mana;
+        nextBlockMove.value = user.nextBlockMove;
+        rowCount.value = user.rowCount;
+        speed.value = user.speed;
+
+        if (user.target !== target.value) {
+          updateTargetRendering(user.target);
+        }
+      },
+    );
 
     const onKeyDown = (keyCode: number) => {
       gameUser.userKeyEvent(keyCode);
@@ -110,6 +160,8 @@ interface GameFieldProps {
         animation: true,
         preview: true,
       });
+      // ensure initial rendered target
+      updateTargetRendering(target.value as number);
     });
 
     // be sure to stop watching, when game was left
@@ -152,5 +204,23 @@ canvas {
 
 .konvajs-content {
   position: initial !important;
+}
+
+.game-field {
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--bg-1);
+}
+
+.targeted-game-field {
+  @apply border-yellow-600 border-opacity-50;
+}
+
+.is-targeting {
+  @apply border-red-600 border-opacity-50;
+}
+
+.is-self-targeting {
+  @apply border-green-600 border-opacity-50;
 }
 </style>

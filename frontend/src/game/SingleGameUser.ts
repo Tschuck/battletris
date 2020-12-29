@@ -6,9 +6,10 @@ export default class SingleGameUser extends FrontendGameUser {
   constructor(
     user: GameUser,
     gameUserIndex: number,
+    gameUserCount: number,
     onUpdate: (frontendUser: FrontendGameUser, userUpdate: Partial<GameUser>) => void,
   ) {
-    super(user, gameUserIndex, onUpdate);
+    super(user, gameUserIndex, gameUserCount, onUpdate);
     this.start();
   }
 

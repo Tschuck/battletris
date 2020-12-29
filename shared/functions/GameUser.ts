@@ -174,7 +174,6 @@ class GameUser {
     // check if armor was beneath zero. add a empty line
     if (this.armor < 0) {
       const [newRow] = generateRandomClears([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]], 1);
-      console.log(newRow);
       this.armor = classInstance.maxArmor;
       this.map.push(newRow);
       this.map.shift();

@@ -10,11 +10,14 @@
     >
       <GameField
         v-if="gameUsers[userIndex]"
+        :activeUserIndex="activeIndex"
+        :gameUserCount="gameUsers.length"
         :roomId="roomId"
-        :userId="gameUsers[userIndex].id"
         :userData="gameUsers[userIndex]"
+        :userId="gameUsers[userIndex].id"
         :userIndex="userIndex"
       />
+      <div style="border: 5px solid var(--bg-1)" v-else />
     </div>
   </div>
 </template>

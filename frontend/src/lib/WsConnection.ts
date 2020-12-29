@@ -94,6 +94,7 @@ export default class WsConnection {
    * Disconnect from websocket connection.
    */
   async disconnect() {
+    this.closed = true;
     this.ws.close();
     // reset values
     this.handlers = [];
@@ -108,8 +109,13 @@ export default class WsConnection {
    * @param payload data to send
    */
   send(type: WsMessageType, payload?: any) {
-    if (!this.closed) {
-      this.ws.send(getStringifiedMessage(type, payload));
+    try {
+      if (!this.closed) {
+        this.ws.send(getStringifiedMessage(type, payload));
+      }
+    } catch (ex) {
+      // maybe fix remote "websocket is already in closing state"
+      console.error(ex);
     }
   }
 
