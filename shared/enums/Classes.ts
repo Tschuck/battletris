@@ -1,7 +1,8 @@
 enum Classes {
-  UNKNOWN = 0,
-  SORCERER = 1,
-  WARRIOR = 2,
+  BATTLETRIS = 0,
+  UNKNOWN = 1,
+  SORCERER = 2,
+  WARRIOR = 3,
 }
 
 export default Classes;

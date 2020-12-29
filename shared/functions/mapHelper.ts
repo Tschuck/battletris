@@ -52,26 +52,26 @@ function getEmptyMap(count = 20, map: number[][] = []): number[][] {
   return map;
 }
 
-// /**
-//  * Takes some rows and make random clear within the rows until clearCount is reached
-//  *
-//  * @param      {Arra<Array<any>>}   rows        array of rows
-//  * @param      {number}             clearCount  number of random clears
-//  * @return     {Array<Array<any>>}  rows
-//  */
-// function generateRandomClears(rows, clearCount = 1) {
-//   while (clearCount > 0) {
-//     const randomY = Math.round(Math.random() * (rows.length - 1));
-//     const randomX = Math.round(Math.random() * (rows[randomY].length - 1));
+/**
+ * Takes some rows and make random clear within the rows until clearCount is reached
+ *
+ * @param      {Arra<Array<any>>}   rows        array of rows
+ * @param      {number}             clearCount  number of random clears
+ * @return     {Array<Array<any>>}  rows
+ */
+function generateRandomClears(rows: number[][], clearCount = 1): number[][] {
+  while (clearCount > 0) {
+    const randomY = Math.round(Math.random() * (rows.length - 1));
+    const randomX = Math.round(Math.random() * (rows[randomY].length - 1));
 
-//     if (rows[randomY][randomX]) {
-//       rows[randomY][randomX] = null;
-//       clearCount--;
-//     }
-//   }
+    if (rows[randomY][randomX]) {
+      (rows[randomY][randomX] as any) = null;
+      clearCount -= 1;
+    }
+  }
 
-//   return rows;
-// }
+  return rows;
+}
 
 // /**
 //  * Randomly clear spaces of a given size in the given map
@@ -154,5 +154,6 @@ function getEmptyMap(count = 20, map: number[][] = []): number[][] {
 
 export {
   generateEmptyRows,
+  generateRandomClears,
   getEmptyMap,
 };

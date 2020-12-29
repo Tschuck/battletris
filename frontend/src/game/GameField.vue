@@ -22,6 +22,7 @@
         <div>speed: {{ speed }}</div>
         <div>effects: {{ effects }}</div>
         <div>effectsString: {{ effectsString }}</div>
+        <div>target: {{ target }}</div>
 
         <div v-if="isCurrUser">
           <div>latency: ~{{ latency }}ms</div>
@@ -32,7 +33,7 @@
             >next down move: {{ props.milliseconds }}</template
           >
         </countdown>
-        <Controls @keydown="onKeyDown($event)" :showAbilities="!offline" />
+        <Controls @keydown="onKeyDown($event)" :showAbilities="!offline" v-if="isCurrUser" />
       </div>
     </div>
   </div>
@@ -47,6 +48,7 @@ import FrontendGameUser from './GameUser';
 import SingeGameUser from './SingleGameUser';
 import GameRenderer from './GameRenderer';
 import Controls from '../components/Controls.vue';
+import currUser from '../lib/User';
 
 interface GameFieldProps {
   userData: GameUser;
@@ -69,7 +71,7 @@ interface GameFieldProps {
     const { userData, userIndex } = (props as unknown) as GameFieldProps;
 
     // vue param setup
-    const isCurrUser = ref<boolean>(false);
+    const isCurrUser = ref<boolean>(currUser.id === userData.id);
     const container = ref();
     // stat values
     const blockCount = ref<number>();
@@ -79,6 +81,7 @@ interface GameFieldProps {
     const latency = ref<number>();
     const armor = ref<number>();
     const mana = ref<number>();
+    const target = ref<number>();
     const effects = ref<number[][]>([]);
     const effectsString = ref<string>('');
 
@@ -86,15 +89,16 @@ interface GameFieldProps {
     let gameRenderer: GameRenderer;
     const UserClass = props.offline ? SingeGameUser : FrontendGameUser;
     const gameUser = new UserClass(userData, userIndex, (user) => {
-      blockCount.value = user.blockCount;
-      rowCount.value = user.rowCount;
-      speed.value = user.speed;
-      nextBlockMove.value = user.nextBlockMove;
-      latency.value = user.latency;
       armor.value = user.armor;
-      mana.value = user.mana;
+      blockCount.value = user.blockCount;
       effects.value = user.effects;
       effectsString.value = JSON.stringify(user.effects);
+      latency.value = user.latency;
+      mana.value = user.mana;
+      nextBlockMove.value = user.nextBlockMove;
+      rowCount.value = user.rowCount;
+      speed.value = user.speed;
+      target.value = user.target;
     });
 
     const onKeyDown = (keyCode: number) => {
@@ -127,6 +131,7 @@ interface GameFieldProps {
       onKeyDown,
       rowCount,
       speed,
+      target,
     };
   },
 })

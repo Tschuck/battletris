@@ -2,7 +2,9 @@
 import { cloneDeep } from 'lodash';
 import Blocks, { BlockMapping } from '../enums/Blocks';
 // eslint-disable-next-line import/no-cycle
-import { AbilityInterface, classes } from './classes';
+import {
+  AbilityInterface, classes, ClassInterface, getClassIndex,
+} from './classes';
 import {
   CollisionType,
   GameStateChange,
@@ -10,7 +12,7 @@ import {
   getStoneCollision,
   iterateOverMap,
 } from './gameHelper';
-import { getEmptyMap } from './mapHelper';
+import { generateRandomClears, getEmptyMap } from './mapHelper';
 
 // order to move turned blocks that get stuck out of the bounds or out of the docked mode
 const turnBlockEvades = [1, -1, 2, -2];
@@ -32,6 +34,15 @@ const neverUpdateProps = [
   'interactionCount',
 ];
 
+/** order of keys, mapped to the abilities */
+const abilityKeys = [
+  GameStateChange.Q,
+  GameStateChange.W,
+  GameStateChange.E,
+  GameStateChange.R,
+];
+
+/** keys that will be pressable by the user */
 const uiKeys = [
   GameStateChange.TURN,
   GameStateChange.LEFT,
@@ -152,6 +163,23 @@ class GameUser {
    * @param key key that was executed
    */
   checkGameState(lastState: GameUser, change?: GameStateChange): void {
+    // check max mana and armor
+    const classInstance = classes[getClassIndex(this.className)];
+    if (this.mana > classInstance.maxMana) {
+      this.mana = classInstance.maxMana;
+    }
+    if (this.armor > classInstance.maxArmor) {
+      this.armor = classInstance.maxArmor;
+    }
+    // check if armor was beneath zero. add a empty line
+    if (this.armor < 0) {
+      const [newRow] = generateRandomClears([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]], 1);
+      console.log(newRow);
+      this.armor = classInstance.maxArmor;
+      this.map.push(newRow);
+      this.map.shift();
+    }
+
     // check for out of range
     const actualBlock = Blocks[this.block][this.getRotationBlockIndex()];
 
@@ -238,7 +266,7 @@ class GameUser {
 
     // check for resolved rows
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let clearedRows = 0; // TODO: use this for stacking mana and stuff
+    let clearedRows = 0;
     for (let y = this.map.length - 1; y !== -1; y -= 1) {
       const filledCols = this.map[y].filter((col) => !!col).length;
       // row is full! clear it
@@ -251,6 +279,24 @@ class GameUser {
         y += 1;
         this.rowCount += 1;
         clearedRows += 1;
+      }
+    }
+
+    if (clearedRows !== 0) {
+      const classInstance: ClassInterface = classes[getClassIndex(this.className)];
+      // stack percentage of mana accordingly to the amount of cleared rows
+      this.mana += (classInstance.maxMana / 10) * clearedRows;
+      if (this.mana > classInstance.maxMana) {
+        this.mana = classInstance.maxMana;
+      }
+      // trigger battletris base class ability for armor healing / damage
+      // if the user targets his self, use healing ability 0 - 3. target will be determine within
+      // on ability
+      if (this.target === this.gameUserIndex) {
+        this.onAbility(0, clearedRows - 1);
+      } else {
+        // use damage abilities
+        this.onAbility(0, 3 + clearedRows);
       }
     }
 
@@ -353,7 +399,7 @@ class GameUser {
       case GameStateChange.W:
       case GameStateChange.E:
       case GameStateChange.R: {
-        this.onAbility(key);
+        this.onAbility(getClassIndex(this.className), abilityKeys.indexOf(key));
         break;
       }
       case GameStateChange.EFFECT: {
@@ -391,7 +437,7 @@ class GameUser {
 
   /** Triggered, when the user activated an ability */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onAbility(key: GameStateChange): void {
+  onAbility(classIndex: number, abilityIndex: number): void {
     /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */
   }
 }

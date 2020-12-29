@@ -6,13 +6,6 @@ import config from '../lib/config';
 import game from './game';
 import numberToBlockMap from './helpers/numberToBlockMap';
 
-const abilityKeys = [
-  GameStateChange.Q,
-  GameStateChange.W,
-  GameStateChange.E,
-  GameStateChange.R,
-];
-
 class BackendGameUser extends GameUser {
   /** list of looping effects */
   effectTimeouts: NodeJS.Timeout[] = [];
@@ -73,25 +66,23 @@ class BackendGameUser extends GameUser {
   /** Select the next target */
   onNextTarget() {
     this.target += 1;
-    if (this.target > game.users.length) {
+    if (this.target > game.users.length - 1) {
       this.target = 0;
     }
   }
 
   /** Activate an ability. */
-  onAbility(key: GameStateChange) {
-    const classIndex = Classes[this.className.toUpperCase()];
-    const abilityIndex = abilityKeys.indexOf(key);
+  onAbility(classIndex: number, abilityIndex: number) {
     const ability = classes[classIndex].abilities[abilityIndex];
     // check if enough mana is available, otherwise the key press can be ignored
-    if (parseInt('1') || this.mana >= ability.mana) {
+    if (this.mana >= ability.mana) {
       // reduce current users mana
       this.mana -= ability.mana;
       // add the ability effect to the target user
       const targetUser = game.users[this.target];
       targetUser.effectLoop([
         classIndex, // class index
-        key, // activated key
+        abilityIndex, // ability index
         Date.now(), // activation time
         0, // execution time
       ]);
@@ -100,8 +91,7 @@ class BackendGameUser extends GameUser {
 
   /** Executes an effect for a specific class and ability. */
   effectLoop(effect: number[]) {
-    const [ classIndex, key ] = effect;
-    const abilityIndex = abilityKeys.indexOf(key);
+    const [ classIndex, abilityIndex ] = effect;
     const ability: AbilityInterface = classes[classIndex].abilities[abilityIndex];
     let timeout;
 
