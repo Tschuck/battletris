@@ -186,8 +186,8 @@ class Game {
 
     // send out game stop message
     processHandler.send(ProcessMessageType.GAME_STOP, stats);
-    // wait with closing the process, until everything has finished
-    setTimeout(() => processHandler.exit(), 3_000);
+    // wait with closing of the process, until message was sent
+    setTimeout(() => processHandler.exit(), 500);
   }
 }
 
