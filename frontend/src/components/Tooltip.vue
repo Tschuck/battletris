@@ -30,7 +30,7 @@ export default class RootNav extends Vue {}
 }
 
 .tooltip {
-  background: var(--bg-2);
+  background-color: var(--bg-2);
   text-align: center;
   padding: 5px 20px;
   bottom: calc(100% + 11px);
@@ -38,6 +38,11 @@ export default class RootNav extends Vue {}
   transform: translate(-50%);
   position: absolute;
   display: none;
+  z-index: 30;
+
+  &.bg-1 {
+    background-color: var(--bg-1);
+  }
 
   @apply text-gray-300;
 }

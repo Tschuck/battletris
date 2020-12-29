@@ -3,6 +3,11 @@
   "classes": {
     "ability-activator": "Key",
     "ability-costs": "Mana-Costs",
+    "armor": "Armor",
+    "mana": "Mana",
+    "block-count-tooltip": "Amount of used blocks",
+    "row-count-tooltip": "Cleared row count",
+    "speed-tooltip": "Speed - every X ms moves the block down",
     "battletris": {
       "ability0": {
         "desc": "Repairs your armor a little bit.",
