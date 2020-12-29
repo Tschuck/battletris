@@ -13,6 +13,23 @@
 
     <div class="p-5">
       <div
+        class="flex p-3 mb-3 overflow-x-auto"
+        style="border: 2px solid var(--bg-1)"
+        :class="{
+          'md:hidden': offline,
+        }"
+      >
+        <Effect
+          class="mr-1"
+          v-for="(effect, index) of effects"
+          :key="index"
+          :classIndex="effect[0]"
+          :abilityIndex="effect[1]"
+          :ticked="effect[3]"
+        />
+      </div>
+
+      <div
         class="p-3"
         style="border: 2px solid var(--bg-1)"
         :class="{
@@ -21,33 +38,38 @@
       >
         <div class="flex items-center justify-between p-3 bg-1">
           <span class="tooltip-box">
-             <font-awesome-icon class="text-lg" icon="th-large" />
+            <font-awesome-icon class="text-lg" icon="th-large" />
             {{ blockCount }}
-            <Tooltip class="bg-1" :value="$t('classes.block-count-tooltip')" style="width: 200px" />
+            <Tooltip
+              class="bg-1"
+              :value="$t('classes.block-count-tooltip')"
+              style="width: 200px"
+            />
           </span>
           <span class="ml-3 tooltip-box">
-             <font-awesome-icon class="text-lg" icon="chart-line" />
+            <font-awesome-icon class="text-lg" icon="chart-line" />
             {{ rowCount }}
-            <Tooltip class="bg-1" :value="$t('classes.row-count-tooltip')" style="width: 200px" />
+            <Tooltip
+              class="bg-1"
+              :value="$t('classes.row-count-tooltip')"
+              style="width: 200px"
+            />
           </span>
           <span class="ml-3 tooltip-box">
-             <font-awesome-icon class="text-lg" icon="angle-double-down" />
+            <font-awesome-icon class="text-lg" icon="angle-double-down" />
             {{ speed }}
-            <Tooltip class="bg-1" :value="$t('classes.speed-tooltip')" style="width: 200px" />
+            <Tooltip
+              class="bg-1"
+              :value="$t('classes.speed-tooltip')"
+              style="width: 200px"
+            />
           </span>
         </div>
-        <!--
-        <div>blockCount: {{ blockCount }}</div>
-        <div>rowCount: {{ rowCount }}</div>
-        <div>speed: {{ speed }}</div>
-        <div>effects: {{ effects }}</div>
-        <div>effectsString: {{ effectsString }}</div>
-        <div>target: {{ target }}</div> -->
-
-        <!--  -->
 
         <div class="relative p-3 mb-1 text-center bg-1 tooltip-box">
-          <span class="absolute top-0 left-0 right-0 z-20">{{ armor }} / {{ classArmor }}</span>
+          <span class="absolute top-0 left-0 right-0 z-20"
+            >{{ armor }} / {{ classArmor }}</span
+          >
           <div
             class="bg-red-600 animated-bar"
             :style="`width: ${(100 / classArmor) * armor}%`"
@@ -56,7 +78,9 @@
         </div>
 
         <div class="relative p-3 mb-3 text-center bg-1 tooltip-box">
-          <span class="absolute top-0 left-0 right-0 z-20">{{ mana }} / {{ classMana }}</span>
+          <span class="absolute top-0 left-0 right-0 z-20"
+            >{{ mana }} / {{ classMana }}</span
+          >
           <div
             class="bg-blue-600 animated-bar"
             :style="`width: ${(100 / classMana) * mana}%`"
@@ -81,8 +105,10 @@ import { Component, Vue } from 'vue-property-decorator';
 
 import { classes } from '@battletris/shared/functions/classes';
 import { GameUser } from '@battletris/shared';
+import AbilityLogo from '../icons/AbilityLogo.vue';
 import Controls from '../components/Controls.vue';
 import currUser from '../lib/User';
+import Effect from '../components/Effect.vue';
 import FrontendGameUser from './GameUser';
 import GameRenderer from './GameRenderer';
 import SingeGameUser from './SingleGameUser';
@@ -95,7 +121,9 @@ interface GameFieldProps {
 
 @Component({
   components: {
+    AbilityLogo,
     Controls,
+    Effect,
     Tooltip,
   },
   props: {

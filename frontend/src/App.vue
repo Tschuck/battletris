@@ -138,6 +138,12 @@ export default class Home extends Vue {}
     svg path {
       fill: var(--bg-1);
     }
+
+    .tooltip {
+      svg path {
+        fill: var(--bg-3);
+      }
+    }
   }
 
   svg {

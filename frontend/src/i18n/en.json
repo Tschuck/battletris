@@ -7,6 +7,7 @@
     "mana": "Mana",
     "block-count-tooltip": "Amount of used blocks",
     "row-count-tooltip": "Cleared row count",
+    "duration": "Duration",
     "speed-tooltip": "Speed - every X ms moves the block down",
     "battletris": {
       "ability0": {

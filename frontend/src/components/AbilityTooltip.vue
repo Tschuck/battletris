@@ -8,9 +8,18 @@
         height="100px"
       />
       <div class="ml-3">
-        <h2 class="text-xs font-bold">
+        <h4 class="flex justify-between text-xs font-bold text-light">
           {{ $t(`classes.${className}.ability${abilityIndex}.title`) }}
-        </h2>
+
+          <span class="text-gray-600">
+            <span class="text-xs"
+              >{{ $t("classes.mana") }}: {{ mana }}</span
+            >
+            <span class="text-xs" v-if="duration"
+              >, {{ $t("classes.duration") }}: {{ duration }}ms</span
+            >
+          </span>
+        </h4>
         <p
           class="text-xs text-justify text-gray-400"
           v-html="$t(`classes.${className}.ability${abilityIndex}.desc`)"
@@ -21,6 +30,8 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { classes } from '@battletris/shared/functions/classes';
+import { ref } from '@vue/composition-api';
 import Tooltip from './Tooltip.vue';
 import AbilityLogo from '../icons/AbilityLogo.vue';
 
@@ -38,6 +49,18 @@ export const iconProps = {
   props: {
     className: { type: String },
     abilityIndex: { type: Number },
+  },
+  setup(props) {
+    const ability = classes[props.className as string].abilities[props.abilityIndex as number];
+    const mana = ref(ability.mana);
+    const ticks = ability?.ticks || 0;
+    const tickTimeout = ability?.tickTimeout || 0;
+    const duration = ref(ticks > 0 ? ticks * tickTimeout : 0);
+
+    return {
+      duration,
+      mana,
+    };
   },
 })
 export default class AbilityControl extends Vue {}

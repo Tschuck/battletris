@@ -3,11 +3,11 @@
 ## Todos
 
 - [x] target displaying
-- [] ability displaying
+- [x] ability displaying
 - [] effect displaying
-- [] mana / armor display
-- [] max amor / mana display to class
-- [] mana display to abilities
+- [x] mana / armor display
+- [x] max amor / mana display to class
+- [x] mana display to abilities
 - [] implement abilities
 - [] readme
 

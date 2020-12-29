@@ -21,7 +21,7 @@
           v-if="!disabled"
         />
         <component
-          :is="classes[activeClassIndex].icon"
+          :is="classIterator[activeClassIndex].icon"
           height="80px"
           width="80px"
         />
@@ -36,13 +36,21 @@
       <h3 class="my-3 font-bold text-center">
         {{ $t(`classes.${className}.title`) }}
       </h3>
-      <p class="p-3 italic bg-2" v-if="!minimal">
+      <div class="flex items-center justify-center w-full">
+        <h3 class="text-xs"
+          >{{ $t("classes.mana") }}: {{ classIterator[activeClassIndex].maxMana }}</h3
+        >
+        <h3 class="mx-2">|</h3>
+        <h3 class="text-xs"
+          >{{ $t("classes.armor") }}: {{ classIterator[activeClassIndex].maxArmor }} </h3>
+      </div>
+      <p class="p-3 mt-3 italic bg-2" v-if="!minimal">
         {{ $t(`classes.${className}.desc`) }}
       </p>
 
       <div :class="{ 'flex flex-row justify-center': minimal }">
         <div
-          v-for="(_, index) in abilityIterator"
+          v-for="(ability, index) in classIterator[activeClassIndex].abilities"
           :key="`value-${className}-${index}`"
           class="flex items-center mt-4"
         >
@@ -53,8 +61,9 @@
               width="32px"
               height="32px"
             />
-            <Tooltip
-              :value="$t(`classes.${className}.ability${index}.desc`)"
+            <AbilityTooltip
+              :className="className"
+              :abilityIndex="index"
               v-if="minimal"
             />
           </div>
@@ -62,6 +71,15 @@
             <h2 class="text-xs font-bold">
               {{ $t(`classes.${className}.ability${index}.title`) }}
             </h2>
+            <div>
+              <span class="text-xs"
+                >{{ $t("classes.mana") }}: {{ ability.mana }}</span
+              >
+              <span class="ml-5" v-if="ability.duration">|</span>
+              <span class="ml-5 text-xs" v-if="ability.duration"
+                >{{ $t("classes.duration") }}: {{ ability.duration }}ms</span
+              >
+            </div>
             <p
               class="text-xs text-justify text-gray-400"
               v-html="$t(`classes.${className}.ability${index}.desc`)"
@@ -76,11 +94,13 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { ref } from '@vue/composition-api';
+import { classes } from '@battletris/shared/functions/classes';
 import ViewWrapper from './ViewWrapper.vue';
 
 import AbilityLogo from '../icons/AbilityLogo.vue';
 import Loading from './Loading.vue';
 import Tooltip from './Tooltip.vue';
+import AbilityTooltip from './AbilityTooltip.vue';
 import SorcererIcon from '../icons/sorcerer.vue';
 import UnknownIcon from '../icons/unknown.vue';
 import WarriorIcon from '../icons/warrior.vue';
@@ -89,6 +109,7 @@ import currUser from '../lib/User';
 @Component({
   components: {
     AbilityLogo,
+    AbilityTooltip,
     Loading,
     SorcererIcon,
     Tooltip,
@@ -109,14 +130,29 @@ import currUser from '../lib/User';
     const className = ref(user.className);
     const userId = ref(user.id);
     const disabled = ref(user.id !== currUser.id);
-    const classes = [
-      { name: 'unknown', icon: UnknownIcon },
-      { name: 'warrior', icon: WarriorIcon },
-      { name: 'sorcerer', icon: SorcererIcon },
+
+    const getDisplayClass = (getForClass: string, icon: any) => ({
+      name: getForClass,
+      icon,
+      maxArmor: classes[getForClass].maxArmor,
+      maxMana: classes[getForClass].maxMana,
+      abilities: classes[getForClass].abilities.map((ability) => {
+        const ticks = ability?.ticks || 0;
+        const tickTimeout = ability?.tickTimeout || 0;
+        return {
+          duration: ticks > 0 ? ticks * tickTimeout : 0,
+          mana: ability.mana,
+        };
+      }),
+    });
+    const classIterator = [
+      getDisplayClass('unknown', UnknownIcon),
+      getDisplayClass('warrior', WarriorIcon),
+      getDisplayClass('sorcerer', SorcererIcon),
     ];
     const abilityIterator = ref([1, 2, 3, 4]);
     const activeClassIndex = ref(
-      classes.findIndex(({ name: n }) => className.value === n),
+      classIterator.findIndex(({ name: n }) => className.value === n),
     );
     const loading = ref(true);
 
@@ -140,19 +176,19 @@ import currUser from '../lib/User';
       activeClassIndex.value += increase;
 
       if (activeClassIndex.value < 0) {
-        activeClassIndex.value = classes.length - 1;
-      } else if (activeClassIndex.value >= classes.length) {
+        activeClassIndex.value = classIterator.length - 1;
+      } else if (activeClassIndex.value >= classIterator.length) {
         activeClassIndex.value = 0;
       }
 
-      className.value = classes[activeClassIndex.value].name;
+      className.value = classIterator[activeClassIndex.value].name;
       updateUser();
     };
 
     return {
       abilityIterator,
       activeClassIndex,
-      classes,
+      classIterator,
       className,
       disabled,
       loading,
