@@ -1,31 +1,18 @@
 <template>
   <div class="overflow-hidden text-gray-300 bg-1 vh-100">
-    <!-- <transition :name="transitionName" v-if="!loading"> -->
     <router-view v-if="!loading"></router-view>
-    <!-- </transition> -->
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { ref } from '@vue/composition-api';
-// import router from './router';
 
 import user from './lib/User';
 
 @Component({
   setup() {
     const loading = ref(true);
-    // const transitionName = ref('appear');
-    // const transitions = [{ from: '/', to: '/mode', transition: 'slide-down' }];
-
-    // router.beforeEach((to, from, next) => {
-    //   const transition = transitions.find(
-    //     ({ from: a, to: b }) => a === from.path && b === to.path,
-    //   );
-    //   transitionName.value = transition?.transition || 'appear';
-    //   next();
-    // });
 
     (async () => {
       await user.init();

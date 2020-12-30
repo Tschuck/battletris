@@ -62,6 +62,9 @@
               </span>
             </div>
           </div>
+          <span class="flex items-center justify-end flex-grow mr-5 font-bold" v-if="userStat.isWinner">{{
+            $t("game.winner")
+          }}</span>
         </div>
 
         <div class="mt-3 text-center">

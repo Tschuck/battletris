@@ -19,25 +19,6 @@
           'md:hidden': offline,
         }"
       >
-        <div class="flex flex-row w-1/2 px-4 py-1 mr-1 bg-1 tooltip-box">
-          <div class="flex" v-for="(block, i1) in nextBlocks" :key="i1">
-            <div class="flex flex-col" v-for="(y, i2) in block" :key="i2">
-              <div
-                class="w-2 h-2"
-                v-for="(x, i3) in y"
-                :key="i3"
-                :style="`margin-right: 1px; margin-top: 1px; background-color: ${
-                  blockColors[y[x] || 0]
-                }`"
-              ></div>
-            </div>
-          </div>
-          <Tooltip
-            class="bg-1"
-            :value="$t('game.next-blocks')"
-            style="width: 200px"
-          />
-        </div>
         <Effect
           class="mr-1"
           v-for="effect of effects"
@@ -114,6 +95,21 @@
           :userMana="mana"
           v-if="isCurrUser"
         />
+      </div>
+    </div>
+
+    <div class="flex flex-row items-center justify-between w-1/2 px-4 py-1 mr-1 next-blocks bg-1">
+      <div class="flex flex-col mr-1" v-for="(block, i1) in nextBlocks" :key="i1">
+        <div class="flex flex-row" v-for="(y, i2) in block" :key="i2">
+          <div
+            class="w-2 h-2"
+            v-for="(x, i3) in y"
+            :key="i3"
+            :style="`margin-right: 1px; margin-top: 1px; background-color: ${
+              blockColors[y[i3] || 0]
+            }`"
+          ></div>
+        </div>
       </div>
     </div>
   </div>
@@ -221,7 +217,11 @@ interface GameFieldProps {
 
       nextBlocks.value = user.nextBlocks
         .slice(0, nextBlocksToRender)
-        .map((blockId: number) => Blocks[blockId][0]);
+        .map((blockId: number) => {
+          // reduce empty block rows
+          const block = [...Blocks[blockId][0]];
+          return block.filter((y: number[]) => y.find((x: number) => !!x));
+        });
       console.log(nextBlocks.value);
     };
 
@@ -313,22 +313,41 @@ canvas {
   border-width: 5px;
   border-style: solid;
   border-color: var(--bg-1);
+  position: relative;
 }
 
 .targeted-game-field {
-  @apply border-yellow-600 border-opacity-50;
+  &, .next-blocks {
+    @apply border-yellow-600 border-opacity-50;
+  }
 }
 
 .is-targeting {
-  @apply border-red-600 border-opacity-50;
+  &, .next-blocks {
+    @apply border-red-600 border-opacity-50;
+  }
 }
 
 .is-self-targeting {
-  @apply border-green-600 border-opacity-50;
+  &, .next-blocks {
+    @apply border-green-600 border-opacity-50;
+  }
 }
 
 .animated-bar {
   @apply absolute top-0 left-0 z-10 h-full bg-opacity-50;
   transition: 0.5s ease-out width;
+}
+
+.next-blocks {
+  position: absolute;
+  top: -19px;
+  left: 0;
+  overflow: hidden;
+  margin: auto;
+  right: 0;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--bg-1);
 }
 </style>
