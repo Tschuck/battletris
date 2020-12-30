@@ -1,4 +1,5 @@
 /* eslint-disable import/no-cycle */
+import { flattenMap, generateRandomAreaClear } from '../mapHelper';
 import GameUser from '../GameUser';
 import { ClassInterface } from './ClassInterface';
 
@@ -24,25 +25,32 @@ export default class Warrior implements ClassInterface {
     {
       tickTimeout: 0,
       ticks: 0,
-      mana: 20,
-      tick: (user: GameUser) => {
-        console.log(`Sorcerer w: ${user.id}`);
+      mana: 30,
+      tick: (user: GameUser): void => {
+        user.map = generateRandomAreaClear([[1, 1], [1, 1]], user.map);
       },
     },
     {
       tickTimeout: 0,
       ticks: 0,
-      mana: 20,
-      tick: (user: GameUser) => {
-        console.log(`Sorcerer e: ${user.id}`);
+      mana: 50,
+      tick: (user: GameUser): void => {
+        user.map = flattenMap(user.map);
       },
     },
     {
       tickTimeout: 0,
       ticks: 0,
-      mana: 20,
-      tick: (user: GameUser) => {
-        console.log(`Sorcerer r: ${user.id}`);
+      mana: 50,
+      tick: (user: GameUser): void => {
+        let xIndex = 0;
+        user.map.forEach((y, yIndex) => {
+          if (!(yIndex % 2) && yIndex) {
+            xIndex += 1;
+          }
+
+          (user.map[yIndex][xIndex] as any) = undefined;
+        });
       },
     },
   ];
