@@ -8,7 +8,7 @@ import StoneLayer from './StoneLayer';
 
 const animationSpeed = 0.05;
 // const animationSpeed = 0;
-const colorMap = {
+export const colorMap = {
   STROKE: '#1a2024',
   STONES: [
     'transparent',
@@ -62,7 +62,7 @@ export default class GameRenderer {
   user: FrontendGameUser;
 
   /** user specific configuration */
-  config: RenderConfig
+  config: RenderConfig;
 
   constructor(element: HTMLDivElement, user: FrontendGameUser, config: RenderConfig) {
     this.element = element;

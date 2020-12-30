@@ -14,14 +14,33 @@
     <div class="p-5">
       <div
         class="flex p-3 mb-3 overflow-x-auto"
-        style="border: 2px solid var(--bg-1); min-height: 52px;"
+        style="border: 2px solid var(--bg-1); min-height: 52px"
         :class="{
           'md:hidden': offline,
         }"
       >
+        <div class="flex flex-row w-1/2 px-4 py-1 mr-1 bg-1 tooltip-box">
+          <div class="flex" v-for="(block, i1) in nextBlocks" :key="i1">
+            <div class="flex flex-col" v-for="(y, i2) in block" :key="i2">
+              <div
+                class="w-2 h-2"
+                v-for="(x, i3) in y"
+                :key="i3"
+                :style="`margin-right: 1px; margin-top: 1px; background-color: ${
+                  blockColors[y[x] || 0]
+                }`"
+              ></div>
+            </div>
+          </div>
+          <Tooltip
+            class="bg-1"
+            :value="$t('game.next-blocks')"
+            style="width: 200px"
+          />
+        </div>
         <Effect
           class="mr-1"
-          v-for="(effect) of effects"
+          v-for="effect of effects"
           :key="`${effect[0]}${effect[1]}${effect[2]}`"
           :classIndex="effect[0]"
           :abilityIndex="effect[1]"
@@ -105,13 +124,13 @@ import { onUnmounted, onMounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 
 import { classes } from '@battletris/shared/functions/classes';
-import { GameUser } from '@battletris/shared';
+import { GameUser, Blocks } from '@battletris/shared';
 import AbilityLogo from '../icons/AbilityLogo.vue';
 import Controls from '../components/Controls.vue';
 import currUser from '../lib/User';
 import Effect from '../components/Effect.vue';
 import FrontendGameUser from './GameUser';
-import GameRenderer from './GameRenderer';
+import GameRenderer, { colorMap } from './GameRenderer';
 import SingeGameUser from './SingleGameUser';
 import Tooltip from '../components/Tooltip.vue';
 
@@ -152,6 +171,7 @@ interface GameFieldProps {
     const className = ref(userData.className);
     const classArmor = ref(classes[userData.className].maxArmor);
     const classMana = ref(classes[userData.className].maxMana);
+    const blockColors = ref(colorMap.STONES);
     // stat values
     const blockCount = ref<number>();
     const rowCount = ref<number>();
@@ -160,7 +180,8 @@ interface GameFieldProps {
     const mana = ref<number>();
     const target = ref<number>();
     const effects = ref<number[][]>([]);
-    const nextBlockMove = ref<number>();
+    const nextBlocks = ref<number[][][]>();
+    const nextBlocksToRender = 3;
 
     /**
      * if this is the handler of the activly playing user, we can handle the active target focus
@@ -193,6 +214,17 @@ interface GameFieldProps {
       }
     };
 
+    const updateNextBlocks = (user: SingeGameUser | FrontendGameUser) => {
+      if (!user?.nextBlocks) {
+        return;
+      }
+
+      nextBlocks.value = user.nextBlocks
+        .slice(0, nextBlocksToRender)
+        .map((blockId: number) => Blocks[blockId][0]);
+      console.log(nextBlocks.value);
+    };
+
     // will be initialized after on mounted
     let gameRenderer: GameRenderer;
     const UserClass = props.offline ? SingeGameUser : FrontendGameUser;
@@ -207,10 +239,13 @@ interface GameFieldProps {
         mana.value = user.mana;
         rowCount.value = user.rowCount;
         speed.value = user.speed;
-        nextBlockMove.value = user.nextBlockMove;
-
+        // update target hints
         if (user.target !== target.value) {
           updateTargetRendering(user.target);
+        }
+        // rerender next blocks
+        if (user.nextBlocks) {
+          updateNextBlocks(gameUser);
         }
       },
     );
@@ -226,6 +261,7 @@ interface GameFieldProps {
       });
       // ensure initial rendered target
       updateTargetRendering(target.value as number);
+      updateNextBlocks(gameUser);
     });
 
     // be sure to stop watching, when game was left
@@ -236,6 +272,7 @@ interface GameFieldProps {
 
     return {
       armor,
+      blockColors,
       blockCount,
       classArmor,
       classMana,
@@ -244,6 +281,7 @@ interface GameFieldProps {
       effects,
       isCurrUser,
       mana,
+      nextBlocks,
       onKeyDown,
       rowCount,
       speed,
