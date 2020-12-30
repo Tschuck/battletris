@@ -106,8 +106,6 @@ export default class FrontendGameUser extends GameUser {
     const previousUIUser = this.clone();
     const userEvents = update.userEvents || [];
 
-    console.log(update.effects);
-
     // create the latest backend state out of the previous backend state and the new update
     this.backendUser.applyUserState(update);
     // delete user events before they will overwrite the ui userEvents

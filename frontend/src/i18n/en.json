@@ -1,5 +1,6 @@
 {
   "battletris": "BATTLETRIS",
+  "close": "Close",
   "classes": {
     "ability-activator": "Key",
     "ability-costs": "Mana-Costs",
@@ -108,9 +109,10 @@
   },
   "coming-soon": "Coming soon...",
   "game": {
-    "ends": "Game ended. Winner is \"{winner}\"",
+    "finished": "Game finished",
     "join": "Join",
     "leave": "Leave",
+    "min-short": "min",
     "not-joined": "No one joined...",
     "running": "Game is running",
     "slot": "Slot",

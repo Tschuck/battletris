@@ -45,7 +45,7 @@ import currUser from '../lib/User';
     const ticked = props.ticked as number;
     const ticks = ability?.ticks || 0;
     const tickTimeout = ability?.tickTimeout || 0;
-    const duration = computed(() => ((ticks - ticked - 1) * tickTimeout));
+    const duration = computed(() => ((ticks - ticked) * tickTimeout));
 
     onBeforeMount(() => {
       // add blur to the screen

@@ -14,7 +14,7 @@
     <div class="p-5">
       <div
         class="flex p-3 mb-3 overflow-x-auto"
-        style="border: 2px solid var(--bg-1)"
+        style="border: 2px solid var(--bg-1); min-height: 52px;"
         :class="{
           'md:hidden': offline,
         }"
@@ -152,7 +152,6 @@ interface GameFieldProps {
     const className = ref(userData.className);
     const classArmor = ref(classes[userData.className].maxArmor);
     const classMana = ref(classes[userData.className].maxMana);
-    console.log(classes[userData.className]);
     // stat values
     const blockCount = ref<number>();
     const rowCount = ref<number>();
@@ -162,7 +161,6 @@ interface GameFieldProps {
     const target = ref<number>();
     const effects = ref<number[][]>([]);
     const nextBlockMove = ref<number>();
-    const effectsString = ref<string>('');
 
     /**
      * if this is the handler of the activly playing user, we can handle the active target focus
@@ -206,7 +204,6 @@ interface GameFieldProps {
         armor.value = user.armor;
         blockCount.value = user.blockCount;
         effects.value = user.effects;
-        effectsString.value = JSON.stringify(user.effects);
         mana.value = user.mana;
         rowCount.value = user.rowCount;
         speed.value = user.speed;
@@ -245,7 +242,6 @@ interface GameFieldProps {
       className,
       container,
       effects,
-      effectsString,
       isCurrUser,
       mana,
       onKeyDown,

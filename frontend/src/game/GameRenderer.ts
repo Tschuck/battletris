@@ -278,7 +278,6 @@ export default class GameRenderer {
 
   // declar resize watcher here, so we can use all game update functions
   windowResizeWatch() {
-    console.log(this.user.id);
     this.updateGameStage();
     this.updateLayerSize(this.mapLayer);
     this.updateLayerSize(this.stoneLayer.children[0] as Konva.Group);

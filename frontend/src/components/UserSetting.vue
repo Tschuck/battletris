@@ -140,7 +140,7 @@ import currUser from '../lib/User';
         const ticks = ability?.ticks || 0;
         const tickTimeout = ability?.tickTimeout || 0;
         return {
-          duration: ticks > 0 ? ticks * tickTimeout : 0,
+          duration: ticks > 0 ? (ticks - 1) * tickTimeout : 0,
           mana: ability.mana,
         };
       }),
