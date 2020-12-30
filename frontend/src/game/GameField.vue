@@ -222,7 +222,6 @@ interface GameFieldProps {
           const block = [...Blocks[blockId][0]];
           return block.filter((y: number[]) => y.find((x: number) => !!x));
         });
-      console.log(nextBlocks.value);
     };
 
     // will be initialized after on mounted
@@ -245,7 +244,7 @@ interface GameFieldProps {
         }
         // rerender next blocks
         if (user.nextBlocks) {
-          updateNextBlocks(gameUser);
+          updateNextBlocks(user);
         }
       },
     );

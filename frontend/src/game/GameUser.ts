@@ -4,7 +4,7 @@ import {
 import {
   GameStateChange, getDifference,
 } from '@battletris/shared/functions/gameHelper';
-import GameConnection, { getCurrentConnection } from '../lib/GameConnection';
+import GameConnection, { getCurrentConnection } from '../lib/Gameconnection';
 import currUser from '../lib/User';
 
 const isSet = (value: number|undefined) => value !== undefined;

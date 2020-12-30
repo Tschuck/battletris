@@ -28,7 +28,7 @@ import { Component, Vue } from 'vue-property-decorator';
 
 import { gameHelper, GameUser, WsMessageType } from '@battletris/shared';
 import currUser from '../lib/User';
-import GameConnection from '../lib/GameConnection';
+import GameConnection from '../lib/Gameconnection';
 import GameField from './GameField.vue';
 
 @Component({

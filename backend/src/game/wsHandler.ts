@@ -1,7 +1,7 @@
 import { ErrorCodes, getStringifiedMessage, parseMessage, WsMessageType } from '@battletris/shared';
 import { Socket } from 'net';
 import WebSocket from 'ws';
-import game from './game';
+import game from './Game';
 import logger from './logger';
 
 const wss = new WebSocket.Server({ noServer: true });

@@ -2,7 +2,7 @@ import { ErrorCodes, ProcessMessageType } from '@battletris/shared';
 import { Socket } from 'net';
 import wsHandler from './wsHandler';
 import logger from './logger';
-import game from './game';
+import game from './Game';
 
 class ProcessHandler {
   keepAliveTimeout: NodeJS.Timeout;

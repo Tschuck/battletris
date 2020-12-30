@@ -3,7 +3,7 @@ import { GameUser, mapHelper } from '@battletris/shared';
 import { classList, AbilityInterface } from '@battletris/shared/functions/classes';
 import { GameStateChange } from '@battletris/shared/functions/gameHelper';
 import config from '../lib/config';
-import game from './game';
+import game from './Game';
 import numberToBlockMap from './helpers/numberToBlockMap';
 
 class BackendGameUser extends GameUser {
