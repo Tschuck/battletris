@@ -18,7 +18,10 @@ interface AbilityInterface {
    * @user GameUser game user to apply effect to
    * @tick amount of previous ticks
    */
-  tick?: (user: GameUser, ticks: number) => void;
+  tick?: (
+    user: GameUser,
+    userEvent: number[]|undefined,
+  ) => void;
 
   /**
    * function that is executed, on each state change

@@ -84,7 +84,10 @@ class BackendGameUser extends GameUser {
         classIndex, // class index
         abilityIndex, // ability index
         Date.now(), // activation time
+        this.gameUserIndex, // from index
         0, // execution time
+        this.block, // active block
+        this.rotation, // active block rotation
       ]);
     }
   }
@@ -107,12 +110,13 @@ class BackendGameUser extends GameUser {
         null,
         classIndex,
         abilityIndex,
-        effect[3] + 1,
+        effect[4] + 1,
+        ...effect.slice(5, effect.length),
       ]);
 
       // can be removed, when ticks are reached
-      effect[3] += 1;
-      if (!ability.ticks || effect[3] >= ability.ticks) {
+      effect[4] += 1;
+      if (!ability.ticks || effect[4] >= ability.ticks) {
         // force effect update if we remove the effect at this position, the diff logic
         // will not update the ui
         this.forceFieldUpdates = ['effects'];

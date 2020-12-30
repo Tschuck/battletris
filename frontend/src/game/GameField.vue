@@ -25,7 +25,7 @@
           :key="`${effect[0]}${effect[1]}${effect[2]}`"
           :classIndex="effect[0]"
           :abilityIndex="effect[1]"
-          :ticked="effect[3]"
+          :ticked="effect[4]"
           :userId="userId"
         />
       </div>

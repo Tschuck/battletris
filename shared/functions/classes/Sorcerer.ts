@@ -21,9 +21,9 @@ export default class Sorcerer implements ClassInterface {
       tickTimeout: 10_000,
       ticks: 2,
       mana: 50,
-      tick: (user: GameUser, tick: number): void => {
+      tick: (user: GameUser, userEvent: number[]|undefined = []): void => {
         // reduce speed on first tick, increase it back on second tick
-        if (tick === 1) {
+        if (userEvent[4] === 1) {
           user.speed -= 800;
         } else {
           user.speed += 800;

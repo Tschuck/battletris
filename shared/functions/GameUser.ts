@@ -414,7 +414,7 @@ class GameUser {
         if (userEvent) {
           const ability: AbilityInterface = classList[userEvent[2]].abilities[userEvent[3]];
           if (ability.tick) {
-            ability.tick(this, userEvent[4]);
+            ability.tick(this, userEvent);
           }
         } else {
           throw new Error('tried to execute effect without specifying params');
