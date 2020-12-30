@@ -17,10 +17,13 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { classes, ClassesIndex } from '@battletris/shared/functions/classes';
-import { computed, ref } from '@vue/composition-api';
+import {
+  computed, onBeforeMount, onBeforeUnmount, ref,
+} from '@vue/composition-api';
 import Tooltip from './Tooltip.vue';
 import AbilityLogo from '../icons/AbilityLogo.vue';
 import AbilityTooltip from './AbilityTooltip.vue';
+import currUser from '../lib/User';
 
 @Component({
   components: {
@@ -29,6 +32,7 @@ import AbilityTooltip from './AbilityTooltip.vue';
     AbilityTooltip,
   },
   props: {
+    userId: { type: String },
     classIndex: { type: Number },
     abilityIndex: { type: Number },
     ticked: { type: Number },
@@ -43,6 +47,22 @@ import AbilityTooltip from './AbilityTooltip.vue';
     const tickTimeout = ability?.tickTimeout || 0;
     const duration = computed(() => ((ticks - ticked) * tickTimeout));
 
+    onBeforeMount(() => {
+      // add blur to the screen
+      if (props.userId === currUser.id && className.value === 'unknown'
+        && props.abilityIndex === 3) {
+        document.body.classList.add('effect-blur');
+      }
+    });
+
+    onBeforeUnmount(() => {
+      // remove blur to the screen
+      if (props.userId === currUser.id && className.value === 'unknown'
+        && props.abilityIndex === 3) {
+        document.body.classList.remove('effect-blur');
+      }
+    });
+
     return {
       className,
       duration,
@@ -52,3 +72,9 @@ import AbilityTooltip from './AbilityTooltip.vue';
 })
 export default class AbilityControl extends Vue {}
 </script>
+
+<style lang="postcss">
+.effect-blur {
+  filter: blur(20px);
+}
+</style>

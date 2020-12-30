@@ -106,11 +106,17 @@ class BackendGameUser extends GameUser {
 
       // can be removed, when ticks are reached
       effect[3] += 1;
-      if (!ability.ticks || effect[3] > ability.ticks) {
+      if (!ability.ticks || effect[3] >= ability.ticks) {
         // force effect update if we remove the effect at this position, the diff logic
         // will not update the ui
         this.forceFieldUpdates = ['effects'];
-        this.effects.splice(this.effects.indexOf(effect), 1);
+        // find effect index by comparing classIndex, abilityIndex and started date
+        const effectIndex = this.effects.findIndex(
+          (eff) => eff[0] === effect[0] && eff[1] === effect[1] && eff[2] === effect[2],
+        );
+        if (effectIndex !== -1) {
+          this.effects.splice(effectIndex, 1);
+        }
         if (timeout) {
           this.effectTimeouts.splice(this.effectTimeouts.indexOf(timeout), 1);
           clearInterval(timeout);

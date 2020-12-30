@@ -11,67 +11,67 @@ export default class BattletrisGameClass implements ClassInterface {
     // heal armor abilities
     {
       tickTimeout: 500,
-      ticks: 5,
+      ticks: 8,
       mana: 0,
       tick: (user: GameUser): void => {
-        user.armor += 2; // => 5 * 2 = 10
+        user.armor += 1; // 8
       },
     },
     {
       tickTimeout: 500,
-      ticks: 5,
+      ticks: 6,
       mana: 0,
       tick: (user: GameUser): void => {
-        user.armor += 4; // => 5 * 3 = 20
+        user.armor += 3; // 18
       },
     },
     {
       tickTimeout: 500,
-      ticks: 5,
+      ticks: 4,
       mana: 0,
       tick: (user: GameUser): void => {
-        user.armor += 6; // => 5 * 6 = 30
+        user.armor += 10; // 40
       },
     },
     {
       tickTimeout: 500,
-      ticks: 5,
+      ticks: 3,
       mana: 0,
       tick: (user: GameUser): void => {
-        user.armor += 10; // => 5 * 10 = 50
+        user.armor += 20; // 60
       },
     },
     // damage armor abilities
     {
       tickTimeout: 500,
-      ticks: 5,
+      ticks: 8,
       mana: 0,
       tick: (user: GameUser): void => {
-        user.armor -= 2; // => 5 * 2 = 10
+        user.armor -= 1; // 8
       },
     },
     {
       tickTimeout: 500,
-      ticks: 5,
+      ticks: 6,
       mana: 0,
       tick: (user: GameUser): void => {
-        user.armor -= 4; // => 5 * 3 = 20
+        user.armor -= 3; // 18
       },
     },
     {
       tickTimeout: 500,
-      ticks: 5,
+      ticks: 4,
       mana: 0,
       tick: (user: GameUser): void => {
-        user.armor -= 6; // => 5 * 6 = 30
+        user.armor -= 10; // 40
       },
     },
     {
       tickTimeout: 500,
-      ticks: 5,
+      ticks: 3,
       mana: 0,
       tick: (user: GameUser): void => {
-        user.armor -= 10; // => 5 * 10 = 50
+        user.armor -= 20; // 60
       },
     },
   ];

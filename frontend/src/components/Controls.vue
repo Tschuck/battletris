@@ -32,11 +32,11 @@
         @keydown="$emit('keydown', $event)"
       />
       <AbilityControl
-        ref="R"
+        ref="r"
         class="mr-3 medium tooltip-box"
         :className="className"
         :abilityIndex="3"
-        :keyValue="83"
+        :keyValue="82"
         :userMana="userMana"
         keyText="R"
         @keydown="$emit('keydown', $event)"

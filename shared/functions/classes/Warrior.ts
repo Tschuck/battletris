@@ -3,9 +3,9 @@ import GameUser from '../GameUser';
 import { ClassInterface } from './ClassInterface';
 
 export default class Warrior implements ClassInterface {
-  maxArmor = 50;
+  maxArmor = 150;
 
-  maxMana = 200;
+  maxMana = 50;
 
   abilities = [
     {

@@ -3,7 +3,7 @@ import { cloneDeep } from 'lodash';
 import Blocks, { BlockMapping } from '../enums/Blocks';
 // eslint-disable-next-line import/no-cycle
 import {
-  AbilityInterface, classList, ClassInterface, getClassIndex,
+  AbilityInterface, classList, ClassInterface, getClassIndex, classes,
 } from './classes';
 import {
   CollisionType,
@@ -137,7 +137,7 @@ class GameUser {
     this.className = user.className || '';
     this.gameUserIndex = gameUserIndex;
     // setup initial game values
-    this.armor = user.armor || 100;
+    this.armor = user.armor || classes[this.className].maxArmor;
     this.block = 0;
     this.blockCount = 0;
     this.effects = user.effects || [];
@@ -284,7 +284,7 @@ class GameUser {
     if (clearedRows !== 0) {
       const classInstance: ClassInterface = classList[getClassIndex(this.className)];
       // stack percentage of mana accordingly to the amount of cleared rows
-      this.mana += (classInstance.maxMana / 10) * clearedRows;
+      this.mana += (classInstance.maxMana / 100) * ((10 * clearedRows) + clearedRows * clearedRows);
       if (this.mana > classInstance.maxMana) {
         this.mana = classInstance.maxMana;
       }

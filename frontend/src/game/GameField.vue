@@ -21,11 +21,12 @@
       >
         <Effect
           class="mr-1"
-          v-for="(effect, index) of effects"
-          :key="index"
+          v-for="(effect) of effects"
+          :key="`${effect[0]}${effect[1]}${effect[2]}`"
           :classIndex="effect[0]"
           :abilityIndex="effect[1]"
           :ticked="effect[3]"
+          :userId="userId"
         />
       </div>
 
@@ -147,6 +148,7 @@ interface GameFieldProps {
     // vue param setup
     const isCurrUser = ref<boolean>(currUser.id === userData.id);
     const container = ref();
+    const userId = ref(userData.id);
     const className = ref(userData.className);
     const classArmor = ref(classes[userData.className].maxArmor);
     const classMana = ref(classes[userData.className].maxMana);
@@ -250,6 +252,7 @@ interface GameFieldProps {
       rowCount,
       speed,
       target,
+      userId,
     };
   },
 })
