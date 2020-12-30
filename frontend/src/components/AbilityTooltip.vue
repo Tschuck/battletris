@@ -55,7 +55,7 @@ export const iconProps = {
     const mana = ref(ability.mana);
     const ticks = ability?.ticks || 0;
     const tickTimeout = ability?.tickTimeout || 0;
-    const duration = ref(ticks > 0 ? ticks * tickTimeout : 0);
+    const duration = ref(ticks > 0 ? (ticks - 1) * tickTimeout : 0);
 
     return {
       duration,
