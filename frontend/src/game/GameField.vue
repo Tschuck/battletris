@@ -317,7 +317,7 @@ canvas {
 }
 
 .targeted-game-field {
-  &, .next-blocks {
+  &, &.is-targeting, .next-blocks {
     @apply border-yellow-600 border-opacity-50;
   }
 }
