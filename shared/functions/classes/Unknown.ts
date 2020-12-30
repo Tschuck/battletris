@@ -36,7 +36,7 @@ export default class Unknown implements ClassInterface {
       },
     },
     {
-      tickTimeout: 10 * 1000,
+      tickTimeout: 10_000,
       // use 2, will be directly executed once
       ticks: 2,
       mana: 80,

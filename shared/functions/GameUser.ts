@@ -354,8 +354,17 @@ class GameUser {
    * @param key key number that was pressed
    * @param userEvent array of numbers [key, id, ...optionalStuff ]
    */
-  handleStateChange(key: GameStateChange, userEvent?: number[]): void {
+  handleStateChange(inputKey: GameStateChange, userEvent?: number[]): void {
+    let key: GameStateChange|undefined = inputKey;
     const beforeUser = this.clone();
+
+    // check for state change effects
+    this.effects.forEach((effect: number[]) => {
+      const ability = classList[effect[0]].abilities[effect[1]];
+      if (ability.onStateChange) {
+        key = ability.onStateChange(this, userEvent, inputKey);
+      }
+    });
 
     switch (key) {
       case GameStateChange.TURN: {
@@ -404,7 +413,9 @@ class GameUser {
       case GameStateChange.EFFECT: {
         if (userEvent) {
           const ability: AbilityInterface = classList[userEvent[2]].abilities[userEvent[3]];
-          ability.tick(this);
+          if (ability.tick) {
+            ability.tick(this, userEvent[4]);
+          }
         } else {
           throw new Error('tried to execute effect without specifying params');
         }

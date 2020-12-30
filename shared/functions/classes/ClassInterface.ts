@@ -1,3 +1,4 @@
+import { GameStateChange } from '../gameHelper';
 // eslint-disable-next-line import/no-cycle
 import GameUser from '../GameUser';
 
@@ -11,8 +12,26 @@ interface AbilityInterface {
   /** amount of needed mana */
   mana: number;
 
-  /** function that is executed, on each effect loop tick */
-  tick: (user: GameUser) => void;
+  /**
+   * function that is executed, on each effect loop tick.
+   *
+   * @user GameUser game user to apply effect to
+   * @tick amount of previous ticks
+   */
+  tick?: (user: GameUser, ticks: number) => void;
+
+  /**
+   * function that is executed, on each state change
+   *
+   * @user GameUser game user to apply effect to
+   * @userEvent user event for the key
+   * @key pressed key
+   */
+  onStateChange?: (
+    user: GameUser,
+    userEvent: number[]|undefined,
+    key: GameStateChange,
+  ) => GameStateChange|undefined;
 }
 
 interface ClassInterface {

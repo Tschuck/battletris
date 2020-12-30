@@ -37,7 +37,7 @@
           'md:hidden': offline,
         }"
       >
-        <div class="flex items-center justify-between p-3 bg-1">
+        <div class="flex items-center justify-between p-3 mb-1 bg-1">
           <span class="tooltip-box">
             <font-awesome-icon class="text-lg" icon="th-large" />
             {{ blockCount }}

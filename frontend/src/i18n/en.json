@@ -51,12 +51,12 @@
         "title": "Gravity Charge"
       },
       "ability1": {
-        "desc": "Confuse the target by distorting the space around them, reversing their controls for 15 seconds.",
-        "title": "Spatial Distortion"
-      },
-      "ability2": {
         "desc": "Speed up the target's block drop speed by amplifying the flow of time for 15 seconds.",
         "title": "Temporal Rift"
+      },
+      "ability2": {
+        "desc": "Confuse the target by distorting the space around them, reversing their controls for 15 seconds.",
+        "title": "Spatial Distortion"
       },
       "ability3": {
         "desc": "By rending spacetime asunder you stop the target's time and freeze its controls solid for 10 seconds.",

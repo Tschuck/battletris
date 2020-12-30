@@ -102,7 +102,13 @@ class BackendGameUser extends GameUser {
     // add the effect to the user events and increase the ticks count
     const execute = () => {
       // add a effect execution to the user event queue
-      this.userEvents.push([GameStateChange.EFFECT, null, classIndex, abilityIndex ]);
+      this.userEvents.push([
+        GameStateChange.EFFECT,
+        null,
+        classIndex,
+        abilityIndex,
+        effect[3] + 1,
+      ]);
 
       // can be removed, when ticks are reached
       effect[3] += 1;

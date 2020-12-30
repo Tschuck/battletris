@@ -213,11 +213,11 @@ export default class FrontendGameUser extends GameUser {
   /**
    * User event was pushed to the userEvents array. We now need to render the change
    */
-  sendUpdate(key: GameStateChange) {
+  sendUpdate(key: GameStateChange, id?: number) {
     // keep the last state
     const lastState = this.clone();
     // adjust the current game state for the key
-    this.handleStateChange(key, [key]);
+    this.handleStateChange(key, [key, id as number]);
     // get the new state including the changes and persist them to the user lastState
     const diff = getDifference(this, lastState);
     // calculate the difference and trigger a re-render
