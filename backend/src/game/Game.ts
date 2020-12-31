@@ -119,19 +119,19 @@ class Game {
 
       const update = this.users.map((user) => {
         // keep before states, so we can calculate a diff to the state without applied key presses
-        const userEvents = [...user.userEvents];
+        const queue = [...user.queue];
         const beforeState = user.clone();
 
         // apply all changes to the user
-        while (user.userEvents.length) {
-          const userEvent = user.userEvents.shift();
+        while (user.queue.length) {
+          const userEvent = user.queue.shift();
           // adjust the current game state for the key
           user.handleStateChange(userEvent[0], userEvent);
         }
 
-        // build the delta and apply the userEvents
+        // build the delta and apply the queue
         const difference = getDifference(user, beforeState);
-        difference.userEvents = userEvents;
+        difference.queue = queue;
 
         // update fiels that were updated by side logic
         user.forceFieldUpdates.forEach((field) => {
@@ -187,7 +187,7 @@ class Game {
     // send out game stop message
     processHandler.send(ProcessMessageType.GAME_STOP, stats);
     // wait with closing of the process, until message was sent
-    setTimeout(() => processHandler.exit(), 500);
+    setTimeout(() => processHandler.exit(), 3_000);
   }
 }
 

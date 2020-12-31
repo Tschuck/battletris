@@ -90,6 +90,7 @@ import Loading from '../components/Loading.vue';
 import RoomConnection from '../lib/RoomConnection';
 import ViewWrapper from '../components/ViewWrapper.vue';
 import Modal from '../components/Modal.vue';
+import Tooltip from '../components/Tooltip.vue';
 import ClassLogo from '../icons/ClassLogo.vue';
 
 interface StopStatsInterface {
@@ -113,6 +114,7 @@ interface StopStatsInterface {
     GameRegistration,
     Loading,
     Modal,
+    Tooltip,
     ViewWrapper,
   },
   props: {

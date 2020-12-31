@@ -104,25 +104,25 @@ export default class FrontendGameUser extends GameUser {
    */
   handleBackendUpdate(update: Partial<GameUser>) {
     const previousUIUser = this.clone();
-    const userEvents = update.userEvents || [];
+    const queue = update.queue || [];
 
     // create the latest backend state out of the previous backend state and the new update
     this.backendUser.applyUserState(update);
-    // delete user events before they will overwrite the ui userEvents
+    // delete user events before they will overwrite the ui queue
     this.applyUserState(this.backendUser);
     // save latest backend state, diff is now applied
     this.backendUser = this.clone();
-    this.backendUser.userEvents = [];
+    this.backendUser.queue = [];
 
     // remove old user events from the frontend user
-    userEvents.forEach(([, id]: number[]) => {
-      const foundEvent = this.userEvents.findIndex(([, frontendId]) => id === frontendId);
+    queue.forEach(([, id]: number[]) => {
+      const foundEvent = this.queue.findIndex(([, frontendId]) => id === frontendId);
       if (foundEvent !== -1) {
-        this.userEvents.splice(foundEvent, 1);
+        this.queue.splice(foundEvent, 1);
       }
     });
     // apply now all new changes to the left backend states, that were not processed
-    this.userEvents.forEach((userEvent: number[]) => {
+    this.queue.forEach((userEvent: number[]) => {
       this.handleStateChange(userEvent[0], userEvent);
     });
 
@@ -209,7 +209,7 @@ export default class FrontendGameUser extends GameUser {
   }
 
   /**
-   * User event was pushed to the userEvents array. We now need to render the change
+   * User event was pushed to the queue array. We now need to render the change
    */
   sendUpdate(key: GameStateChange, id?: number) {
     // keep the last state

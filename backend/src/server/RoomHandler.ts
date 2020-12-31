@@ -153,12 +153,20 @@ export default class RoomHandler {
           stats: JSON.stringify(stats),
         }).save();
 
+        // directly send process close event
+        this.onProcessClose();
+        // wait a bit, so everyone is back in the lobby
+        await new Promise((resolve) => setTimeout(resolve, 500));
         this.wsBroadcast(WsMessageType.GAME_STOP, message.payload);
       }
     });
 
     // wait for process close and reset all game registrations
-    this.process.on('close', () => {
+    this.process.on('close', () => this.onProcessClose());
+  }
+
+  onProcessClose() {
+    if (this.process) {
       this.process = null;
 
       // clear left users and reset states
@@ -177,7 +185,7 @@ export default class RoomHandler {
       this.wsBroadcast(WsMessageType.GAME_REG_UPDATE, this.gameRegistration);
       // check if room can be cleared
       this.closeRoom();
-    });
+    }
   }
 
   /**

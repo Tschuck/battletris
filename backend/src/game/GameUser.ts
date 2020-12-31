@@ -20,7 +20,7 @@ class BackendGameUser extends GameUser {
     // ensure that only one is running
     clearTimeout(this.gameLoopTimeout);
     this.gameLoopTimeout = setTimeout(() => {
-      this.userEvents.push([GameStateChange.DOWN]);
+      this.queue.push([GameStateChange.DOWN]);
 
       // ensure users are up to date
       this.sendUpdate();
@@ -105,7 +105,7 @@ class BackendGameUser extends GameUser {
     // add the effect to the user events and increase the ticks count
     const execute = () => {
       // add a effect execution to the user event queue
-      this.userEvents.push([
+      this.queue.push([
         GameStateChange.EFFECT,
         null,
         classIndex,

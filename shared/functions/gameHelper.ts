@@ -17,7 +17,7 @@ export enum GameUserMapping {
   mana = 12,
   effects = 13,
   target = 14,
-  userEvents = 15,
+  queue = 15,
   interactionCount = 16,
 }
 

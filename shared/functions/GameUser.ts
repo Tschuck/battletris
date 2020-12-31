@@ -30,7 +30,7 @@ function getRandomNumber(min: number, max: number): number { // min and max incl
 }
 
 const neverUpdateProps = [
-  'userEvents',
+  'queue',
   'interactionCount',
 ];
 
@@ -117,8 +117,8 @@ class GameUser {
   /** counter of key presses of the user */
   interactionCount = 0;
 
-  /** list of latest user events (use arrays in arrays to reduce sent payload) ([id, key]) */
-  userEvents: number[][] = [];
+  /** list of latest user events (use arrays in arrays to reduce sent payload) ([id, key, payload]) */
+  queue: (number|any)[][] = [];
 
   constructor(
     user: Partial<GameUser>|GameUser,
@@ -239,7 +239,7 @@ class GameUser {
         return;
       }
 
-      // never overwrite userEvents
+      // never overwrite queue
       if (neverUpdateProps.indexOf(key) !== -1) {
         return;
       }
@@ -335,7 +335,7 @@ class GameUser {
     // backend
     // !IMPORTANT: be careful to handle user event emptying within the backend / frontend state
     this.interactionCount += 1;
-    this.userEvents.push([key, this.interactionCount]);
+    this.queue.push([key, this.interactionCount]);
     // update the user
     this.sendUpdate(key, this.interactionCount);
   }
