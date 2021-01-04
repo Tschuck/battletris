@@ -45,4 +45,6 @@ export default {
   debugGame: _('DEBUG_GAME', false),
   /** overall log level */
   logLevel: _('LOG_LEVEL', 'debug'),
+  /** room keep alive timeout */
+  keepAliveTimeout: _('ROOM_KEEP_ALIVE', 15_000),
 };

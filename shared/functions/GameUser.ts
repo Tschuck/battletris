@@ -72,6 +72,9 @@ class GameUser {
   /** db user class */
   className!: string;
 
+  /** users name */
+  name!: string;
+
   /** users index within the game */
   gameUserIndex!: number;
 
@@ -134,6 +137,7 @@ class GameUser {
 
     // initialize a new user
     this.id = user.id || '';
+    this.name = user.name || '';
     this.className = user.className || '';
     this.gameUserIndex = gameUserIndex;
     // setup initial game values

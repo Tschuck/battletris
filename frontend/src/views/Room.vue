@@ -2,7 +2,7 @@
   <ViewWrapper
     backRoute="/multi-player"
     :title="roomName"
-    :showNav="!(isJoined && isMatchRunning)"
+    :showNav="!isMatchRunning"
   >
     <Loading class="mt-20" v-if="loading" />
     <template class="w-full vh-100" v-else>
@@ -136,6 +136,7 @@ interface StopStatsInterface {
           isMatchRunning.value = roomConn?.isMatchRunning;
 
           if (type === WsMessageType.GAME_STOP) {
+            isMatchRunning.value = false;
             const {
               started, stopped, users, winner,
             } = payload;

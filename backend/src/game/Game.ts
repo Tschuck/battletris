@@ -117,21 +117,28 @@ class Game {
       // allow next update
       this.updateTriggered = null;
 
-      const update = this.users.map((user) => {
-        // keep before states, so we can calculate a diff to the state without applied key presses
-        const queue = [...user.queue];
-        const beforeState = user.clone();
+      // save the before queue and the build the before user states before the update loop, so
+      // abilities activation can access other users and diff will correctly be evaluated
+      const beforeQueues = this.users.map((user) => [...user.queue]);
+      const beforeStates = this.users.map((user) => user.clone());
 
-        // apply all changes to the user
+      // apply the changes first, so the last user can activate a ability on the first user and
+      // probably changes his values
+      this.users.forEach((user) => {
+        // apply all changes to the user and empty the queue
         while (user.queue.length) {
           const userEvent = user.queue.shift();
           // adjust the current game state for the key
           user.handleStateChange(userEvent[0], userEvent);
         }
+      });
 
+      // build the changes to sync from the original states
+      const update = this.users.map((user, index) => {
         // build the delta and apply the queue
-        const difference = getDifference(user, beforeState);
-        difference.queue = queue;
+        const difference = getDifference(user, beforeStates[index]);
+        // enforce queue sending, so user knows, which queue events were already calculated
+        difference.queue = beforeQueues[index];
 
         // update fiels that were updated by side logic
         user.forceFieldUpdates.forEach((field) => {
@@ -143,6 +150,7 @@ class Game {
         return gameHelper.transformUserTransport(difference);
       });
 
+      // send updates
       wsHandler.wsBroadcast(WsMessageType.GAME_USER_UPDATE, update);
     }, config.userUpdateInterval);
   }
@@ -187,7 +195,7 @@ class Game {
     // send out game stop message
     processHandler.send(ProcessMessageType.GAME_STOP, stats);
     // wait with closing of the process, until message was sent
-    setTimeout(() => processHandler.exit(), 3_000);
+    setTimeout(() => processHandler.exit(), 100);
   }
 }
 

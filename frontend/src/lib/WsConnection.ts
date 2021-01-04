@@ -110,7 +110,7 @@ export default class WsConnection {
    */
   send(type: WsMessageType, payload?: any) {
     try {
-      if (!this.closed) {
+      if (!this.closed && this.ws.readyState === this.ws.OPEN) {
         this.ws.send(getStringifiedMessage(type, payload));
       }
     } catch (ex) {

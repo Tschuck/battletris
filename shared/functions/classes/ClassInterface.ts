@@ -24,6 +24,18 @@ interface AbilityInterface {
   ) => void;
 
   /**
+   * function that is executed, before the ability is activated.
+   *
+   * @user GameUser game user to apply effect to
+   * @tick amount of previous ticks
+   */
+  onActivate?: (
+    from: GameUser,
+    to: GameUser,
+    userEvent: number[]|undefined,
+  ) => void;
+
+  /**
    * function that is executed, on each state change
    *
    * @user GameUser game user to apply effect to

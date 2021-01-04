@@ -10,11 +10,9 @@ export default class Sorcerer implements ClassInterface {
 
   abilities = [
     {
-      tickTimeout: 0,
-      ticks: 0,
       mana: 20,
-      tick: (user: GameUser): void => {
-        user.handleStateChange(GameStateChange.FALL_DOWN);
+      onActivate: (from: GameUser, to: GameUser): void => {
+        to.handleStateChange(GameStateChange.FALL_DOWN);
       },
     },
     {
@@ -24,9 +22,9 @@ export default class Sorcerer implements ClassInterface {
       tick: (user: GameUser, userEvent: number[]|undefined = []): void => {
         // reduce speed on first tick, increase it back on second tick
         if (userEvent[4] === 1) {
-          user.speed -= 800;
+          user.speed /= 2;
         } else {
-          user.speed += 800;
+          user.speed *= 2;
         }
       },
     },

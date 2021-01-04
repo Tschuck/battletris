@@ -98,19 +98,25 @@
       </div>
     </div>
 
-    <div class="flex flex-row items-center justify-between w-1/2 px-4 py-1 mr-1 next-blocks bg-1">
-      <div class="flex flex-col mr-1" v-for="(block, i1) in nextBlocks" :key="i1">
-        <div class="flex flex-row" v-for="(y, i2) in block" :key="i2">
-          <div
-            class="w-2 h-2"
-            v-for="(x, i3) in y"
-            :key="i3"
-            :style="`margin-right: 1px; margin-top: 1px; background-color: ${
-              blockColors[y[i3] || 0]
-            }`"
-          ></div>
+    <div class="flex flex-row items-center justify-between w-1/2 px-4 py-1 mr-1 leading-box bg-1">
+      <template v-if="isCurrUser">
+        <div class="flex flex-col mr-1" v-for="(block, i1) in nextBlocks" :key="i1">
+          <div class="flex flex-row" v-for="(y, i2) in block" :key="i2">
+            <div
+              class="w-2 h-2"
+              v-for="(x, i3) in y"
+              :key="i3"
+              :style="`margin-right: 1px; margin-top: 1px; background-color: ${
+                blockColors[y[i3] || 0]
+              }`"
+            ></div>
+          </div>
         </div>
-      </div>
+      </template>
+      <template v-else>
+        <ClassLogo class="w-6" :className="className" height="20px" />
+        <span class="ml-3 text-xs font-bold w=full text-center">{{ userName }}</span>
+      </template>
     </div>
   </div>
 </template>
@@ -122,6 +128,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { classes } from '@battletris/shared/functions/classes';
 import { GameUser, Blocks } from '@battletris/shared';
 import AbilityLogo from '../icons/AbilityLogo.vue';
+import ClassLogo from '../icons/ClassLogo.vue';
 import Controls from '../components/Controls.vue';
 import currUser from '../lib/User';
 import Effect from '../components/Effect.vue';
@@ -138,6 +145,7 @@ interface GameFieldProps {
 @Component({
   components: {
     AbilityLogo,
+    ClassLogo,
     Controls,
     Effect,
     Tooltip,
@@ -164,6 +172,7 @@ interface GameFieldProps {
     const isCurrUser = ref<boolean>(currUser.id === userData.id);
     const container = ref();
     const userId = ref(userData.id);
+    const userName = ref(userData.name);
     const className = ref(userData.className);
     const classArmor = ref(classes[userData.className].maxArmor);
     const classMana = ref(classes[userData.className].maxMana);
@@ -286,6 +295,7 @@ interface GameFieldProps {
       speed,
       target,
       userId,
+      userName,
     };
   },
 })
@@ -316,19 +326,19 @@ canvas {
 }
 
 .targeted-game-field {
-  &, &.is-targeting, .next-blocks {
+  &, &.is-targeting, .leading-box {
     @apply border-yellow-600 border-opacity-50;
   }
 }
 
 .is-targeting {
-  &, .next-blocks {
+  &, .leading-box {
     @apply border-red-600 border-opacity-50;
   }
 }
 
 .is-self-targeting {
-  &, .next-blocks {
+  &, .leading-box {
     @apply border-green-600 border-opacity-50;
   }
 }
@@ -338,7 +348,7 @@ canvas {
   transition: 0.5s ease-out width;
 }
 
-.next-blocks {
+.leading-box {
   position: absolute;
   top: -19px;
   left: 0;

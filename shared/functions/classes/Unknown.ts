@@ -12,19 +12,17 @@ export default class Unknown implements ClassInterface {
   abilities = [
     {
       mana: 20,
-      tick: (user: GameUser): void => {
-        user.map.pop();
-        user.map.unshift(generateEmptyRows(1)[0]);
+      onActivate: (from: GameUser, to: GameUser): void => {
+        to.map.pop();
+        to.map.unshift(generateEmptyRows(1)[0]);
       },
     },
     {
-      tickTimeout: 0,
-      ticks: 0,
       mana: 30,
-      tick: (user: GameUser): void => {
+      onActivate: (from: GameUser, to: GameUser): void => {
         const [newRow] = generateRandomClears([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]], 1);
-        user.map.push(newRow);
-        user.map.shift();
+        to.map.push(newRow);
+        to.map.shift();
       },
     },
     {

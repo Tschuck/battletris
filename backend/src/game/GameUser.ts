@@ -80,15 +80,24 @@ class BackendGameUser extends GameUser {
       this.mana -= ability.mana;
       // add the ability effect to the target user
       const targetUser = game.users[this.target];
-      targetUser.effectLoop([
+      const effect = [
         classIndex, // class index
         abilityIndex, // ability index
         Date.now(), // activation time
         this.gameUserIndex, // from index
         0, // execution time
-        this.block, // active block
-        this.rotation, // active block rotation
-      ]);
+      ];
+      // run on activate functions (single time hooks) => solves the problem, that effects were at
+      //  executed without any reference on the targets side. we can just run the game state
+      // checking in here
+      if (ability.onActivate) {
+        // !IMPORATANT: copy the target and check the game state!
+        const beforeTarget = this.clone();
+        ability.onActivate(this, targetUser, effect);
+        this.checkGameState(beforeTarget);
+      }
+      // start effect loop to run the tick function
+      targetUser.effectLoop(effect);
     }
   }
 

@@ -91,11 +91,20 @@
 import { GameStateChange } from '@battletris/shared/functions/gameHelper';
 import { onBeforeUnmount, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
+import { Key } from 'ts-keycode-enum';
 import Control from './Control.vue';
 import AbilityLogo from '../icons/AbilityLogo.vue';
 import Tooltip from './Tooltip.vue';
 import AbilityTooltip from './AbilityTooltip.vue';
 import AbilityControl from './AbilityControl.vue';
+
+const keysToIgnore = [
+  Key.Alt,
+  Key.Ctrl,
+  Key.LeftWindowKey,
+  Key.RightWindowKey,
+  Key.Shift,
+];
 
 @Component({
   components: {
@@ -148,17 +157,27 @@ import AbilityControl from './AbilityControl.vue';
       [GameStateChange.NEXT_TARGET]: tab,
     };
 
+    const ignoreKeys: number[] = [];
     const keyDownListener = ($event: KeyboardEvent) => {
-      if (references[$event.keyCode]) {
+      if (ignoreKeys.indexOf($event.keyCode) === -1
+        && keysToIgnore.indexOf($event.keyCode) !== -1) {
+        ignoreKeys.push($event.keyCode);
+      }
+      // only react on known and single key presses, when command is pressed
+      if (references[$event.keyCode] && ignoreKeys.length === 0) {
         references[$event.keyCode].value.mouseDown();
+        $event.preventDefault();
         $event.stopPropagation();
         return false;
       }
     };
 
     const keyUpListener = ($event: KeyboardEvent) => {
+      // clear pressed key stack
+      ignoreKeys.splice(ignoreKeys.indexOf($event.keyCode), 1);
       if (references[$event.keyCode]) {
         references[$event.keyCode].value.mouseUp();
+        $event.preventDefault();
         $event.stopPropagation();
         return false;
       }
