@@ -11,6 +11,20 @@ Battletris is a multiplayer block stacking game for up to 5 players.
 
 ![Game Screenshot](https://raw.githubusercontent.com/Tschuck/battletris/develop/docs/game-screenshot.png)
 
+## Next Features
+
+- [ ] ability cooldown
+- [ ] tutorial with images
+- [ ] german translations
+- [ ] page transitions
+- [ ] small screen
+- [ ] how to for "how to add a class"
+- [ ] statistics page
+- [ ] the winkler class
+- [ ] dynamic tutorial
+- [ ] custom room handling
+- [ ] tetris bot
+
 ## Start playing
 
 Do you want to try it? Have a look at [battletris.de](https://battletris.de).
