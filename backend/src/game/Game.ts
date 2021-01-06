@@ -175,7 +175,7 @@ class Game {
       started: this.started,
       stopped: new Date(),
       users: {},
-      winner: this.userIds[0],
+      winner: this.users.find((user) => !user.lost)?.id || '',
     };
 
     // apply latest user stats

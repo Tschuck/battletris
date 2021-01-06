@@ -6,11 +6,11 @@ import { ClassInterface } from './ClassInterface';
 export default class Sorcerer implements ClassInterface {
   maxArmor = 50;
 
-  maxMana = 200;
+  maxMana = 100;
 
   abilities = [
     {
-      mana: 20,
+      mana: 35,
       onActivate: (from: GameUser, to: GameUser): void => {
         to.handleStateChange(GameStateChange.FALL_DOWN);
       },

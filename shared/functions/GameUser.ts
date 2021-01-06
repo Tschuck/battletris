@@ -329,6 +329,11 @@ class GameUser {
    * @param keyCode key number
    */
   onNewStateChange(key: GameStateChange): void {
+    // disable keys when lost
+    if (this.lost) {
+      return;
+    }
+
     // only allow user keys that can be activated (prevent from accessing effect / new block logic
     // or something else)
     if (uiKeys.indexOf(key) === -1) {
@@ -359,6 +364,11 @@ class GameUser {
    * @param userEvent array of numbers [key, id, ...optionalStuff ]
    */
   handleStateChange(inputKey: GameStateChange, userEvent?: number[]): void {
+    // disable keys when lost
+    if (this.lost) {
+      return;
+    }
+
     let key: GameStateChange|undefined = inputKey;
     const beforeUser = this.clone();
 
