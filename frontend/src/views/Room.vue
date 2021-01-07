@@ -140,8 +140,9 @@ interface StopStatsInterface {
             const {
               started, stopped, users, winner,
             } = payload;
+            console.log(payload);
             const userIds = Object.keys(users);
-            const duration = new Date(started).getDate() - new Date(stopped).getDate();
+            const duration = new Date(stopped).getTime() - new Date(started).getTime();
             // create stop stats to show the finish modal
             stopStats.value = {
               duration: Math.round((duration / 1000 / 60) * 10) / 10,

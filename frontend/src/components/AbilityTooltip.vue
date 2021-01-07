@@ -16,7 +16,7 @@
               >{{ $t("classes.mana") }}: {{ mana }}</span
             >
             <span class="text-xs" v-if="duration"
-              >, {{ $t("classes.duration") }}: {{ duration }}ms</span
+              >, {{ $t("classes.duration") }}: {{ duration }}s</span
             >
           </span>
         </h4>
@@ -55,7 +55,8 @@ export const iconProps = {
     const mana = ref(ability.mana);
     const ticks = ability?.ticks || 0;
     const tickTimeout = ability?.tickTimeout || 0;
-    const duration = ref(ticks > 0 ? (ticks - 1) * tickTimeout : 0);
+    const msDuration = ticks > 0 ? (ticks - 1) * tickTimeout : 0;
+    const duration = ref(Math.round((msDuration / 1000) * 10) / 10);
 
     return {
       duration,

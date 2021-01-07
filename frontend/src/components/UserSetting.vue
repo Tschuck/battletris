@@ -77,7 +77,7 @@
               >
               <span class="ml-5" v-if="ability.duration">|</span>
               <span class="ml-5 text-xs" v-if="ability.duration"
-                >{{ $t("classes.duration") }}: {{ ability.duration }}ms</span
+                >{{ $t("classes.duration") }}: {{ ability.duration }}s</span
               >
             </div>
             <p
@@ -139,8 +139,10 @@ import currUser from '../lib/User';
       abilities: classes[getForClass].abilities.map((ability) => {
         const ticks = ability?.ticks || 0;
         const tickTimeout = ability?.tickTimeout || 0;
+        const msDuration = ticks > 0 ? (ticks - 1) * tickTimeout : 0;
+
         return {
-          duration: ticks > 0 ? (ticks - 1) * tickTimeout : 0,
+          duration: Math.round((msDuration / 1000) * 10) / 10,
           mana: ability.mana,
         };
       }),
