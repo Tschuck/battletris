@@ -6,7 +6,7 @@
       div
       class="relative border-8 selection-card"
       v-for="(slot, index) in userSlots"
-      :key="slot"
+      :key="users[slot] ? users[slot].id: slot"
     >
       <div
         class="absolute top-0 left-0 right-0 opacity-50"
