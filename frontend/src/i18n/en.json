@@ -1,15 +1,9 @@
 {
   "battletris": "BATTLETRIS",
-  "close": "Close",
   "classes": {
     "ability-activator": "Key",
     "ability-costs": "Mana-Costs",
     "armor": "Armor",
-    "mana": "Mana",
-    "block-count-tooltip": "Amount of used blocks",
-    "row-count-tooltip": "Cleared row count",
-    "duration": "Duration",
-    "speed-tooltip": "Speed - every X ms moves the block down",
     "battletris": {
       "ability0": {
         "desc": "Repairs your armor a little bit.",
@@ -44,8 +38,12 @@
         "title": "Armor Damage"
       }
     },
+    "block-count-tooltip": "Amount of used blocks",
     "cooldown": "Cooldown",
+    "duration": "Duration",
     "in-development": "This class is currently in development. Abilities for this class will be available soon...",
+    "mana": "Mana",
+    "row-count-tooltip": "Cleared row count",
     "sorcerer": {
       "ability0": {
         "desc": "By applying a massive amount of gravity you cause the target's block to immediately drop.",
@@ -66,6 +64,7 @@
       "desc": "A powerful magician harnessing the power of space and time to defeat his foes.",
       "title": "The Sorcerer"
     },
+    "speed-tooltip": "Speed - every X ms moves the block down",
     "unknown": {
       "ability0": {
         "desc": "Uses a simple shovel, that he found under a bridge, to remove a row at the bottom a Battlefield.",
@@ -96,32 +95,33 @@
         "title": "Punch"
       },
       "ability2": {
-        "desc": "Fiercely stomp on the ground causing blocks with gaps beneath to drop.",
-        "title": "Earthquake"
-      },
-      "ability3": {
         "desc": "Execute a full power slash with your beloved sword, cutting a diagonal line on your target's board.",
         "title": "Mighty Slash"
+      },
+      "ability3": {
+        "desc": "Fiercely stomp on the ground causing blocks with gaps beneath to drop.",
+        "title": "Earthquake"
       },
       "desc": "An offensive fighter who attacks the enemy with direct attacks and his powerful muscle power. Harnesses abilities to hurt others and trigger entire earthquakes.",
       "title": "Warrior"
     }
   },
+  "close": "Close",
   "coming-soon": "Coming soon...",
   "game": {
     "finished": "Game finished",
     "join": "Join",
     "leave": "Leave",
-    "next-blocks": "Next Blocks",
-    "winner": "Winner",
     "min-short": "min",
+    "next-blocks": "Next Blocks",
     "not-joined": "No one joined...",
     "running": "Game is running",
     "slot": "Slot",
+    "space": "Space",
     "start": "Start",
     "start-game": "Start Game",
     "stop": "Stop",
-    "space": "Space"
+    "winner": "Winner"
   },
   "lobby": {
     "chat-message": "Chat message",
@@ -137,15 +137,15 @@
   "settings": {
     "class": "Class",
     "history": {
-      "no-matches": "No Matches found...",
-      "title": "Match History",
-      "time": "Time",
-      "className": "Class",
       "blocks": "Blocks",
-      "rows": "Rows",
-      "won": "won",
+      "className": "Class",
       "lost": "lost",
-      "status": "Status"
+      "no-matches": "No Matches found...",
+      "rows": "Rows",
+      "status": "Status",
+      "time": "Time",
+      "title": "Match History",
+      "won": "won"
     },
     "name": "Name",
     "user-id-handling": {
@@ -159,8 +159,8 @@
   "start-page": {
     "buy-me-a-coffee": "Buy me a coffee - Tschuck",
     "github": "Github - battletris",
-    "multi-player": "Multi-Player",
     "mode-selection": "Mode Selection",
+    "multi-player": "Multi-Player",
     "multi-player-desc": "Join a battle room and play against 4 other players.",
     "settings": "Settings & History",
     "settings-desc": "Manage user name, class and view game history.",

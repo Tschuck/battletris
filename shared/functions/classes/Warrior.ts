@@ -27,12 +27,6 @@ export default class Warrior implements ClassInterface {
     {
       mana: 50,
       onActivate: (from: GameUser, to: GameUser): void => {
-        to.map = flattenMap(to.map);
-      },
-    },
-    {
-      mana: 50,
-      onActivate: (from: GameUser, to: GameUser): void => {
         let xIndex = 0;
         to.map.forEach((y, yIndex) => {
           if (!(yIndex % 2) && yIndex) {
@@ -41,6 +35,12 @@ export default class Warrior implements ClassInterface {
 
           (to.map[yIndex][xIndex] as any) = undefined;
         });
+      },
+    },
+    {
+      mana: 50,
+      onActivate: (from: GameUser, to: GameUser): void => {
+        to.map = flattenMap(to.map);
       },
     },
   ];
