@@ -12,22 +12,10 @@ import {
   getStoneCollision,
   iterateOverMap,
 } from './gameHelper';
-import { generateRandomClears, getEmptyMap } from './mapHelper';
+import { generateRandomClears, getEmptyMap, getRandomNumber } from './mapHelper';
 
 // order to move turned blocks that get stuck out of the bounds or out of the docked mode
 const turnBlockEvades = [1, -1, 2, -2];
-
-/**
- * Gets a random between to numbers
- *
- * https://stackoverflow.com/questions/4959975/generate-random-number-between-two-numbers-in-javascript
- *
- * @param min min value
- * @param max max value
- */
-function getRandomNumber(min: number, max: number): number { // min and max included
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
 
 const neverUpdateProps = [
   'queue',

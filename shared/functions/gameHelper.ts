@@ -20,6 +20,7 @@ export enum GameUserMapping {
   target = 15,
   queue = 16,
   interactionCount = 17,
+  lost = 18,
 }
 
 /**
