@@ -137,6 +137,7 @@ import FrontendGameUser from './GameUser';
 import GameRenderer, { colorMap } from './GameRenderer';
 import SingeGameUser from './SingleGameUser';
 import Tooltip from '../components/Tooltip.vue';
+import GameRegistry from './GameRegistry';
 
 interface GameFieldProps {
   userData: GameUser;
@@ -165,6 +166,8 @@ interface GameFieldProps {
       type: Boolean,
       default: false,
     },
+    // list of lost users
+    lostUsers: { type: [Number] },
   },
   setup(props) {
     const { userData, userIndex } = (props as unknown) as GameFieldProps;
@@ -184,11 +187,12 @@ interface GameFieldProps {
     const speed = ref<number>();
     const armor = ref<number>();
     const mana = ref<number>();
-    const target = ref<number>();
     const hasLost = ref<boolean>();
     const effects = ref<number[][]>([]);
     const nextBlocks = ref<number[][][]>();
     const nextBlocksToRender = 3;
+    // non vue values
+    let target = -1;
 
     /**
      * if this is the handler of the activly playing user, we can handle the active target focus
@@ -197,13 +201,13 @@ interface GameFieldProps {
      *   - event handlers are complexer than this
      */
     const updateTargetRendering = (newTargetIndex: number) => {
-      target.value = newTargetIndex;
+      target = newTargetIndex;
 
       // use direct css class accessor, vue will renrender the field and will cause flickering
       const gameField = document.getElementById(`game-field-${userIndex}`);
       gameField?.classList.remove('is-targeting');
       gameField?.classList.remove('is-self-targeting');
-      if (target.value === props.activeUserIndex) {
+      if (target === props.activeUserIndex) {
         gameField?.classList.add(
           !isCurrUser.value ? 'is-targeting' : 'is-self-targeting'
         );
@@ -216,7 +220,7 @@ interface GameFieldProps {
         );
         previousTargeted.forEach((el) => el.classList.remove('targeted-game-field'));
         // select the new target and add the targeted game field
-        const newTarget = document.getElementById(`game-field-${target.value}`);
+        const newTarget = document.getElementById(`game-field-${target}`);
         newTarget?.classList.add('targeted-game-field');
       }
     };
@@ -251,7 +255,7 @@ interface GameFieldProps {
         speed.value = user.speed;
         hasLost.value = user.lost;
         // update target hints
-        if (user.target !== target.value) {
+        if (user.target !== target) {
           updateTargetRendering(user.target);
         }
         // rerender next blocks
@@ -260,6 +264,10 @@ interface GameFieldProps {
         }
       },
     );
+
+    // register the game user in the game registry, so every game user class in the same room can
+    // access this one
+    GameRegistry[userIndex] = gameUser;
 
     const onKeyDown = (keyCode: number) => {
       gameUser.userKeyEvent(keyCode);
@@ -271,7 +279,7 @@ interface GameFieldProps {
         preview: true,
       });
       // ensure initial rendered target
-      updateTargetRendering(target.value as number);
+      updateTargetRendering(target as number);
       updateNextBlocks(gameUser);
     });
 
@@ -290,6 +298,7 @@ interface GameFieldProps {
       className,
       container,
       effects,
+      hasLost,
       isCurrUser,
       mana,
       nextBlocks,

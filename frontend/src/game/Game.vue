@@ -23,13 +23,14 @@
 </template>
 
 <script lang="ts">
-import { onUnmounted, ref } from '@vue/composition-api';
+import { onBeforeUnmount, onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 
 import { gameHelper, GameUser, WsMessageType } from '@battletris/shared';
 import currUser from '../lib/User';
 import GameConnection from '../lib/Gameconnection';
 import GameField from './GameField.vue';
+import GameRegistry from './GameRegistry';
 
 @Component({
   components: {
@@ -77,6 +78,13 @@ import GameField from './GameField.vue';
 
     // just start the game. loading will be resolved, when game process responds with full game data
     gameConn.connect();
+
+    // cleanup game registry to save memory
+    onBeforeUnmount(() => {
+      while (GameRegistry.length) {
+        GameRegistry.pop();
+      }
+    });
 
     return {
       activeIndex,

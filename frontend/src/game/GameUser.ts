@@ -6,6 +6,7 @@ import {
 } from '@battletris/shared/functions/gameHelper';
 import GameConnection, { getCurrentConnection } from '../lib/Gameconnection';
 import currUser from '../lib/User';
+import GameRegistry from './GameRegistry';
 
 const isSet = (value: number|undefined) => value !== undefined;
 
@@ -229,10 +230,13 @@ export default class FrontendGameUser extends GameUser {
   onStoneChange() { /** will be overwritten by gameRenderer */ }
 
   onNextTarget() {
-    this.target += 1;
-    if (this.target > this.gameUserCount - 1) {
-      this.target = 0;
-    }
+    do {
+      this.target += 1;
+      if (this.target > this.gameUserCount - 1) {
+        this.target = 0;
+      }
+      console.log(GameRegistry);
+    } while (!(GameRegistry[this.target] && !GameRegistry[this.target].lost));
     this.onUserUpdate(this);
   }
 }
