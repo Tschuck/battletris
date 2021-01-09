@@ -1,7 +1,7 @@
 <template>
   <ViewWrapper :title="$t('start-page.versions')">
     <div style="max-width: 600px">
-      <div class="mb-16" v-for="version in versionList" :key="version">
+      <div class="mb-8" v-for="version in versionList" :key="version">
         <h2>{{ version }} - {{ versionObj[version].title }}</h2>
         <div class="p-4 mt-4 space-y-4 text-xs bg-2">
           <div

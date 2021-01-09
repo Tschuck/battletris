@@ -197,7 +197,7 @@ export default class FrontendGameUser extends GameUser {
    */
   userKeyEvent(keyCode: number) {
     // ignore unknown key events
-    if (!GameStateChange[keyCode]) {
+    if (typeof GameStateChange[keyCode] === 'undefined') {
       return;
     }
     this.lastKeyPressTime.push(Date.now());
@@ -229,7 +229,17 @@ export default class FrontendGameUser extends GameUser {
 
   onStoneChange() { /** will be overwritten by gameRenderer */ }
 
-  onNextTarget() {
+  onNextTarget(index?: number) {
+    // if a specific index was selected, check if available and use it
+    if (typeof index !== 'undefined') {
+      if (GameRegistry[index] && !GameRegistry[index].lost) {
+        this.target = index;
+      }
+
+      return;
+    }
+
+    // search for the next available target
     do {
       this.target += 1;
       if (this.target > this.gameUserCount - 1) {
@@ -237,6 +247,7 @@ export default class FrontendGameUser extends GameUser {
       }
       console.log(GameRegistry);
     } while (!(GameRegistry[this.target] && !GameRegistry[this.target].lost));
+    // update the display
     this.onUserUpdate(this);
   }
 }

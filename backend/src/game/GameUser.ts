@@ -24,8 +24,6 @@ class BackendGameUser extends GameUser {
         game.blocks.push(getRandomNumber(1, 7));
       }
 
-      console.log(game.blocks);
-
       // add the block to the next
       this.nextBlocks.push(game.blocks[gameBlockIndex]);
     }
@@ -82,7 +80,17 @@ class BackendGameUser extends GameUser {
   }
 
   /** Select the next target */
-  onNextTarget() {
+  onNextTarget(index?: number) {
+    // if a specific index was selected, check if available and use it
+    if (typeof index !== 'undefined') {
+      if (game.users[index] && !game.users[index].lost) {
+        this.target = index;
+      }
+
+      return;
+    }
+
+    // search for the next available target
     do {
       this.target += 1;
       if (this.target > game.users.length - 1) {

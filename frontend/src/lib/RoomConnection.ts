@@ -68,6 +68,10 @@ export default class RoomConnection extends WsConnection {
           this.isMatchRunning = false;
           break;
         }
+        case WsMessageType.KEEP_ALIVE: {
+          // just for keeping the connection alive
+          break;
+        }
         default: {
           console.log(`${type} ws messages not implemented`);
         }

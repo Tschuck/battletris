@@ -4,6 +4,7 @@
     "ability-activator": "Key",
     "ability-costs": "Mana-Costs",
     "armor": "Armor",
+    "user-index": "User Index",
     "battletris": {
       "ability0": {
         "desc": "Repairs your armor a little bit.",

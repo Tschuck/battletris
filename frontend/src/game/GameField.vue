@@ -40,6 +40,15 @@
       >
         <div class="flex items-center justify-between p-3 mb-1 bg-1">
           <span class="tooltip-box">
+            <font-awesome-icon class="text-lg" icon="user-circle" />
+            {{ userIndex + 1 }}
+            <Tooltip
+              class="bg-1"
+              :value="$t('classes.user-index')"
+              style="width: 200px"
+            />
+          </span>
+          <span class="tooltip-box">
             <font-awesome-icon class="text-lg" icon="th-large" />
             {{ blockCount }}
             <Tooltip
@@ -99,9 +108,15 @@
       </div>
     </div>
 
-    <div class="flex flex-row items-center justify-between w-1/2 px-4 py-1 mr-1 leading-box bg-1">
+    <div
+      class="flex flex-row items-center justify-between w-1/2 px-4 py-1 mr-1 leading-box bg-1"
+    >
       <template v-if="isCurrUser">
-        <div class="flex flex-col mr-1" v-for="(block, i1) in nextBlocks" :key="i1">
+        <div
+          class="flex flex-col mr-1"
+          v-for="(block, i1) in nextBlocks"
+          :key="i1"
+        >
           <div class="flex flex-row" v-for="(y, i2) in block" :key="i2">
             <div
               class="w-2 h-2"
@@ -116,7 +131,9 @@
       </template>
       <template v-else>
         <ClassLogo class="w-6" :className="className" height="20px" />
-        <span class="ml-3 text-xs font-bold w=full text-center">{{ userName }}</span>
+        <span class="ml-3 text-xs font-bold w=full text-center"
+          >{{ userName }}</span
+        >
       </template>
     </div>
   </div>
@@ -338,19 +355,23 @@ canvas {
 }
 
 .targeted-game-field {
-  &, &.is-targeting, .leading-box {
+  &,
+  &.is-targeting,
+  .leading-box {
     @apply border-yellow-600 border-opacity-50;
   }
 }
 
 .is-targeting {
-  &, .leading-box {
+  &,
+  .leading-box {
     @apply border-red-600 border-opacity-50;
   }
 }
 
 .is-self-targeting {
-  &, .leading-box {
+  &,
+  .leading-box {
     @apply border-green-600 border-opacity-50;
   }
 }

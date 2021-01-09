@@ -1,5 +1,6 @@
 // eslint-disable class-methods-use-this
 import { cloneDeep } from 'lodash';
+import { Key } from 'ts-keycode-enum';
 import Blocks, { BlockMapping } from '../enums/Blocks';
 // eslint-disable-next-line import/no-cycle
 import {
@@ -9,6 +10,7 @@ import {
   CollisionType,
   GameStateChange,
   getPreviewY,
+  getRotationBlockIndex,
   getStoneCollision,
   iterateOverMap,
 } from './gameHelper';
@@ -32,16 +34,23 @@ const abilityKeys = [
 
 /** keys that will be pressable by the user */
 const uiKeys = [
-  GameStateChange.TURN,
-  GameStateChange.LEFT,
-  GameStateChange.RIGHT,
   GameStateChange.DOWN,
+  GameStateChange.E,
   GameStateChange.FALL_DOWN,
+  GameStateChange.LEFT,
   GameStateChange.NEXT_TARGET,
   GameStateChange.Q,
-  GameStateChange.W,
-  GameStateChange.E,
   GameStateChange.R,
+  GameStateChange.RIGHT,
+  GameStateChange.TARGET_USER_1,
+  GameStateChange.TARGET_USER_2,
+  GameStateChange.TARGET_USER_3,
+  GameStateChange.TARGET_USER_4,
+  GameStateChange.TARGET_USER_5,
+  GameStateChange.TURN_LEFT,
+  GameStateChange.TURN_RIGHT,
+  GameStateChange.TURN,
+  GameStateChange.W,
 ];
 
 class GameUser {
@@ -341,7 +350,7 @@ class GameUser {
    * Transforms the current rotation counter into a block index
    */
   getRotationBlockIndex(): number {
-    return this.rotation % 4;
+    return getRotationBlockIndex(this.rotation);
   }
 
   /**
@@ -369,10 +378,13 @@ class GameUser {
     });
 
     switch (key) {
-      case GameStateChange.TURN: {
-        if (this.block !== 4) {
-          this.rotation += 1;
-        }
+      case GameStateChange.TURN:
+      case GameStateChange.TURN_RIGHT: {
+        this.rotation += 1;
+        break;
+      }
+      case GameStateChange.TURN_LEFT: {
+        this.rotation -= 1;
         break;
       }
       case GameStateChange.LEFT: {
@@ -423,6 +435,14 @@ class GameUser {
         }
         break;
       }
+      case GameStateChange.TARGET_USER_1:
+      case GameStateChange.TARGET_USER_2:
+      case GameStateChange.TARGET_USER_3:
+      case GameStateChange.TARGET_USER_4:
+      case GameStateChange.TARGET_USER_5: {
+        this.onNextTarget(key - Key.One); // map key 1 to 5 (49 - 53) to 0 to 5
+        break;
+      }
     }
 
     // check the latest move states for docked states
@@ -445,7 +465,10 @@ class GameUser {
   onUserLost(): void { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
 
   /** Triggered, when the user selected the next target */
-  onNextTarget(): void { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onNextTarget(index?: number): void {
+    /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */
+  }
 
   /** Triggered, when the user activated an ability */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
