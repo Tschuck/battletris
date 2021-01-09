@@ -2,6 +2,7 @@ import { GameUser, mapHelper } from '@battletris/shared';
 // eslint-disable-next-line import/no-cycle
 import { classList, AbilityInterface } from '@battletris/shared/functions/classes';
 import { GameStateChange } from '@battletris/shared/functions/gameHelper';
+import { getRandomNumber } from '@battletris/shared/functions/mapHelper';
 import config from '../lib/config';
 import game from './Game';
 import numberToBlockMap from './helpers/numberToBlockMap';
@@ -12,6 +13,23 @@ class BackendGameUser extends GameUser {
 
   /** list of fields that should be synced with the ui */
   forceFieldUpdates: string[] = [];
+
+  /** setup a list of next blocks */
+  fillNextBlocks(): void {
+    while (this.nextBlocks.length < 10) {
+      const gameBlockIndex = this.blockCount + this.nextBlocks.length;
+
+      // fill up the game blocks, until every gap until this required next block is reached
+      while (game.blocks.length < gameBlockIndex + 10) {
+        game.blocks.push(getRandomNumber(1, 7));
+      }
+
+      console.log(game.blocks);
+
+      // add the block to the next
+      this.nextBlocks.push(game.blocks[gameBlockIndex]);
+    }
+  }
 
   /**
    * Start timeout to move blocks down.
@@ -65,10 +83,12 @@ class BackendGameUser extends GameUser {
 
   /** Select the next target */
   onNextTarget() {
-    this.target += 1;
-    if (this.target > game.users.length - 1) {
-      this.target = 0;
-    }
+    do {
+      this.target += 1;
+      if (this.target > game.users.length - 1) {
+        this.target = 0;
+      }
+    } while (game.users[this.target].lost);
   }
 
   /** Activate an ability. */

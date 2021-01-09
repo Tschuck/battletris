@@ -27,6 +27,9 @@ class Game {
   /** should a update be sent to the game? */
   updateTriggered: NodeJS.Timeout;
 
+  /** list of next blocks for all users */
+  blocks: number[];
+
   /**
    * Show countdown before starting the game loops of each user.
    */
@@ -62,6 +65,7 @@ class Game {
     // access user ids faster => will never change
     this.userIds = Object.keys(users);
     this.users = [];
+    this.blocks = [];
     this.indexIdMap = {};
     // setup game users
     this.userIds.forEach((userId, index) => {
