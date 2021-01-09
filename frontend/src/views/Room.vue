@@ -40,7 +40,7 @@
             :width="'50px'"
           />
           <div class="flex flex-col justify-center p-3">
-            <h3>{{ userStat.name }}</h3>
+            <h3 class="overflow-hidden">{{ userStat.name }}</h3>
             <div class="flex items-center justify-between mt-1">
               <span class="tooltip-box">
                 <font-awesome-icon class="text-lg" icon="th-large" />
