@@ -3,6 +3,7 @@
     style="width: 100%; height: 100%"
     class="flex flex-col bg-2 game-field"
     :id="`game-field-${userIndex}`"
+    :class="{ 'opacity-50': hasLost }"
   >
     <div class="flex justify-center flex-grow p-5">
       <div
@@ -184,6 +185,7 @@ interface GameFieldProps {
     const armor = ref<number>();
     const mana = ref<number>();
     const target = ref<number>();
+    const hasLost = ref<boolean>();
     const effects = ref<number[][]>([]);
     const nextBlocks = ref<number[][][]>();
     const nextBlocksToRender = 3;
@@ -247,6 +249,7 @@ interface GameFieldProps {
         mana.value = user.mana;
         rowCount.value = user.rowCount;
         speed.value = user.speed;
+        hasLost.value = user.lost;
         // update target hints
         if (user.target !== target.value) {
           updateTargetRendering(user.target);
