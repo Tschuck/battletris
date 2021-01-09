@@ -121,6 +121,7 @@
     "start": "Start",
     "start-game": "Start Game",
     "stop": "Stop",
+    "version": "Versions",
     "winner": "Winner"
   },
   "lobby": {
@@ -167,7 +168,8 @@
     "single-player": "Single-Player",
     "single-player-desc": "Play a match alone in the browser without any server.",
     "tutorial": "Tutorial",
-    "tutorial-desc": "Checkup the basics in with an interactive tutorial."
+    "tutorial-desc": "Checkup the basics in with an interactive tutorial.",
+    "versions": "Versions"
   },
   "tutorial": {
     "abilities": {
@@ -194,5 +196,10 @@
       "title": "Tavern"
     },
     "title": "Whats Battletris?"
+  },
+  "versions": {
+    "bugs": "Bugs",
+    "classes": "Classes",
+    "features": "Features"
   }
 }

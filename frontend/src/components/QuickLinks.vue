@@ -15,19 +15,26 @@
       :to="`/multi-player?back=${$route.path}`"
       class="mx-2 tooltip-box"
     >
-      <CrossedSowrdsIcon width="30px" />
+      <CrossedSwordsIcon width="30px" />
       <Tooltip :value="$t('start-page.multi-player')" style="width: 150px" />
     </router-link>
     <router-link :to="`/settings?back=${$route.path}`" class="mx-2 tooltip-box">
       <ScrollBookIcon width="30px" />
       <Tooltip :value="$t('start-page.settings')" style="width: 200px" />
     </router-link>
+    <router-link :to="`/versions?back=${$route.path}`" class="mx-2 tooltip-box">
+      <BlacksmithIcon width="30px" :class="{ 'bounce': hasNewVersions }" />
+      <Tooltip :value="$t('start-page.versions')" style="width: 200px" />
+    </router-link>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import CrossedSowrdsIcon from '../icons/crossed-swords.vue';
+import { ref } from '@vue/composition-api';
+import { latestVersion } from '../lib/versions';
+import CrossedSwordsIcon from '../icons/crossed-swords.vue';
+import BlacksmithIcon from '../icons/blacksmith.vue';
 import KimonoIcon from '../icons/kimono.vue';
 import ScrollBookIcon from '../icons/scroll-book.vue';
 import TargetDummyIcon from '../icons/target-dummy.vue';
@@ -35,7 +42,8 @@ import Tooltip from './Tooltip.vue';
 
 @Component({
   components: {
-    CrossedSowrdsIcon,
+    BlacksmithIcon,
+    CrossedSwordsIcon,
     KimonoIcon,
     ScrollBookIcon,
     TargetDummyIcon,
@@ -43,6 +51,19 @@ import Tooltip from './Tooltip.vue';
   },
   props: {
     value: { type: String },
+  },
+  setup() {
+    const hasNewVersions = ref(false);
+
+    // check if a new version is available, animate the versions icon
+    const lastSeenVersion = window.localStorage.getItem('battletris-version');
+    if (!lastSeenVersion || lastSeenVersion !== latestVersion) {
+      hasNewVersions.value = true;
+    }
+
+    return {
+      hasNewVersions,
+    };
   },
 })
 export default class QuickLinks extends Vue {}
