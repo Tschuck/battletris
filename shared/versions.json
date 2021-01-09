@@ -1,0 +1,38 @@
+{
+  "1.0.0": {
+    "title": "Full battletris rework",
+    "bugs": [],
+    "features": [],
+    "classes": []
+  },
+  "1.0.1": {
+    "title": "Initial fixes",
+    "bugs": [],
+    "features": [
+      "add feedback",
+      "fix latency",
+      "fix game end logic with room keep alive"
+    ],
+    "classes": []
+  },
+  "1.1.0": {
+    "title": "Feedback and new features",
+    "bugs": [
+      "does not update game registration card inputs on leave / join",
+      "ms to seconds in ui",
+      "game duration always 0ms",
+      "user can interact when dead",
+      "user can be targeted when dead",
+      "slot 1 always wins"
+    ],
+    "features": [
+      "overall same stones"
+    ],
+    "classes": [
+      "mage mana reduced to 150",
+      "increased mage Q abilities mana usage to 35",
+      "warrior abilities swapped E and R",
+      "increased mana usage of unknown Q"
+    ]
+  }
+}
