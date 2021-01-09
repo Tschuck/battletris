@@ -156,17 +156,23 @@ class BackendGameUser extends GameUser {
   }
 
   /** Executes an effect for a specific class and ability. */
-  effectLoop(effect: number[]) {
-    const [ classIndex, abilityIndex ] = effect;
+  effectLoop(inputEffect: number[]) {
+    let [ classIndex, abilityIndex, startDate ] = inputEffect;
     const ability: AbilityInterface = classList[classIndex].abilities[abilityIndex];
     let timeout;
 
     // display the effect
-    this.effects.push(effect);
+    this.effects.push(inputEffect);
     this.forceFieldUpdates = ['effects'];
 
     // add the effect to the user events and increase the ticks count
     const execute = () => {
+      // find effect index by comparing classIndex, abilityIndex and started date
+      const effectIndex = this.effects.findIndex(
+        (eff) => eff[0] === classIndex && eff[1] === abilityIndex && eff[2] === startDate,
+      );
+      const effect = this.effects[effectIndex];
+
       // add a effect execution to the user event queue
       this.queue.push([
         GameStateChange.EFFECT,
@@ -186,21 +192,17 @@ class BackendGameUser extends GameUser {
 
         // reduce the event stack, if the event stack is not zero, start the loop again
         effect[5] -= 1;
-        console.log(effect[5]);
         if (effect[5] !== 0) {
-          // reset execution time
+          // reset start date (to have the correct timer in the ui) and tick count
+          // (to keep it running)
+          effect[2] = startDate = Date.now();
           effect[4] = 0;
           // trigger the effect loop again
           execute();
           return;
         }
-        console.log('removed');
 
         // if the stack is zero, cleanup
-        // find effect index by comparing classIndex, abilityIndex and started date
-        const effectIndex = this.effects.findIndex(
-          (eff) => eff[0] === effect[0] && eff[1] === effect[1] && eff[2] === effect[2],
-        );
         if (effectIndex !== -1) {
           this.effects.splice(effectIndex, 1);
         }
