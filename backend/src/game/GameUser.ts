@@ -11,6 +11,9 @@ class BackendGameUser extends GameUser {
   /** list of looping effects */
   effectTimeouts: NodeJS.Timeout[] = [];
 
+  /** list of cooldown timeouts */
+  cooldownTimeouts: NodeJS.Timeout[] = [];
+
   /** list of fields that should be synced with the ui */
   forceFieldUpdates: string[] = [];
 
@@ -103,7 +106,8 @@ class BackendGameUser extends GameUser {
   onAbility(classIndex: number, abilityIndex: number) {
     const ability = classList[classIndex].abilities[abilityIndex];
     // check if enough mana is available, otherwise the key press can be ignored
-    if (this.mana >= ability.mana) {
+    // check if a cooldown for this ability is active, if yes, we can ignore it
+    if (this.mana >= ability.mana && typeof this.cooldowns[abilityIndex] === 'undefined') {
       // reduce current users mana
       this.mana -= ability.mana;
       // add the ability effect to the target user
@@ -114,7 +118,9 @@ class BackendGameUser extends GameUser {
         Date.now(), // activation time
         this.gameUserIndex, // from index
         0, // execution time
+        1, // effect stack
       ];
+
       // run on activate functions (single time hooks) => solves the problem, that effects were at
       //  executed without any reference on the targets side. we can just run the game state
       // checking in here
@@ -124,8 +130,28 @@ class BackendGameUser extends GameUser {
         ability.onActivate(this, targetUser, effect);
         this.checkGameState(beforeTarget);
       }
-      // start effect loop to run the tick function
-      targetUser.effectLoop(effect);
+
+      // check for already running effect
+      const activeEffect = targetUser.effects.find((e) => e[0] === classIndex
+        && e[1] === abilityIndex);
+      // if a effect of the same type is already running, increase the runtime
+      if (activeEffect) {
+        // reduce the ticks and execute again
+        activeEffect[5] += 1;
+        this.forceFieldUpdates = ['effects'];
+      } else {
+        // start effect loop to run the tick function
+        targetUser.effectLoop(effect);
+      }
+
+      // activate a ability cooldown and setup cleanup timeout
+      if (ability.cooldown) {
+        this.cooldowns[abilityIndex] = Date.now() + ability.cooldown;
+        this.cooldownTimeouts[abilityIndex] = setTimeout(() => {
+          this.forceFieldUpdates.push('cooldowns');
+          delete this.cooldowns[abilityIndex];
+        }, ability.cooldown);
+      }
     }
   }
 
@@ -156,7 +182,21 @@ class BackendGameUser extends GameUser {
       if (!ability.ticks || effect[4] >= ability.ticks) {
         // force effect update if we remove the effect at this position, the diff logic
         // will not update the ui
-        this.forceFieldUpdates = ['effects'];
+        this.forceFieldUpdates.push('effects');
+
+        // reduce the event stack, if the event stack is not zero, start the loop again
+        effect[5] -= 1;
+        console.log(effect[5]);
+        if (effect[5] !== 0) {
+          // reset execution time
+          effect[4] = 0;
+          // trigger the effect loop again
+          execute();
+          return;
+        }
+        console.log('removed');
+
+        // if the stack is zero, cleanup
         // find effect index by comparing classIndex, abilityIndex and started date
         const effectIndex = this.effects.findIndex(
           (eff) => eff[0] === effect[0] && eff[1] === effect[1] && eff[2] === effect[2],

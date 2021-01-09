@@ -11,6 +11,7 @@ export default class Sorcerer implements ClassInterface {
   abilities = [
     {
       mana: 55,
+      cooldown: 5_000,
       onActivate: (from: GameUser, to: GameUser): void => {
         to.handleStateChange(GameStateChange.FALL_DOWN);
       },

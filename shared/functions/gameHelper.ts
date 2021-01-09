@@ -21,6 +21,7 @@ export enum GameUserMapping {
   queue = 16,
   interactionCount = 17,
   lost = 18,
+  cooldowns = 19,
 }
 
 /**
@@ -37,8 +38,7 @@ export enum CollisionType {
  * interaction (keys).
  */
 export enum GameStateChange {
-  LOST = -4,
-  EFFECT_FINISHED = -3,
+  LOST = -3,
   EFFECT = -2,
   NEW_BLOCK = -1,
   TURN = Key.UpArrow,

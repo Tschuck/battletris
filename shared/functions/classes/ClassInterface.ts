@@ -12,6 +12,9 @@ interface AbilityInterface {
   /** amount of needed mana */
   mana: number;
 
+  /** milliseconds for that the ability cannot be activated */
+  cooldown?: number;
+
   /**
    * function that is executed, on each effect loop tick.
    *

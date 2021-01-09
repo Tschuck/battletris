@@ -245,7 +245,6 @@ export default class FrontendGameUser extends GameUser {
       if (this.target > this.gameUserCount - 1) {
         this.target = 0;
       }
-      console.log(GameRegistry);
     } while (!(GameRegistry[this.target] && !GameRegistry[this.target].lost));
     // update the display
     this.onUserUpdate(this);

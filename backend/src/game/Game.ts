@@ -145,7 +145,8 @@ class Game {
         difference.queue = beforeQueues[index];
 
         // update fiels that were updated by side logic
-        user.forceFieldUpdates.forEach((field) => {
+        const forcedUpdates = [...new Set(user.forceFieldUpdates)];
+        forcedUpdates.forEach((field) => {
           difference[field] = user[field];
         });
         // reset custom field updates

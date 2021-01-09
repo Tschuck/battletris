@@ -41,9 +41,13 @@ const versions: Record<string, VersionInterface> = {
       'increased mage Q abilities mana usage to 35',
       'warrior abilities swapped E and R',
       'increased mana usage of unknown Q',
+      'stack same effects and not run them twice',
+      'added cooldowns for abilities',
     ],
     features: [
       'overall same stones',
+      'explicit target index selection with keys: 1, 2, 3, 4, 5',
+      'spin to stone the left / right with A and D',
     ],
     title: 'Feedback and new features',
   },

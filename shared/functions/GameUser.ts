@@ -120,6 +120,9 @@ class GameUser {
   /** list of latest user events (use arrays in arrays to reduce sent payload) ([id, key, payload]) */
   queue: (number|any)[][] = [];
 
+  /** dates until specific ability index will be blocked */
+  cooldowns: number[] = [];
+
   constructor(
     user: Partial<GameUser>|GameUser,
     gameUserIndex = -1,

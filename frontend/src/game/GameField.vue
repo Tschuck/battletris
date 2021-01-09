@@ -27,6 +27,7 @@
           :classIndex="effect[0]"
           :abilityIndex="effect[1]"
           :ticked="effect[4]"
+          :stack="effect[5]"
           :userId="userId"
         />
       </div>
@@ -103,6 +104,7 @@
           :className="className"
           :showAbilities="!offline"
           :userMana="mana"
+          :cooldowns="cooldowns"
           v-if="isCurrUser"
         />
       </div>
@@ -199,15 +201,16 @@ interface GameFieldProps {
     const classMana = ref(classes[userData.className].maxMana);
     const blockColors = ref(colorMap.STONES);
     // stat values
-    const blockCount = ref<number>();
-    const rowCount = ref<number>();
-    const speed = ref<number>();
     const armor = ref<number>();
-    const mana = ref<number>();
-    const hasLost = ref<boolean>();
+    const blockCount = ref<number>();
+    const cooldowns = ref<number[]>([]);
     const effects = ref<number[][]>([]);
+    const hasLost = ref<boolean>();
+    const mana = ref<number>();
     const nextBlocks = ref<number[][][]>();
     const nextBlocksToRender = 3;
+    const rowCount = ref<number>();
+    const speed = ref<number>();
     // non vue values
     let target = -1;
 
@@ -271,6 +274,7 @@ interface GameFieldProps {
         rowCount.value = user.rowCount;
         speed.value = user.speed;
         hasLost.value = user.lost;
+        cooldowns.value = user.cooldowns;
         // update target hints
         if (user.target !== target) {
           updateTargetRendering(user.target);
@@ -314,6 +318,7 @@ interface GameFieldProps {
       classMana,
       className,
       container,
+      cooldowns,
       effects,
       hasLost,
       isCurrUser,

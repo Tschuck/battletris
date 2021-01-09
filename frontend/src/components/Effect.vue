@@ -8,7 +8,10 @@
     />
     <countdown :interval="1000" :time="duration">
       <template slot-scope="props">
-        <span class="text-xs text-center">{{ props.seconds }}s</span>
+        <span class="text-xs text-center">
+          {{ props.seconds }}s
+          <span v-if="stack > 1">(x{{ stack }})</span>
+        </span>
       </template>
     </countdown>
     <AbilityTooltip :className="className" :abilityIndex="abilityIndex" />
@@ -36,6 +39,7 @@ import currUser from '../lib/User';
     classIndex: { type: Number },
     abilityIndex: { type: Number },
     ticked: { type: Number },
+    stack: { type: Number },
   },
   setup(props) {
     const className = ref(

@@ -8,6 +8,7 @@
         :abilityIndex="0"
         :keyValue="81"
         :userMana="userMana"
+        :cooldown="cooldowns[0]"
         keyText="Q"
         @keydown="$emit('keydown', $event)"
       />
@@ -18,6 +19,7 @@
         :abilityIndex="1"
         :keyValue="87"
         :userMana="userMana"
+        :cooldown="cooldowns[1]"
         keyText="W"
         @keydown="$emit('keydown', $event)"
       />
@@ -28,6 +30,7 @@
         :abilityIndex="2"
         :keyValue="69"
         :userMana="userMana"
+        :cooldown="cooldowns[2]"
         keyText="E"
         @keydown="$emit('keydown', $event)"
       />
@@ -38,6 +41,7 @@
         :abilityIndex="3"
         :keyValue="82"
         :userMana="userMana"
+        :cooldown="cooldowns[3]"
         keyText="R"
         @keydown="$emit('keydown', $event)"
       />
@@ -189,6 +193,7 @@ const keysToIgnore = [
     userMana: {
       type: Number,
     },
+    cooldowns: {},
   },
   setup() {
     // ability keys
