@@ -13,15 +13,15 @@
     <div class="mt-8">
       <p class="mb-3 font-bold" v-if="!minimal">{{ $t("settings.class") }}</p>
 
-      <div class="flex flex-row items-center justify-center">
+      <div class="flex flex-row items-center justify-between">
         <font-awesome-icon
           class="text-4xl cursor-pointer"
           icon="chevron-left"
           @click="selectClass(-1)"
           v-if="!disabled"
         />
-        <component
-          :is="classIterator[activeClassIndex].icon"
+        <ClassLogo
+          :className="className"
           height="80px"
           width="80px"
         />
@@ -101,21 +101,17 @@ import AbilityLogo from '../icons/AbilityLogo.vue';
 import Loading from './Loading.vue';
 import Tooltip from './Tooltip.vue';
 import AbilityTooltip from './AbilityTooltip.vue';
-import SorcererIcon from '../icons/sorcerer.vue';
-import UnknownIcon from '../icons/unknown.vue';
-import WarriorIcon from '../icons/warrior.vue';
+import ClassLogo from '../icons/ClassLogo.vue';
 import currUser from '../lib/User';
 
 @Component({
   components: {
     AbilityLogo,
     AbilityTooltip,
+    ClassLogo,
     Loading,
-    SorcererIcon,
     Tooltip,
-    UnknownIcon,
     ViewWrapper,
-    WarriorIcon,
   },
   props: {
     minimal: {
@@ -131,9 +127,8 @@ import currUser from '../lib/User';
     const userId = ref(user.id);
     const disabled = ref(user.id !== currUser.id);
 
-    const getDisplayClass = (getForClass: string, icon: any) => ({
+    const getDisplayClass = (getForClass: string) => ({
       name: getForClass,
-      icon,
       maxArmor: classes[getForClass].maxArmor,
       maxMana: classes[getForClass].maxMana,
       abilities: classes[getForClass].abilities.map((ability) => {
@@ -147,16 +142,19 @@ import currUser from '../lib/User';
         };
       }),
     });
-    const classIterator = [
-      getDisplayClass('unknown', UnknownIcon),
-      getDisplayClass('warrior', WarriorIcon),
-      getDisplayClass('sorcerer', SorcererIcon),
-    ];
+    const classIterator = Object.keys(classes)
+      .filter((key) => key !== 'battletris')
+      .map((key) => getDisplayClass(key));
     const abilityIterator = ref([1, 2, 3, 4]);
     const activeClassIndex = ref(
       classIterator.findIndex(({ name: n }) => className.value === n),
     );
     const loading = ref(true);
+    // class was deleted?
+    if (activeClassIndex.value === -1) {
+      activeClassIndex.value = 0;
+      className.value = classIterator[0].name;
+    }
 
     let debounce: ReturnType<typeof setTimeout>;
     const updateUser = () => {

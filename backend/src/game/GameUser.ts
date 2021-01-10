@@ -1,6 +1,6 @@
 import { GameUser, mapHelper } from '@battletris/shared';
 // eslint-disable-next-line import/no-cycle
-import { classList, AbilityInterface } from '@battletris/shared/functions/classes';
+import { classList, AbilityInterface, classes } from '@battletris/shared/functions/classes';
 import { GameStateChange } from '@battletris/shared/functions/gameHelper';
 import { getRandomNumber } from '@battletris/shared/functions/mapHelper';
 import config from '../lib/config';
@@ -107,7 +107,8 @@ class BackendGameUser extends GameUser {
     const ability = classList[classIndex].abilities[abilityIndex];
     // check if enough mana is available, otherwise the key press can be ignored
     // check if a cooldown for this ability is active, if yes, we can ignore it
-    if (this.mana >= ability.mana && typeof this.cooldowns[abilityIndex] === 'undefined') {
+    if ((this.mana >= ability.mana && typeof this.cooldowns[abilityIndex] === 'undefined')
+      || config.devMode) {
       // reduce current users mana
       this.mana -= ability.mana;
       // add the ability effect to the target user

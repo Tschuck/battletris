@@ -18,6 +18,7 @@ const classes: Record<string, ClassInterface> = {
   sorcerer: new Sorcerer(),
   warrior: new Warrior(),
 };
+
 const classList: ClassInterface[] = [
   classes.battletris,
   classes.unknown,

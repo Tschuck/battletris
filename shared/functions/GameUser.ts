@@ -145,7 +145,7 @@ class GameUser {
     this.block = 0;
     this.blockCount = 0;
     this.effects = user.effects || [];
-    this.mana = 300;
+    this.mana = 0;
     this.rotation = 0;
     this.rowCount = 0;
     this.speed = user.speed || -1;

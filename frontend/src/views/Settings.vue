@@ -86,16 +86,18 @@ import {
   Component, Vue,
 } from 'vue-property-decorator';
 import { ref } from '@vue/composition-api';
+import { classes } from '@battletris/shared/functions/classes';
 import ViewWrapper from '../components/ViewWrapper.vue';
 
 import { getRequest } from '../lib/request';
 import AbilityLogo from '../icons/AbilityLogo.vue';
 import Loading from '../components/Loading.vue';
-import SorcererIcon from '../icons/sorcerer.vue';
-import UnknownIcon from '../icons/unknown.vue';
 import UserSetting from '../components/UserSetting.vue';
 import user from '../lib/User';
+
 import WarriorIcon from '../icons/warrior.vue';
+import SorcererIcon from '../icons/sorcerer.vue';
+import UnknownIcon from '../icons/unknown.vue';
 
 @Component({
   components: {
@@ -111,12 +113,9 @@ import WarriorIcon from '../icons/warrior.vue';
     const name = ref<string>(user.name);
     const className = ref(user.className);
     const userId = ref(user.id);
-    const classes = [
-      { name: 'unknown', icon: UnknownIcon },
-      { name: 'warrior', icon: WarriorIcon },
-      { name: 'sorcerer', icon: SorcererIcon },
-    ];
-    const activeClassIndex = ref(classes.findIndex(({ name: n }) => className.value === n));
+    console.log(classes);
+    const classList = Object.keys(classes);
+    const activeClassIndex = ref(classList.findIndex((key) => className.value === key));
     const matches = ref();
     const loading = ref(true);
 
@@ -143,12 +142,12 @@ import WarriorIcon from '../icons/warrior.vue';
       activeClassIndex.value += increase;
 
       if (activeClassIndex.value < 0) {
-        activeClassIndex.value = classes.length - 1;
-      } else if (activeClassIndex.value >= classes.length) {
+        activeClassIndex.value = classList.length - 1;
+      } else if (activeClassIndex.value >= classList.length) {
         activeClassIndex.value = 0;
       }
 
-      className.value = classes[activeClassIndex.value].name;
+      className.value = classList[activeClassIndex.value];
       updateUser();
     };
 
@@ -175,7 +174,7 @@ import WarriorIcon from '../icons/warrior.vue';
 
     return {
       activeClassIndex,
-      classes,
+      classList,
       className,
       importError,
       importUser,

@@ -10,7 +10,7 @@ const package = {
   version: `1.0.${Date.now()}`,
   devDependencies: {},
   scripts: {
-    start: "node dist/src/index.js"
+    start: `BATTLETRIS_DEV_MODE=false node dist/src/index.js`
   },
 };
 

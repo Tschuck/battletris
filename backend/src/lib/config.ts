@@ -1,16 +1,24 @@
 import path from 'path';
 
+console.log(process.env)
+
 const prefix = 'BATTLETRIS_';
 const _ = (name: string, defaultValue: any) => {
   const paramName = `${prefix}${name.toUpperCase()}`;
   const value = process.env[paramName];
   if ((value || defaultValue) !== undefined) {
     // do not log in game process
-    if (defaultValue !== undefined && process.env.BATTLETRIS_IS_GAME !== 'true') {
-      console.warn('\x1b[33m%s\x1b[0m: ', `[CONFIG] using default for: ${paramName}: ${defaultValue}`);
+    if (typeof value === 'undefined' && defaultValue !== undefined
+      && process.env.BATTLETRIS_IS_GAME !== 'true') {
+      console.warn('\x1b[33m%s\x1b[0m', `[CONFIG] using default for: ${paramName}: ${defaultValue}`);
     }
 
-    return value || defaultValue;
+    try {
+      // try to JSON parse it, so we can use json values
+      return JSON.parse(value || defaultValue);
+    } catch (ex) {
+      return value || defaultValue;
+    }
   }
 
   throw new Error(`config ${prefix}${name.toUpperCase()} is missing`);
@@ -47,4 +55,6 @@ export default {
   logLevel: _('LOG_LEVEL', 'debug'),
   /** room keep alive timeout */
   keepAliveTimeout: _('ROOM_KEEP_ALIVE', 15_000),
+  /** enables max mana and no mana usage */
+  devMode: _('DEV_MODE', true),
 };
