@@ -89,8 +89,9 @@ class BaseClass implements ClassInterface {
 
   expScaling = 0;
 
-  calculateForLevel(baseValue: number, scaling: number, level: number) {
-    return baseValue + (baseValue * scaling * level);
+  /** General calculation function for exp, armor and mana */
+  calculateForLevel(baseValue: number, scaling: number, level: number): number {
+    return Math.ceil(baseValue + (baseValue * scaling * level));
   }
 
   /** Calculate the max mana for a specific level */

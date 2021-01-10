@@ -1,9 +1,9 @@
 <template>
   <ViewWrapper :title="$t('start-page.versions')">
-    <div style="max-width: 600px">
+    <div style="max-width: 1200px">
       <div class="mb-8" v-for="version in versionList" :key="version">
-        <h2>{{ version }} - {{ versionObj[version].title }}</h2>
-        <div class="p-4 mt-4 space-y-4 text-xs bg-2">
+        <h2 class="font-bold">{{ version }} - {{ versionObj[version].title }}</h2>
+        <div class="p-4 mt-4 space-y-4 bg-2">
           <div
             v-for="changeKey in getChangesOrderForVersion(version)"
             :key="`${version}-${changeKey}`"

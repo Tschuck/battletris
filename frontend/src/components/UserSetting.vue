@@ -13,7 +13,11 @@
     <div class="mt-8">
       <p class="mb-3 font-bold" v-if="!minimal">{{ $t("settings.class") }}</p>
 
-      <div class="flex flex-row items-center justify-between">
+      <div class="flex flex-row items-center"
+        :class="{
+          'justify-between': !disabled,
+          'justify-center': disabled,
+        }">
         <font-awesome-icon
           class="text-4xl cursor-pointer"
           icon="chevron-left"

@@ -114,7 +114,7 @@
             >{{ exp }} / {{ maxExp }}</span
           >
           <div
-            class="bg-yellow-600 animated-bar"
+            class="bg-yellow-300 animated-bar"
             :style="`width: ${(100 / maxExp) * exp}%`"
           />
           <Tooltip :value="$t('classes.exp')" />

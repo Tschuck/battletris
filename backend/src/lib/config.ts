@@ -41,6 +41,8 @@ export default {
   userUpdateInterval: _('USER_UPDATE_INTERVAL', 100),
   /** "user speed", moves blocks down, ... */
   userSpeed: _('USER_SPEED', 1100),
+  /** maximum "user speed" to move the blocks down, ... */
+  maxSpeed: _('USER_SPEED', 150),
   /** amount of seconds until the game starts (max =10) */
   startCounter: _('GAME_START_COUNTER', 3),
   /** start sub process in debug mode */

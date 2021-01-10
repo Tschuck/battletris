@@ -220,13 +220,26 @@ class Game {
    * Used to globally calculate the users speed.
    */
   onRowClear() {
+    // never faster than the cap
+    if (this.speed === config.maxSpeed) {
+      return;
+    }
+
+    // calculate the overall used rows
     const clearRows = this.users
       .map((user) => user.rowCount)
       .reduce((a: number, b: number) => a + b, 0);
+    // use this awesome :D
     const speedPercentage = 100 / (config.maxSpeedRowsPerUser * this.users.length);
+    this.speed = Math.ceil(config.userSpeed - (7 * speedPercentage * clearRows));
+    // cap on max speed
+    if (this.speed < config.maxSpeed) {
+      this.speed = config.maxSpeed;
+    }
+    // apply speed to all users
     this.users.forEach((user) => {
       user.forceFieldUpdates.push('speed');
-      user.speed = Math.ceil(config.userSpeed - (7 * speedPercentage * clearRows));
+      user.speed = this.speed;
     });
   }
 }

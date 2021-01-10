@@ -171,34 +171,34 @@
     "single-player": "Single-Player",
     "single-player-desc": "Play a match alone in the browser without any server.",
     "tutorial": "Tutorial",
-    "tutorial-desc": "Checkup the basics in with an interactive tutorial.",
+    "tutorial-desc": "Checkup the game mechanics with an tutorial.",
     "versions": "Versions"
   },
   "tutorial": {
-    "abilities": {
-      "desc": "At the beginning, each player selects a class that grants him special abilities like \"Add line\" or \"Remove line\". During the battles an ability can be activated on the target user with the \"q, w, e, r\". At first, each player is targeting his self. With the \"tab\" key you can select the next player. Each ability requires mana to be activated, which you get by dissolving rows. The more rows you dissolve at once, the more mana you will receive.",
-      "title": "Abilities"
+    "1-battletris": {
+      "desc": "Welcome to BATTLETRIS, a multiplayer block stacking game for up to 5 players. It follows the basic logic of the classic tetris. BATTLETRIS adds much more complexity to the original game. With several classes, leveling, abilities, mana and armor, it increases the complexity of tetris a lot. And func fact, it's good for your brain. ;)",
+      "title": "Whats BATTLETRIS?"
     },
-    "battle-control": {
-      "desc": "Once you have joined a Battlefield, you can see the battle controls on the left and the overview of the different players on the right. If a battle is already running, you can simply watch the action. As soon as no battle has started and there is still free space available, you can join the battle at the bottom of the Battle Controls. After you are joined and ready, use the \"Start Battle\" button to start the battle. As soon as all joined Warriors have started the battle, start a 10 second timer after the actual game starts.",
-      "title": "Battle Control"
+    "2-quick-nav": {
+      "desc": "From the start page and with the back button on the top, you will be navigated back to the mode selection. From this mode selection, you will reach the specific views for SinglePlayer, Multiplayer, Settings or Version overview. With the small icons at the bottom, you can navigate even more faster.",
+      "title": "Quick Navigation"
     },
-    "desc": "Welcome to Battletris, a multiplayer block stacking game for up to 5 players. You are currently in the tavern, a place where everyone can hang around to search for opponents. Checkup the Battlefields and join a match.",
-    "how-to-play": {
-      "desc": "I hope everyone knows the game principle of good old Tetris. The goal is to stack the opponent's Battlefield with blocks up to the top, so that the opponent is eliminated from the battle. The last player with free spaces wins the battle. <br>With the arrow keys (←, →), the active block can be changed to the right and to the left. The arrow up key (↑) rotates the active tile. With the arrow down key (↓) you can move the block down faster. <br>By pressing the space bar the active block is docked directly to the existing Battlefield, so you save a lot of time.",
-      "title": "How to play"
+    "3-rooms": {
+      "desc": "On this page you can see all available rooms and can view a running battle or join a new game..",
+      "title": "Room Selection"
     },
-    "interactive": "Interactive Tutorial",
-    "interactive-desc": "A interactive Tutorial will be able soon...",
-    "targets": {
-      "desc": "Besides to the abilities their is one more game mechanic. As soon as you resolve rows, the armor of the target will be damaged. If the armor is fully locked down, a row will be attached to the bottom of the targets Battlefield. By targeting yourself and resolving rows, your armor will be regerenrated, so you can block heavy attacks. By resolving more than one row at the same time, this effect will be event stronger!",
-      "title": "Targets"
+    "4-joining": {
+      "desc": "To join a game, just use the join button and wait for all others to be ready. Just press the start button and you will be marked as ready. When everyone is ready, the game will start. At this screen you can also change your class and your player name.",
+      "title": "Join Game"
     },
-    "tavern": {
-      "desc": "In the beginning you will find yourself in the \"Tavern\", a kind of lobby where players can find each other and join different battles. Once you have decided on a Battlefield, you can join it with the small icon (<i class=\"mdi mdi-login-variant\"></i>) in the upper right corner.",
-      "title": "Tavern"
+    "5-game": {
+      "desc": "BATTLETRIS is full packed with classic and new features.<br><br><b class=\"font-bold\">← / →</b>: Move a stone to the left or the right.<b class=\"font-bold d-block\">↑</b> to turn the stone to the right. You can also use the key <b class=\"font-bold\">A</b> to turn the stone to the left or <b class=\"font-bold\">D</b> to the right. Use the ↓, to move a block downwards. Use the space key",
+      "title": "In Game"
     },
-    "title": "Whats Battletris?"
+    "6-export-import": {
+      "desc": "On the settings screen, you can import and export an BATTLETRIS user file. This file is used for authenticating you against the system, to view your previous game history.",
+      "title": "Export / Import"
+    }
   },
   "versions": {
     "bugs": "Bugs",

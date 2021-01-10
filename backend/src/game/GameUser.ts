@@ -105,7 +105,7 @@ class BackendGameUser extends GameUser {
     if ((this.mana >= ability.mana && typeof this.cooldowns[abilityIndex] === 'undefined')
       || config.devMode) {
       // reduce current users mana
-      this.mana -= ability.mana;
+      this.mana -= Math.ceil(ability.mana);
       // add the ability effect to the target user
       const targetUser = game.users[this.target];
       const effect = [
@@ -225,6 +225,8 @@ class BackendGameUser extends GameUser {
    * User reaches a level up. Reset exp, increase the level and debuff all others
    */
   onLevelUp(): void {
+    this.forceFieldUpdates.push('exp');
+
     // never go over max level
     if (this.level === config.maxLevel) {
       this.exp = this.maxExp;
@@ -232,9 +234,15 @@ class BackendGameUser extends GameUser {
     }
 
     // set new stat values
-    this.exp = this.maxExp - this.exp;
+    this.exp = this.exp - this.maxExp;
     this.level += 1;
     this.setStatsForLevel();
+    this.forceFieldUpdates = this.forceFieldUpdates.concat([
+      'level',
+      'maxArmor',
+      'maxMana',
+      'maxExp',
+    ]);
 
     // apply a buff to your self / debuff to the others
     // the strength is based on your level

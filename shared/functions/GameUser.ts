@@ -301,7 +301,9 @@ class GameUser {
 
     if (clearedRows !== 0) {
       // stack percentage of mana accordingly to the amount of cleared rows
-      this.mana += (this.maxMana / 100) * ((10 * clearedRows) + clearedRows * clearedRows);
+      this.mana += Math.ceil(
+        (this.maxMana / 100) * ((10 * clearedRows) + clearedRows * clearedRows),
+      );
       this.exp += clearedRows * clearedRows * (4 + (10 / clearedRows));
       if (this.mana > this.maxMana) {
         this.mana = this.maxMana;
@@ -481,7 +483,6 @@ class GameUser {
    */
   setStatsForLevel(): void {
     const userClass = classes[this.className];
-
     this.maxArmor = userClass.getManaForLevel(this.level);
     this.maxMana = userClass.getManaForLevel(this.level);
     this.maxExp = userClass.getExpForLevel(this.level);
