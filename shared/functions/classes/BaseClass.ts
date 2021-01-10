@@ -39,6 +39,18 @@ interface AbilityInterface {
   ) => void;
 
   /**
+   * function that is executed, before the ability is activated.
+   *
+   * @user GameUser game user to apply effect to
+   * @tick amount of previous ticks
+   */
+  onBeforeEnd?: (
+    from: GameUser,
+    to: GameUser,
+    userEvent: number[]|undefined,
+  ) => void;
+
+  /**
    * function that is executed, on each state change
    *
    * @user GameUser game user to apply effect to
@@ -91,16 +103,16 @@ class BaseClass implements ClassInterface {
 
   /** General calculation function for exp, armor and mana */
   calculateForLevel(baseValue: number, scaling: number, level: number): number {
-    return Math.ceil(baseValue + (baseValue * scaling * level));
+    return Math.ceil(baseValue + (baseValue * scaling * (level - 1)));
   }
 
   /** Calculate the max mana for a specific level */
-  getManaForLevel(level: number): number {
+  getArmorForLevel(level: number): number {
     return this.calculateForLevel(this.baseArmor, this.armorScaling, level);
   }
 
   /** Calculate the max armor for a specific level */
-  getArmorForLevel(level: number): number {
+  getManaForLevel(level: number): number {
     return this.calculateForLevel(this.baseMana, this.manaScaling, level);
   }
 

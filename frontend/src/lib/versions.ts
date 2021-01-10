@@ -52,6 +52,15 @@ const versions: Record<string, VersionInterface> = {
     ],
     title: 'Feedback and new features',
   },
+  '1.2.0': {
+    bugs: [],
+    classes: [],
+    features: [
+      'level support + mana, armor scaling',
+      'better tutorial description',
+    ],
+    title: 'Level Support',
+  },
 };
 
 export {

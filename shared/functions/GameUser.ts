@@ -111,6 +111,9 @@ class GameUser {
   /** users speed (block move down) */
   speed!: number;
 
+  /** speed adjustments from abilities */
+  speedAdjust!: number;
+
   /** current user level */
   level!: number;
 
@@ -160,6 +163,7 @@ class GameUser {
     this.level = 1;
     this.rotation = 0;
     this.rowCount = 0;
+    this.speedAdjust = 0;
     this.target = user.target || gameUserIndex;
     this.x = 0;
     this.y = 0;
@@ -483,7 +487,7 @@ class GameUser {
    */
   setStatsForLevel(): void {
     const userClass = classes[this.className];
-    this.maxArmor = userClass.getManaForLevel(this.level);
+    this.maxArmor = userClass.getArmorForLevel(this.level);
     this.maxMana = userClass.getManaForLevel(this.level);
     this.maxExp = userClass.getExpForLevel(this.level);
   }

@@ -38,6 +38,7 @@ class BackendGameUser extends GameUser {
   gameLoop() {
     // ensure that only one is running
     clearTimeout(this.gameLoopTimeout);
+    const speed = this.speed + this.speedAdjust;
     this.gameLoopTimeout = setTimeout(() => {
       this.queue.push([GameStateChange.DOWN]);
 
@@ -46,7 +47,7 @@ class BackendGameUser extends GameUser {
 
       // ensure next tick
       this.gameLoop();
-    }, this.speed);
+    }, speed < config.maxSpeed ? config.maxSpeed : speed);
   }
 
   /**
@@ -137,7 +138,7 @@ class BackendGameUser extends GameUser {
         this.forceFieldUpdates = ['effects'];
       } else {
         // start effect loop to run the tick function
-        targetUser.effectLoop(effect);
+        targetUser.effectLoop(effect, this);
       }
 
       // activate a ability cooldown and setup cleanup timeout
@@ -152,7 +153,7 @@ class BackendGameUser extends GameUser {
   }
 
   /** Executes an effect for a specific class and ability. */
-  effectLoop(inputEffect: number[]) {
+  effectLoop(inputEffect: number[], executor: GameUser) {
     let [ classIndex, abilityIndex, startDate ] = inputEffect;
     const ability: AbilityInterface = classList[classIndex].abilities[abilityIndex];
     let timeout;
@@ -193,8 +194,6 @@ class BackendGameUser extends GameUser {
           // (to keep it running)
           effect[2] = startDate = Date.now();
           effect[4] = 0;
-          // trigger the effect loop again
-          execute();
           return;
         }
 
@@ -205,6 +204,9 @@ class BackendGameUser extends GameUser {
         if (timeout) {
           this.effectTimeouts.splice(this.effectTimeouts.indexOf(timeout), 1);
           clearInterval(timeout);
+        }
+        if (ability.onBeforeEnd) {
+          ability.onBeforeEnd(this, executor, effect);
         }
       }
 
