@@ -17,7 +17,7 @@
                 v-for="(change, changeIndex) in versionObj[version][changeKey]"
                 :key="`${version}-${changeKey}-${changeIndex}`"
               >
-                - {{ change }}
+                - <span v-html="change" />
               </li>
             </ul>
           </div>

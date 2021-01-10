@@ -125,10 +125,11 @@ export default class RoomHandler {
     this.process = fork(gameFilePath, ['params'], {
       silent: true,
       env: {
+        ...process.env,
         BATTLETRIS_IS_GAME: 'true',
         BATTLETRIS_LOG_LEVEL: config.logLevel,
         ROOM_ID: this.id,
-        stdio: "inherit",
+        stdio: 'inherit',
       },
     });
 
