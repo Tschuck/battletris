@@ -12,6 +12,9 @@ interface AbilityInterface {
   /** amount of needed mana */
   mana: number;
 
+  /** milliseconds for that the ability cannot be activated */
+  cooldown?: number;
+
   /**
    * function that is executed, on each effect loop tick.
    *
@@ -20,6 +23,18 @@ interface AbilityInterface {
    */
   tick?: (
     user: GameUser,
+    userEvent: number[]|undefined,
+  ) => void;
+
+  /**
+   * function that is executed, before the ability is activated.
+   *
+   * @user GameUser game user to apply effect to
+   * @tick amount of previous ticks
+   */
+  onActivate?: (
+    from: GameUser,
+    to: GameUser,
     userEvent: number[]|undefined,
   ) => void;
 

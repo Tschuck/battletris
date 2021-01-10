@@ -2,7 +2,7 @@
   <ViewWrapper
     backRoute="/multi-player"
     :title="roomName"
-    :showNav="!(isJoined && isMatchRunning)"
+    :showNav="!isMatchRunning"
   >
     <Loading class="mt-20" v-if="loading" />
     <template class="w-full vh-100" v-else>
@@ -40,7 +40,7 @@
             :width="'50px'"
           />
           <div class="flex flex-col justify-center p-3">
-            <h3>{{ userStat.name }}</h3>
+            <h3 class="overflow-hidden">{{ userStat.name }}</h3>
             <div class="flex items-center justify-between mt-1">
               <span class="tooltip-box">
                 <font-awesome-icon class="text-lg" icon="th-large" />
@@ -136,11 +136,12 @@ interface StopStatsInterface {
           isMatchRunning.value = roomConn?.isMatchRunning;
 
           if (type === WsMessageType.GAME_STOP) {
+            isMatchRunning.value = false;
             const {
               started, stopped, users, winner,
             } = payload;
             const userIds = Object.keys(users);
-            const duration = new Date(started).getDate() - new Date(stopped).getDate();
+            const duration = new Date(stopped).getTime() - new Date(started).getTime();
             // create stop stats to show the finish modal
             stopStats.value = {
               duration: Math.round((duration / 1000 / 60) * 10) / 10,

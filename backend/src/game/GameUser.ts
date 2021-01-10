@@ -1,7 +1,8 @@
 import { GameUser, mapHelper } from '@battletris/shared';
 // eslint-disable-next-line import/no-cycle
-import { classList, AbilityInterface } from '@battletris/shared/functions/classes';
+import { classList, AbilityInterface, classes } from '@battletris/shared/functions/classes';
 import { GameStateChange } from '@battletris/shared/functions/gameHelper';
+import { getRandomNumber } from '@battletris/shared/functions/mapHelper';
 import config from '../lib/config';
 import game from './Game';
 import numberToBlockMap from './helpers/numberToBlockMap';
@@ -10,8 +11,26 @@ class BackendGameUser extends GameUser {
   /** list of looping effects */
   effectTimeouts: NodeJS.Timeout[] = [];
 
+  /** list of cooldown timeouts */
+  cooldownTimeouts: NodeJS.Timeout[] = [];
+
   /** list of fields that should be synced with the ui */
   forceFieldUpdates: string[] = [];
+
+  /** setup a list of next blocks */
+  fillNextBlocks(): void {
+    while (this.nextBlocks.length < 10) {
+      const gameBlockIndex = this.blockCount + this.nextBlocks.length;
+
+      // fill up the game blocks, until every gap until this required next block is reached
+      while (game.blocks.length < gameBlockIndex + 10) {
+        game.blocks.push(getRandomNumber(1, 7));
+      }
+
+      // add the block to the next
+      this.nextBlocks.push(game.blocks[gameBlockIndex]);
+    }
+  }
 
   /**
    * Start timeout to move blocks down.
@@ -64,46 +83,97 @@ class BackendGameUser extends GameUser {
   }
 
   /** Select the next target */
-  onNextTarget() {
-    this.target += 1;
-    if (this.target > game.users.length - 1) {
-      this.target = 0;
+  onNextTarget(index?: number) {
+    // if a specific index was selected, check if available and use it
+    if (typeof index !== 'undefined') {
+      if (game.users[index] && !game.users[index].lost) {
+        this.target = index;
+      }
+
+      return;
     }
+
+    // search for the next available target
+    do {
+      this.target += 1;
+      if (this.target > game.users.length - 1) {
+        this.target = 0;
+      }
+    } while (game.users[this.target].lost);
   }
 
   /** Activate an ability. */
   onAbility(classIndex: number, abilityIndex: number) {
     const ability = classList[classIndex].abilities[abilityIndex];
     // check if enough mana is available, otherwise the key press can be ignored
-    if (this.mana >= ability.mana) {
+    // check if a cooldown for this ability is active, if yes, we can ignore it
+    if ((this.mana >= ability.mana && typeof this.cooldowns[abilityIndex] === 'undefined')
+      || config.devMode) {
       // reduce current users mana
       this.mana -= ability.mana;
       // add the ability effect to the target user
       const targetUser = game.users[this.target];
-      targetUser.effectLoop([
+      const effect = [
         classIndex, // class index
         abilityIndex, // ability index
         Date.now(), // activation time
         this.gameUserIndex, // from index
         0, // execution time
-        this.block, // active block
-        this.rotation, // active block rotation
-      ]);
+        1, // effect stack
+      ];
+
+      // run on activate functions (single time hooks) => solves the problem, that effects were at
+      //  executed without any reference on the targets side. we can just run the game state
+      // checking in here
+      if (ability.onActivate) {
+        // !IMPORATANT: copy the target and check the game state!
+        const beforeTarget = this.clone();
+        ability.onActivate(this, targetUser, effect);
+        this.checkGameState(beforeTarget);
+      }
+
+      // check for already running effect
+      const activeEffect = targetUser.effects.find((e) => e[0] === classIndex
+        && e[1] === abilityIndex);
+      // if a effect of the same type is already running, increase the runtime
+      if (activeEffect) {
+        // reduce the ticks and execute again
+        activeEffect[5] += 1;
+        this.forceFieldUpdates = ['effects'];
+      } else {
+        // start effect loop to run the tick function
+        targetUser.effectLoop(effect);
+      }
+
+      // activate a ability cooldown and setup cleanup timeout
+      if (ability.cooldown) {
+        this.cooldowns[abilityIndex] = Date.now() + ability.cooldown;
+        this.cooldownTimeouts[abilityIndex] = setTimeout(() => {
+          this.forceFieldUpdates.push('cooldowns');
+          delete this.cooldowns[abilityIndex];
+        }, ability.cooldown);
+      }
     }
   }
 
   /** Executes an effect for a specific class and ability. */
-  effectLoop(effect: number[]) {
-    const [ classIndex, abilityIndex ] = effect;
+  effectLoop(inputEffect: number[]) {
+    let [ classIndex, abilityIndex, startDate ] = inputEffect;
     const ability: AbilityInterface = classList[classIndex].abilities[abilityIndex];
     let timeout;
 
     // display the effect
-    this.effects.push(effect);
+    this.effects.push(inputEffect);
     this.forceFieldUpdates = ['effects'];
 
     // add the effect to the user events and increase the ticks count
     const execute = () => {
+      // find effect index by comparing classIndex, abilityIndex and started date
+      const effectIndex = this.effects.findIndex(
+        (eff) => eff[0] === classIndex && eff[1] === abilityIndex && eff[2] === startDate,
+      );
+      const effect = this.effects[effectIndex];
+
       // add a effect execution to the user event queue
       this.queue.push([
         GameStateChange.EFFECT,
@@ -119,11 +189,21 @@ class BackendGameUser extends GameUser {
       if (!ability.ticks || effect[4] >= ability.ticks) {
         // force effect update if we remove the effect at this position, the diff logic
         // will not update the ui
-        this.forceFieldUpdates = ['effects'];
-        // find effect index by comparing classIndex, abilityIndex and started date
-        const effectIndex = this.effects.findIndex(
-          (eff) => eff[0] === effect[0] && eff[1] === effect[1] && eff[2] === effect[2],
-        );
+        this.forceFieldUpdates.push('effects');
+
+        // reduce the event stack, if the event stack is not zero, start the loop again
+        effect[5] -= 1;
+        if (effect[5] !== 0) {
+          // reset start date (to have the correct timer in the ui) and tick count
+          // (to keep it running)
+          effect[2] = startDate = Date.now();
+          effect[4] = 0;
+          // trigger the effect loop again
+          execute();
+          return;
+        }
+
+        // if the stack is zero, cleanup
         if (effectIndex !== -1) {
           this.effects.splice(effectIndex, 1);
         }

@@ -3,6 +3,7 @@
     style="width: 100%; height: 100%"
     class="flex flex-col bg-2 game-field"
     :id="`game-field-${userIndex}`"
+    :class="{ 'opacity-50': hasLost }"
   >
     <div class="flex justify-center flex-grow p-5">
       <div
@@ -26,6 +27,7 @@
           :classIndex="effect[0]"
           :abilityIndex="effect[1]"
           :ticked="effect[4]"
+          :stack="effect[5]"
           :userId="userId"
         />
       </div>
@@ -38,6 +40,15 @@
         }"
       >
         <div class="flex items-center justify-between p-3 mb-1 bg-1">
+          <span class="tooltip-box">
+            <font-awesome-icon class="text-lg" icon="user-circle" />
+            {{ userIndex + 1 }}
+            <Tooltip
+              class="bg-1"
+              :value="$t('classes.user-index')"
+              style="width: 200px"
+            />
+          </span>
           <span class="tooltip-box">
             <font-awesome-icon class="text-lg" icon="th-large" />
             {{ blockCount }}
@@ -93,24 +104,39 @@
           :className="className"
           :showAbilities="!offline"
           :userMana="mana"
+          :cooldowns="cooldowns"
           v-if="isCurrUser"
         />
       </div>
     </div>
 
-    <div class="flex flex-row items-center justify-between w-1/2 px-4 py-1 mr-1 next-blocks bg-1">
-      <div class="flex flex-col mr-1" v-for="(block, i1) in nextBlocks" :key="i1">
-        <div class="flex flex-row" v-for="(y, i2) in block" :key="i2">
-          <div
-            class="w-2 h-2"
-            v-for="(x, i3) in y"
-            :key="i3"
-            :style="`margin-right: 1px; margin-top: 1px; background-color: ${
-              blockColors[y[i3] || 0]
-            }`"
-          ></div>
+    <div
+      class="flex flex-row items-center justify-between w-1/2 px-4 py-1 mr-1 leading-box bg-1"
+    >
+      <template v-if="isCurrUser">
+        <div
+          class="flex flex-col mr-1"
+          v-for="(block, i1) in nextBlocks"
+          :key="i1"
+        >
+          <div class="flex flex-row" v-for="(y, i2) in block" :key="i2">
+            <div
+              class="w-2 h-2"
+              v-for="(x, i3) in y"
+              :key="i3"
+              :style="`margin-right: 1px; margin-top: 1px; background-color: ${
+                blockColors[y[i3] || 0]
+              }`"
+            ></div>
+          </div>
         </div>
-      </div>
+      </template>
+      <template v-else>
+        <ClassLogo class="w-6" :className="className" height="20px" />
+        <span class="ml-3 text-xs font-bold w=full text-center"
+          >{{ userName }}</span
+        >
+      </template>
     </div>
   </div>
 </template>
@@ -122,6 +148,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { classes } from '@battletris/shared/functions/classes';
 import { GameUser, Blocks } from '@battletris/shared';
 import AbilityLogo from '../icons/AbilityLogo.vue';
+import ClassLogo from '../icons/ClassLogo.vue';
 import Controls from '../components/Controls.vue';
 import currUser from '../lib/User';
 import Effect from '../components/Effect.vue';
@@ -129,6 +156,7 @@ import FrontendGameUser from './GameUser';
 import GameRenderer, { colorMap } from './GameRenderer';
 import SingeGameUser from './SingleGameUser';
 import Tooltip from '../components/Tooltip.vue';
+import GameRegistry from './GameRegistry';
 
 interface GameFieldProps {
   userData: GameUser;
@@ -138,6 +166,7 @@ interface GameFieldProps {
 @Component({
   components: {
     AbilityLogo,
+    ClassLogo,
     Controls,
     Effect,
     Tooltip,
@@ -156,6 +185,8 @@ interface GameFieldProps {
       type: Boolean,
       default: false,
     },
+    // list of lost users
+    lostUsers: { type: [Number] },
   },
   setup(props) {
     const { userData, userIndex } = (props as unknown) as GameFieldProps;
@@ -164,20 +195,24 @@ interface GameFieldProps {
     const isCurrUser = ref<boolean>(currUser.id === userData.id);
     const container = ref();
     const userId = ref(userData.id);
+    const userName = ref(userData.name);
     const className = ref(userData.className);
     const classArmor = ref(classes[userData.className].maxArmor);
     const classMana = ref(classes[userData.className].maxMana);
     const blockColors = ref(colorMap.STONES);
     // stat values
-    const blockCount = ref<number>();
-    const rowCount = ref<number>();
-    const speed = ref<number>();
     const armor = ref<number>();
-    const mana = ref<number>();
-    const target = ref<number>();
+    const blockCount = ref<number>();
+    const cooldowns = ref<number[]>([]);
     const effects = ref<number[][]>([]);
+    const hasLost = ref<boolean>();
+    const mana = ref<number>();
     const nextBlocks = ref<number[][][]>();
     const nextBlocksToRender = 3;
+    const rowCount = ref<number>();
+    const speed = ref<number>();
+    // non vue values
+    let target = -1;
 
     /**
      * if this is the handler of the activly playing user, we can handle the active target focus
@@ -186,13 +221,13 @@ interface GameFieldProps {
      *   - event handlers are complexer than this
      */
     const updateTargetRendering = (newTargetIndex: number) => {
-      target.value = newTargetIndex;
+      target = newTargetIndex;
 
       // use direct css class accessor, vue will renrender the field and will cause flickering
       const gameField = document.getElementById(`game-field-${userIndex}`);
       gameField?.classList.remove('is-targeting');
       gameField?.classList.remove('is-self-targeting');
-      if (target.value === props.activeUserIndex) {
+      if (target === props.activeUserIndex) {
         gameField?.classList.add(
           !isCurrUser.value ? 'is-targeting' : 'is-self-targeting'
         );
@@ -205,7 +240,7 @@ interface GameFieldProps {
         );
         previousTargeted.forEach((el) => el.classList.remove('targeted-game-field'));
         // select the new target and add the targeted game field
-        const newTarget = document.getElementById(`game-field-${target.value}`);
+        const newTarget = document.getElementById(`game-field-${target}`);
         newTarget?.classList.add('targeted-game-field');
       }
     };
@@ -238,8 +273,10 @@ interface GameFieldProps {
         mana.value = user.mana;
         rowCount.value = user.rowCount;
         speed.value = user.speed;
+        hasLost.value = user.lost;
+        cooldowns.value = user.cooldowns;
         // update target hints
-        if (user.target !== target.value) {
+        if (user.target !== target) {
           updateTargetRendering(user.target);
         }
         // rerender next blocks
@@ -248,6 +285,10 @@ interface GameFieldProps {
         }
       },
     );
+
+    // register the game user in the game registry, so every game user class in the same room can
+    // access this one
+    GameRegistry[userIndex] = gameUser;
 
     const onKeyDown = (keyCode: number) => {
       gameUser.userKeyEvent(keyCode);
@@ -259,7 +300,7 @@ interface GameFieldProps {
         preview: true,
       });
       // ensure initial rendered target
-      updateTargetRendering(target.value as number);
+      updateTargetRendering(target as number);
       updateNextBlocks(gameUser);
     });
 
@@ -277,7 +318,9 @@ interface GameFieldProps {
       classMana,
       className,
       container,
+      cooldowns,
       effects,
+      hasLost,
       isCurrUser,
       mana,
       nextBlocks,
@@ -286,6 +329,7 @@ interface GameFieldProps {
       speed,
       target,
       userId,
+      userName,
     };
   },
 })
@@ -316,19 +360,23 @@ canvas {
 }
 
 .targeted-game-field {
-  &, &.is-targeting, .next-blocks {
+  &,
+  &.is-targeting,
+  .leading-box {
     @apply border-yellow-600 border-opacity-50;
   }
 }
 
 .is-targeting {
-  &, .next-blocks {
+  &,
+  .leading-box {
     @apply border-red-600 border-opacity-50;
   }
 }
 
 .is-self-targeting {
-  &, .next-blocks {
+  &,
+  .leading-box {
     @apply border-green-600 border-opacity-50;
   }
 }
@@ -338,7 +386,7 @@ canvas {
   transition: 0.5s ease-out width;
 }
 
-.next-blocks {
+.leading-box {
   position: absolute;
   top: -19px;
   left: 0;

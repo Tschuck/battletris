@@ -3,6 +3,7 @@ import { cloneDeep } from 'lodash';
 import {
   Blocks, gameHelper,
 } from '@battletris/shared';
+import { getRotationBlockIndex } from '@battletris/shared/functions/gameHelper';
 import FrontendGameUser from './GameUser';
 import StoneLayer from './StoneLayer';
 
@@ -232,7 +233,7 @@ export default class GameRenderer {
       // calculate lowest y position that is possible
       y = gameHelper.getPreviewY(
         this.user.map,
-        Blocks[this.user.block][this.user.rotation % 4],
+        Blocks[this.user.block][getRotationBlockIndex(this.user.rotation)],
         this.user.y,
         this.user.x,
       ) * this.colHeight;

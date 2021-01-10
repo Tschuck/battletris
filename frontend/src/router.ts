@@ -15,6 +15,7 @@ const routes: Array<RouteConfig> = [
     props: true,
   },
   { path: '/settings', component: () => import('./views/Settings.vue') },
+  { path: '/versions', component: () => import('./views/Versions.vue') },
 ];
 
 const router = new VueRouter({

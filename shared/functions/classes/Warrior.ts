@@ -11,46 +11,36 @@ export default class Warrior implements ClassInterface {
   abilities = [
     {
       mana: 20,
-      tick: (user: GameUser, userEvent: number[]|undefined): void => {
-        // class index
-        // ability index
-        // activation time
-        // from index
-        // execution time
-        const [,,,,, activeBlock, rotation] = userEvent || [];
-        user.block = activeBlock;
-        user.rotation = rotation;
+      onActivate: (from: GameUser, to: GameUser): void => {
+        // class index, ability index, activation time, from index, execution time
+        to.block = from.block;
+        to.rotation = from.rotation;
+        from.setNewBlock();
       },
     },
     {
-      tickTimeout: 0,
-      ticks: 0,
       mana: 30,
-      tick: (user: GameUser): void => {
-        user.map = generateRandomAreaClear([[1, 1], [1, 1]], user.map);
+      onActivate: (from: GameUser, to: GameUser): void => {
+        to.map = generateRandomAreaClear([[1, 1], [1, 1]], to.map);
       },
     },
     {
-      tickTimeout: 0,
-      ticks: 0,
       mana: 50,
-      tick: (user: GameUser): void => {
-        user.map = flattenMap(user.map);
-      },
-    },
-    {
-      tickTimeout: 0,
-      ticks: 0,
-      mana: 50,
-      tick: (user: GameUser): void => {
+      onActivate: (from: GameUser, to: GameUser): void => {
         let xIndex = 0;
-        user.map.forEach((y, yIndex) => {
+        to.map.forEach((y, yIndex) => {
           if (!(yIndex % 2) && yIndex) {
             xIndex += 1;
           }
 
-          (user.map[yIndex][xIndex] as any) = undefined;
+          (to.map[yIndex][xIndex] as any) = undefined;
         });
+      },
+    },
+    {
+      mana: 50,
+      onActivate: (from: GameUser, to: GameUser): void => {
+        to.map = flattenMap(to.map);
       },
     },
   ];

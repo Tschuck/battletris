@@ -6,27 +6,26 @@ import { ClassInterface } from './ClassInterface';
 export default class Sorcerer implements ClassInterface {
   maxArmor = 50;
 
-  maxMana = 200;
+  maxMana = 150;
 
   abilities = [
     {
-      tickTimeout: 0,
-      ticks: 0,
-      mana: 20,
-      tick: (user: GameUser): void => {
-        user.handleStateChange(GameStateChange.FALL_DOWN);
+      mana: 55,
+      cooldown: 5_000,
+      onActivate: (from: GameUser, to: GameUser): void => {
+        to.handleStateChange(GameStateChange.FALL_DOWN);
       },
     },
     {
       tickTimeout: 10_000,
       ticks: 2,
-      mana: 50,
+      mana: 80,
       tick: (user: GameUser, userEvent: number[]|undefined = []): void => {
         // reduce speed on first tick, increase it back on second tick
         if (userEvent[4] === 1) {
-          user.speed -= 800;
+          user.speed /= 2;
         } else {
-          user.speed += 800;
+          user.speed *= 2;
         }
       },
     },
@@ -64,7 +63,7 @@ export default class Sorcerer implements ClassInterface {
     {
       tickTimeout: 10_000,
       ticks: 2,
-      mana: 100,
+      mana: 150,
       onStateChange: (
         user: GameUser,
         userEvent: number[]|undefined,

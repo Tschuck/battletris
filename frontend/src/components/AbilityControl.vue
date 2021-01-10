@@ -3,11 +3,22 @@
     <div
       class="absolute top-0 left-0 z-10 flex justify-between w-full p-1"
       :class="{
-        'opacity-50': userMana < mana,
+        'no-mana': userMana < mana && !cooldown,
+        'cooldown-active': cooldown,
       }"
     >
       <div class="text-xs">{{ mana }}</div>
       <div class="text-xs font-bold">{{ keyText }}</div>
+    </div>
+    <div
+      v-if="cooldown"
+      class="absolute bottom-0 left-0 right-0 z-20 flex justify-between w-full p-1 font-xs"
+    >
+      <countdown class="w-full text-center" :interval="1000" :time="cooldown - dateNow()">
+        <template slot-scope="props">
+          <span class="text-center">{{ props.seconds }}s</span>
+        </template>
+      </countdown>
     </div>
     <Control
       ref="control"
@@ -17,7 +28,8 @@
     >
       <AbilityLogo
         :class="{
-          'opacity-50': userMana < mana,
+          'no-mana': userMana < mana && !cooldown,
+          'cooldown-active': cooldown,
         }"
         class="p-3"
         :className="className"
@@ -47,6 +59,7 @@ import Control from './Control.vue';
     keyText: { type: String },
     keyValue: { type: Number },
     userMana: { type: Number },
+    cooldown: { type: Number },
   },
   setup(props) {
     const control = ref();
@@ -59,8 +72,12 @@ import Control from './Control.vue';
     const mouseDown = (touch: number) => control.value.mouseDown(touch);
     const mouseUp = (touch: number) => control.value.mouseUp(touch);
 
+    // get current date time
+    const dateNow = () => Date.now();
+
     return {
       control,
+      dateNow,
       mana,
       mouseDown,
       mouseUp,
@@ -69,3 +86,12 @@ import Control from './Control.vue';
 })
 export default class AbilityControl extends Vue {}
 </script>
+
+<style lang="postcss">
+.no-mana {
+  opacity: 0.5;
+}
+.cooldown-active {
+  opacity: 0.1;
+}
+</style>

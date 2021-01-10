@@ -1,5 +1,6 @@
 // eslint-disable class-methods-use-this
 import { cloneDeep } from 'lodash';
+import { Key } from 'ts-keycode-enum';
 import Blocks, { BlockMapping } from '../enums/Blocks';
 // eslint-disable-next-line import/no-cycle
 import {
@@ -9,25 +10,14 @@ import {
   CollisionType,
   GameStateChange,
   getPreviewY,
+  getRotationBlockIndex,
   getStoneCollision,
   iterateOverMap,
 } from './gameHelper';
-import { generateRandomClears, getEmptyMap } from './mapHelper';
+import { generateRandomClears, getEmptyMap, getRandomNumber } from './mapHelper';
 
 // order to move turned blocks that get stuck out of the bounds or out of the docked mode
 const turnBlockEvades = [1, -1, 2, -2];
-
-/**
- * Gets a random between to numbers
- *
- * https://stackoverflow.com/questions/4959975/generate-random-number-between-two-numbers-in-javascript
- *
- * @param min min value
- * @param max max value
- */
-function getRandomNumber(min: number, max: number): number { // min and max included
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
 
 const neverUpdateProps = [
   'queue',
@@ -44,16 +34,23 @@ const abilityKeys = [
 
 /** keys that will be pressable by the user */
 const uiKeys = [
-  GameStateChange.TURN,
-  GameStateChange.LEFT,
-  GameStateChange.RIGHT,
   GameStateChange.DOWN,
+  GameStateChange.E,
   GameStateChange.FALL_DOWN,
+  GameStateChange.LEFT,
   GameStateChange.NEXT_TARGET,
   GameStateChange.Q,
-  GameStateChange.W,
-  GameStateChange.E,
   GameStateChange.R,
+  GameStateChange.RIGHT,
+  GameStateChange.TARGET_USER_1,
+  GameStateChange.TARGET_USER_2,
+  GameStateChange.TARGET_USER_3,
+  GameStateChange.TARGET_USER_4,
+  GameStateChange.TARGET_USER_5,
+  GameStateChange.TURN_LEFT,
+  GameStateChange.TURN_RIGHT,
+  GameStateChange.TURN,
+  GameStateChange.W,
 ];
 
 class GameUser {
@@ -71,6 +68,9 @@ class GameUser {
 
   /** db user class */
   className!: string;
+
+  /** users name */
+  name!: string;
 
   /** users index within the game */
   gameUserIndex!: number;
@@ -120,6 +120,9 @@ class GameUser {
   /** list of latest user events (use arrays in arrays to reduce sent payload) ([id, key, payload]) */
   queue: (number|any)[][] = [];
 
+  /** dates until specific ability index will be blocked */
+  cooldowns: number[] = [];
+
   constructor(
     user: Partial<GameUser>|GameUser,
     gameUserIndex = -1,
@@ -134,6 +137,7 @@ class GameUser {
 
     // initialize a new user
     this.id = user.id || '';
+    this.name = user.name || '';
     this.className = user.className || '';
     this.gameUserIndex = gameUserIndex;
     // setup initial game values
@@ -325,6 +329,11 @@ class GameUser {
    * @param keyCode key number
    */
   onNewStateChange(key: GameStateChange): void {
+    // disable keys when lost
+    if (this.lost) {
+      return;
+    }
+
     // only allow user keys that can be activated (prevent from accessing effect / new block logic
     // or something else)
     if (uiKeys.indexOf(key) === -1) {
@@ -344,7 +353,7 @@ class GameUser {
    * Transforms the current rotation counter into a block index
    */
   getRotationBlockIndex(): number {
-    return this.rotation % 4;
+    return getRotationBlockIndex(this.rotation);
   }
 
   /**
@@ -355,6 +364,11 @@ class GameUser {
    * @param userEvent array of numbers [key, id, ...optionalStuff ]
    */
   handleStateChange(inputKey: GameStateChange, userEvent?: number[]): void {
+    // disable keys when lost
+    if (this.lost) {
+      return;
+    }
+
     let key: GameStateChange|undefined = inputKey;
     const beforeUser = this.clone();
 
@@ -367,10 +381,13 @@ class GameUser {
     });
 
     switch (key) {
-      case GameStateChange.TURN: {
-        if (this.block !== 4) {
-          this.rotation += 1;
-        }
+      case GameStateChange.TURN:
+      case GameStateChange.TURN_RIGHT: {
+        this.rotation += 1;
+        break;
+      }
+      case GameStateChange.TURN_LEFT: {
+        this.rotation -= 1;
         break;
       }
       case GameStateChange.LEFT: {
@@ -421,6 +438,14 @@ class GameUser {
         }
         break;
       }
+      case GameStateChange.TARGET_USER_1:
+      case GameStateChange.TARGET_USER_2:
+      case GameStateChange.TARGET_USER_3:
+      case GameStateChange.TARGET_USER_4:
+      case GameStateChange.TARGET_USER_5: {
+        this.onNextTarget(key - Key.One); // map key 1 to 5 (49 - 53) to 0 to 5
+        break;
+      }
     }
 
     // check the latest move states for docked states
@@ -443,7 +468,10 @@ class GameUser {
   onUserLost(): void { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
 
   /** Triggered, when the user selected the next target */
-  onNextTarget(): void { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onNextTarget(index?: number): void {
+    /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */
+  }
 
   /** Triggered, when the user activated an ability */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -57,13 +57,17 @@ export default class RoomHandler {
   /** room specific logger */
   logger: Pino;
 
-  /** room specific logger */
+  /** for the game registered users */
   gameRegistration: Record<string, GameUserStatus>;
+
+  /** room specific logger */
+  keepAlive: Record<string, NodeJS.Timeout>;
 
   constructor(id: string) {
     this.id = id;
     this.users = { };
     this.gameRegistration = { };
+    this.keepAlive = {};
     this.logger = Pino({
       prettyPrint: true,
       level: config.logLevel,
@@ -115,16 +119,17 @@ export default class RoomHandler {
   }
 
   /**
-   * Start the room process and listen for process messages, that needs to be synced.
+   * Start the game process and listen for process messages, that needs to be synced.
    */
   async processStart() {
     this.process = fork(gameFilePath, ['params'], {
       silent: true,
       env: {
+        ...process.env,
         BATTLETRIS_IS_GAME: 'true',
         BATTLETRIS_LOG_LEVEL: config.logLevel,
         ROOM_ID: this.id,
-        stdio: "inherit",
+        stdio: 'inherit',
       },
     });
 
@@ -219,8 +224,12 @@ export default class RoomHandler {
   wsClose(userId: string) {
     // do not remove the users, when the game is running and the user is registered
     if ((this.process && !this.gameRegistration[userId]) || !this.process) {
+      // clear the user
       delete this.users[userId];
       delete this.gameRegistration[userId];
+      // stop keep alive and clear the user from it
+      clearInterval(this.keepAlive[userId]);
+      delete this.keepAlive[userId];
       // notify clients, that the user left the room
       this.wsBroadcast(WsMessageType.ROOM_LEAVE, { userId });
       // check if room can be closed
@@ -242,7 +251,6 @@ export default class RoomHandler {
     this.users[userId].send(getStringifiedMessage(type, payload), { binary: true });
   }
 
-
   /**
    * Add a user to the room websocket and listen for messages!
    *
@@ -259,10 +267,18 @@ export default class RoomHandler {
     // handle ws leave
     ws.on('close', () => this.wsClose(userId));
 
+    // keep the connection alive. game could run longer and connections start idling
+    this.keepAlive[userId] = setInterval(
+      () => this.wsBroadcast(WsMessageType.KEEP_ALIVE),
+      config.keepAliveTimeout,
+    );
+
+    // update the ui for all users
     this.wsBroadcast(WsMessageType.ROOM_JOIN, {
       user: await User.findOne(userId),
     });
 
+    // listen for incoming messages
     this.wsListen(userId);
   }
 

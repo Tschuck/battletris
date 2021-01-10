@@ -2,23 +2,26 @@ import { isEqual } from 'lodash';
 import { Key } from 'ts-keycode-enum';
 
 export enum GameUserMapping {
-  className = 0,
-  id = 1,
-  map = 2,
-  block = 3,
-  nextBlocks = 4,
-  rotation = 5,
-  x = 6,
-  y = 7,
-  blockCount = 8,
-  rowCount = 9,
-  speed = 10,
-  armor = 11,
-  mana = 12,
-  effects = 13,
-  target = 14,
-  queue = 15,
-  interactionCount = 16,
+  id = 0,
+  className = 1,
+  name = 2,
+  map = 3,
+  block = 4,
+  nextBlocks = 5,
+  rotation = 6,
+  x = 7,
+  y = 8,
+  blockCount = 9,
+  rowCount = 10,
+  speed = 11,
+  armor = 12,
+  mana = 13,
+  effects = 14,
+  target = 15,
+  queue = 16,
+  interactionCount = 17,
+  lost = 18,
+  cooldowns = 19,
 }
 
 /**
@@ -36,10 +39,11 @@ export enum CollisionType {
  */
 export enum GameStateChange {
   LOST = -3,
-  EFFECT_FINISHED = -2,
-  EFFECT = -1,
-  NEW_BLOCK = 0,
+  EFFECT = -2,
+  NEW_BLOCK = -1,
   TURN = Key.UpArrow,
+  TURN_LEFT = Key.A,
+  TURN_RIGHT = Key.D,
   LEFT = Key.LeftArrow,
   RIGHT = Key.RightArrow,
   DOWN = Key.DownArrow,
@@ -49,6 +53,11 @@ export enum GameStateChange {
   W = Key.W,
   E = Key.E,
   R = Key.R,
+  TARGET_USER_1 = Key.One,
+  TARGET_USER_2 = Key.Two,
+  TARGET_USER_3 = Key.Three,
+  TARGET_USER_4 = Key.Four,
+  TARGET_USER_5 = Key.Five,
 }
 
 /**
@@ -189,6 +198,19 @@ export const getStoneCollision = (
 });
 
 /**
+ * Transforms the current rotation counter into a block index
+ */
+export const getRotationBlockIndex = (rotation: number): number => {
+  const rotationIndex = rotation % 4;
+
+  if (rotationIndex < 0) {
+    return rotationIndex + 4;
+  }
+
+  return rotationIndex;
+};
+
+/**
  * Gets the lowest possible position for the given block.
  *
  * @param map to check
@@ -196,7 +218,7 @@ export const getStoneCollision = (
  * @param y block y
  * @param x block x
  */
-export const getPreviewY = (map: number[][], block: number[][], y: number, x: number) => {
+export const getPreviewY = (map: number[][], block: number[][], y: number, x: number): number => {
   // initially start with y minus one, that will be directly raised at the beginning
   let previewY = y - 1;
 
