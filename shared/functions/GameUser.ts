@@ -4,7 +4,7 @@ import { Key } from 'ts-keycode-enum';
 import Blocks, { BlockMapping } from '../enums/Blocks';
 // eslint-disable-next-line import/no-cycle
 import {
-  AbilityInterface, classList, ClassInterface, getClassIndex, classes,
+  AbilityInterface, classList, getClassIndex, classes,
 } from './classes';
 import {
   CollisionType,
@@ -99,9 +99,6 @@ class GameUser {
   /** game loop timeout */
   gameLoopTimeout: any;
 
-  /** increase speed of block down moving */
-  increaseLoopTimeout: any;
-
   /** is the user out of game? */
   lost = false;
 
@@ -111,8 +108,23 @@ class GameUser {
   /** amount of cleared rows */
   rowCount!: number;
 
-  /** timeout, until the next block moves down */
+  /** users speed (block move down) */
   speed!: number;
+
+  /** current user level */
+  level!: number;
+
+  /** maximum amount of mana, calculated by current level and initial mana of class */
+  maxMana!: number;
+
+  /** maximum amount of armor, calculated by current level and initial armor of class */
+  maxArmor!: number;
+
+  /** experience points */
+  exp!: number;
+
+  /** amount of exp to reach for the next level */
+  maxExp!: number;
 
   /** counter of key presses of the user */
   interactionCount = 0;
@@ -141,20 +153,23 @@ class GameUser {
     this.className = user.className || '';
     this.gameUserIndex = gameUserIndex;
     // setup initial game values
-    this.armor = user.armor || classes[this.className].maxArmor;
     this.block = 0;
     this.blockCount = 0;
     this.effects = user.effects || [];
-    this.mana = 0;
+    this.exp = 0;
+    this.level = 1;
     this.rotation = 0;
     this.rowCount = 0;
-    this.speed = user.speed || -1;
     this.target = user.target || gameUserIndex;
     this.x = 0;
     this.y = 0;
+    // ensure to run this before setting up initial armor
+    this.setStatsForLevel();
+    this.armor = user.armor || this.maxArmor;
+    this.mana = 0;
     this.fillNextBlocks();
     // catch invalid param setup
-    if (this.speed === -1 || this.gameUserIndex === -1 || !this.id || !this.className) {
+    if (this.gameUserIndex === -1 || !this.id || !this.className) {
       throw new Error(`params missing in game user setup: speed: ${this.speed},`
         + ` index: ${this.gameUserIndex}, id: ${this.id}, className: ${this.className}`);
     }
@@ -168,17 +183,16 @@ class GameUser {
    */
   checkGameState(lastState: GameUser, change?: GameStateChange): void {
     // check max mana and armor
-    const classInstance = classList[getClassIndex(this.className)];
-    if (this.mana > classInstance.maxMana) {
-      this.mana = classInstance.maxMana;
+    if (this.mana > this.maxMana) {
+      this.mana = this.maxMana;
     }
-    if (this.armor > classInstance.maxArmor) {
-      this.armor = classInstance.maxArmor;
+    if (this.armor > this.maxArmor) {
+      this.armor = this.maxArmor;
     }
     // check if armor was beneath zero. add a empty line
     if (this.armor < 0) {
       const [newRow] = generateRandomClears([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]], 1);
-      this.armor = classInstance.maxArmor;
+      this.armor = this.maxArmor;
       this.map.push(newRow);
       this.map.shift();
     }
@@ -286,12 +300,17 @@ class GameUser {
     }
 
     if (clearedRows !== 0) {
-      const classInstance: ClassInterface = classList[getClassIndex(this.className)];
       // stack percentage of mana accordingly to the amount of cleared rows
-      this.mana += (classInstance.maxMana / 100) * ((10 * clearedRows) + clearedRows * clearedRows);
-      if (this.mana > classInstance.maxMana) {
-        this.mana = classInstance.maxMana;
+      this.mana += (this.maxMana / 100) * ((10 * clearedRows) + clearedRows * clearedRows);
+      this.exp += clearedRows * clearedRows * (4 + (10 / clearedRows));
+      if (this.mana > this.maxMana) {
+        this.mana = this.maxMana;
       }
+      // LEVEL UP!
+      if (this.exp >= this.maxExp) {
+        this.onLevelUp();
+      }
+
       // trigger battletris base class ability for armor healing / damage
       // if the user targets his self, use healing ability 0 - 3. target will be determine within
       // on ability
@@ -301,6 +320,9 @@ class GameUser {
         // use damage abilities
         this.onAbility(0, 3 + clearedRows);
       }
+
+      // trigger on row clear implementation
+      this.onRowClear();
     }
 
     this.setNewBlock();
@@ -452,6 +474,19 @@ class GameUser {
     this.checkGameState(beforeUser, key);
   }
 
+  /**
+   * Calculate the latest values for level specific values.
+   *
+   * @return  {void}    [return description]
+   */
+  setStatsForLevel(): void {
+    const userClass = classes[this.className];
+
+    this.maxArmor = userClass.getManaForLevel(this.level);
+    this.maxMana = userClass.getManaForLevel(this.level);
+    this.maxExp = userClass.getExpForLevel(this.level);
+  }
+
   /** Start timeout to move blocks down. */
   gameLoop(): void { /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */ }
 
@@ -476,6 +511,18 @@ class GameUser {
   /** Triggered, when the user activated an ability */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onAbility(classIndex: number, abilityIndex: number): void {
+    /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */
+  }
+
+  /** Triggered, when the user reaches a level up */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onLevelUp(): void {
+    /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */
+  }
+
+  /** Triggered, when the user clears a row */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onRowClear(): void {
     /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */
   }
 }

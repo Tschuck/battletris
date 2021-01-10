@@ -1,6 +1,8 @@
 <template>
   <ViewWrapper :title="$t('start-page.tutorial')">
     <div style="max-width: 600px;">
+      fun fact: tetris is good for your brain: https://www.sciencedaily.com/releases/2009/09/090901082851.htm
+      Battletris is even more complex than usual tetris. If you don't like it that much, then learn it, just for your brain :P
       <h2 class="font-bold">{{ $t("tutorial.interactive") }}</h2>
       <p class="p-4 mt-4 text-xs bg-2">{{ $t("tutorial.interactive-desc") }}</p>
 

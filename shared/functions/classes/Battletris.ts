@@ -1,11 +1,15 @@
 /* eslint-disable import/no-cycle */
 import GameUser from '../GameUser';
-import { ClassInterface } from './ClassInterface';
+import { BaseClass } from './BaseClass';
 
-export default class BattletrisGameClass implements ClassInterface {
-  maxArmor = 0;
+export default class BattletrisGameClass extends BaseClass {
+  baseArmor = 0;
 
-  maxMana = 0;
+  baseMana = 0;
+
+  armorScaling = 0;
+
+  manaScaling = 0;
 
   abilities = [
     // heal armor abilities

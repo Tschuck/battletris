@@ -1,12 +1,21 @@
 /* eslint-disable import/no-cycle */
 import { flattenMap, generateRandomAreaClear } from '../mapHelper';
 import GameUser from '../GameUser';
-import { ClassInterface } from './ClassInterface';
+import { BaseClass } from './BaseClass';
 
-export default class Warrior implements ClassInterface {
-  maxArmor = 150;
+/*
+  // use this calculation for adjusting the scaling values:
+  checkMaxValues = (value, scaling, level = 15) => value + (value * scaling * level);
+  checkMaxValues(30, 0.1);
+*/
+export default class Warrrior extends BaseClass {
+  baseArmor = 50; // max: 275
 
-  maxMana = 50;
+  baseMana = 20; // max: 275
+
+  armorScaling = 0.3;
+
+  manaScaling = 0.1;
 
   abilities = [
     {

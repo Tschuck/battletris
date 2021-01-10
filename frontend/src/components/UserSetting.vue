@@ -20,11 +20,7 @@
           @click="selectClass(-1)"
           v-if="!disabled"
         />
-        <ClassLogo
-          :className="className"
-          height="80px"
-          width="80px"
-        />
+        <ClassLogo :className="className" height="80px" width="80px" />
         <font-awesome-icon
           class="text-4xl cursor-pointer"
           icon="chevron-right"
@@ -36,13 +32,17 @@
       <h3 class="my-3 font-bold text-center">
         {{ $t(`classes.${className}.title`) }}
       </h3>
-      <div class="flex items-center justify-center w-full">
-        <h3 class="text-xs"
-          >{{ $t("classes.mana") }}: {{ classIterator[activeClassIndex].maxMana }}</h3
-        >
-        <h3 class="mx-2">|</h3>
-        <h3 class="text-xs"
-          >{{ $t("classes.armor") }}: {{ classIterator[activeClassIndex].maxArmor }} </h3>
+      <div class="flex flex-col items-center justify-center w-full">
+        <h3 class="text-xs">
+          {{ $t("classes.mana") }}:
+          {{ classIterator[activeClassIndex].baseMana }}
+          ({{$t('classes.level')}} 15: {{ classIterator[activeClassIndex].maxMana }})
+        </h3>
+        <h3 class="text-xs">
+          {{ $t("classes.armor") }}:
+          {{ classIterator[activeClassIndex].baseArmor }}
+          ({{$t('classes.level')}} 15: {{ classIterator[activeClassIndex].maxArmor }})
+        </h3>
       </div>
       <p class="p-3 mt-3 italic bg-2" v-if="!minimal">
         {{ $t(`classes.${className}.desc`) }}
@@ -129,8 +129,10 @@ import currUser from '../lib/User';
 
     const getDisplayClass = (getForClass: string) => ({
       name: getForClass,
-      maxArmor: classes[getForClass].maxArmor,
-      maxMana: classes[getForClass].maxMana,
+      baseArmor: classes[getForClass].baseArmor,
+      baseMana: classes[getForClass].baseMana,
+      maxArmor: classes[getForClass].getArmorForLevel(15),
+      maxMana: classes[getForClass].getManaForLevel(15),
       abilities: classes[getForClass].abilities.map((ability) => {
         const ticks = ability?.ticks || 0;
         const tickTimeout = ability?.tickTimeout || 0;

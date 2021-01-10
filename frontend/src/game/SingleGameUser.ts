@@ -3,6 +3,8 @@ import { GameStateChange } from '@battletris/shared/functions/gameHelper';
 import FrontendGameUser from './GameUser';
 
 export default class SingleGameUser extends FrontendGameUser {
+  increaseLoopTimeout!: number;
+
   constructor(
     user: GameUser,
     gameUserIndex: number,

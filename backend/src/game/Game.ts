@@ -1,4 +1,5 @@
 import { gameHelper, mapHelper, MatchStatsInterface, ProcessMessageType, WsMessageType } from '@battletris/shared';
+import { classes } from '@battletris/shared/functions/classes';
 import { transformUserTransport, getDifference, GameStateChange } from '@battletris/shared/functions/gameHelper';
 import { User } from '../db';
 import config from '../lib/config';
@@ -29,6 +30,9 @@ class Game {
 
   /** list of next blocks for all users */
   blocks: number[];
+
+  /** starting speed for all users (global speed for everyone!) */
+  speed: number = config.userSpeed;
 
   /**
    * Show countdown before starting the game loops of each user.
@@ -69,12 +73,21 @@ class Game {
     this.indexIdMap = {};
     // setup game users
     this.userIds.forEach((userId, index) => {
+      // prevent someone is using battletris game ability class
+      const className = users[userId].className;
+      if (!classes[className] || className === 'battletris') {
+        users[userId].className = 'unknown';
+      }
+      // initialize the users for the game
       this.users.push(new GameUser({
         ...users[userId],
         speed: config.userSpeed,
       }, index));
       this.indexIdMap[index] = userId;
     });
+    // IMPORTANT: game user speed is not initially set and is handled by the game using the overall
+    // cleared rows
+    this.onRowClear();
 
     logger.debug(`Game started with: ${this.userIds.join(', ')}`);
     // show countdown
@@ -201,6 +214,20 @@ class Game {
     processHandler.send(ProcessMessageType.GAME_STOP, stats);
     // wait with closing of the process, until message was sent
     setTimeout(() => processHandler.exit(), 100);
+  }
+
+  /**
+   * Used to globally calculate the users speed.
+   */
+  onRowClear() {
+    const clearRows = this.users
+      .map((user) => user.rowCount)
+      .reduce((a: number, b: number) => a + b, 0);
+    const speedPercentage = 100 / (config.maxSpeedRowsPerUser * this.users.length);
+    this.users.forEach((user) => {
+      user.forceFieldUpdates.push('speed');
+      user.speed = Math.ceil(config.userSpeed - (7 * speedPercentage * clearRows));
+    });
   }
 }
 

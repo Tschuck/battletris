@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { AbilityInterface, ClassInterface } from './ClassInterface';
+import { AbilityInterface, BaseClass } from './BaseClass';
 import Battletris from './Battletris';
 import Sorcerer from './Sorcerer';
 import Unknown from './Unknown';
@@ -12,14 +12,14 @@ enum ClassesIndex {
   WARRIOR = 3,
 }
 
-const classes: Record<string, ClassInterface> = {
+const classes: Record<string, BaseClass> = {
   battletris: new Battletris(),
   unknown: new Unknown(),
   sorcerer: new Sorcerer(),
   warrior: new Warrior(),
 };
 
-const classList: ClassInterface[] = [
+const classList: BaseClass[] = [
   classes.battletris,
   classes.unknown,
   classes.sorcerer,
@@ -32,7 +32,7 @@ export {
   AbilityInterface,
   classes,
   ClassesIndex,
-  ClassInterface,
+  BaseClass,
   classList,
   getClassIndex,
 };

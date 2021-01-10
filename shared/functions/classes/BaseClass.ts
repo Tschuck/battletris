@@ -54,15 +54,63 @@ interface AbilityInterface {
 
 interface ClassInterface {
   /** maximum amount of armor */
-  maxArmor: number;
+  baseArmor: number;
 
   /** maximum amount of mana */
-  maxMana: number;
+  baseMana: number;
+
+  /** amount of exp needed to level up */
+  baseExp: number;
+
+  /** base armor will scale with with this level with each level up */
+  armorScaling: number;
+
+  /** base mana will scale with with this level with each level up */
+  manaScaling: number;
+
+  /** base exp will scale with with this level with each level up */
+  expScaling: number;
 
   abilities: AbilityInterface[];
 }
 
+class BaseClass implements ClassInterface {
+  abilities: AbilityInterface[] = [];
+
+  baseArmor = 0;
+
+  baseMana = 0;
+
+  baseExp = 100;
+
+  armorScaling = 0;
+
+  manaScaling = 0;
+
+  expScaling = 0;
+
+  calculateForLevel(baseValue: number, scaling: number, level: number) {
+    return baseValue + (baseValue * scaling * level);
+  }
+
+  /** Calculate the max mana for a specific level */
+  getManaForLevel(level: number): number {
+    return this.calculateForLevel(this.baseArmor, this.armorScaling, level);
+  }
+
+  /** Calculate the max armor for a specific level */
+  getArmorForLevel(level: number): number {
+    return this.calculateForLevel(this.baseMana, this.manaScaling, level);
+  }
+
+  /** Calculate the max armor for a specific level */
+  getExpForLevel(level: number): number {
+    return this.calculateForLevel(this.baseExp, this.expScaling, level);
+  }
+}
+
 export {
   AbilityInterface,
+  BaseClass,
   ClassInterface,
 };

@@ -1,12 +1,22 @@
 /* eslint-disable import/no-cycle */
 import { GameStateChange } from '../gameHelper';
 import GameUser from '../GameUser';
-import { ClassInterface } from './ClassInterface';
+import { BaseClass } from './BaseClass';
 
-export default class Sorcerer implements ClassInterface {
-  maxArmor = 50;
+/*
+  // use this calculation for adjusting the scaling values:
+  checkMaxValues = (value, scaling, level = 15) => value + (value * scaling * level);
+  checkMaxValues(30, 0.1);
+*/
 
-  maxMana = 150;
+export default class Sorcerer extends BaseClass {
+  baseArmor = 30; // max: 52.5
+
+  baseMana = 50; // max: 275
+
+  armorScaling = 0.05;
+
+  manaScaling = 0.3;
 
   abilities = [
     {

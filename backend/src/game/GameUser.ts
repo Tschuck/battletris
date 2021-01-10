@@ -53,7 +53,6 @@ class BackendGameUser extends GameUser {
    * Stop timeout
    */
   stop() {
-    clearTimeout(this.increaseLoopTimeout);
     clearTimeout(this.gameLoopTimeout);
     this.effectTimeouts.forEach((timeout) => clearTimeout(timeout));
   }
@@ -71,10 +70,6 @@ class BackendGameUser extends GameUser {
     this.setNewBlock();
     // start game loop iteration
     this.gameLoop();
-    // start increase timeout
-    this.increaseLoopTimeout = setInterval(() => {
-      this.speed -= config.increaseSteps;
-    }, config.increaseInterval);
   }
 
   onUserLost() {
@@ -224,6 +219,42 @@ class BackendGameUser extends GameUser {
 
     // execute the effect initially
     execute();
+  }
+
+  /**
+   * User reaches a level up. Reset exp, increase the level and debuff all others
+   */
+  onLevelUp(): void {
+    // never go over max level
+    if (this.level === config.maxLevel) {
+      this.exp = this.maxExp;
+      return;
+    }
+
+    // set new stat values
+    this.exp = this.maxExp - this.exp;
+    this.level += 1;
+    this.setStatsForLevel();
+
+    // apply a buff to your self / debuff to the others
+    // the strength is based on your level
+    const buffStrength = Math.ceil(this.level / (config.maxLevel / (config.maxLevel / 4)));
+    game.users.forEach((user) => {
+      // add a buff for yourself
+      if (user.id === this.id) {
+        this.onAbility(0, buffStrength);
+      } else {
+        // add a debuff for the others
+        this.onAbility(0, 3 + buffStrength);
+      }
+    });
+  }
+
+  /**
+   * Trigger speed calculation.
+   */
+  onRowClear() {
+    game.onRowClear();
   }
 }
 

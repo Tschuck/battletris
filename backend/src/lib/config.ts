@@ -1,7 +1,5 @@
 import path from 'path';
 
-console.log(process.env)
-
 const prefix = 'BATTLETRIS_';
 const _ = (name: string, defaultValue: any) => {
   const paramName = `${prefix}${name.toUpperCase()}`;
@@ -43,10 +41,6 @@ export default {
   userUpdateInterval: _('USER_UPDATE_INTERVAL', 100),
   /** "user speed", moves blocks down, ... */
   userSpeed: _('USER_SPEED', 1100),
-  /** increase speed after X ms */
-  increaseInterval: _('INCREASE_INTERVAL', 30_000),
-  /** reduce the speed timeout with the amount of ms */
-  increaseSteps: _('INCREASE_STEPS', 50),
   /** amount of seconds until the game starts (max =10) */
   startCounter: _('GAME_START_COUNTER', 3),
   /** start sub process in debug mode */
@@ -57,4 +51,8 @@ export default {
   keepAliveTimeout: _('ROOM_KEEP_ALIVE', 15_000),
   /** enables max mana and no mana usage */
   devMode: _('DEV_MODE', true),
+  /** enables max mana and no mana usage */
+  maxLevel: _('MAX_LEVEL', 15),
+  /** amount of rows that each user can resolve, until the max speed is reached */
+  maxSpeedRowsPerUser: _('MAX_SPEED_ROWS_PER_USER', 60),
 };

@@ -68,6 +68,15 @@
             />
           </span>
           <span class="ml-3 tooltip-box">
+            <font-awesome-icon class="text-lg" icon="trophy" />
+            {{ level }}
+            <Tooltip
+              class="bg-1"
+              :value="$t('classes.level')"
+              style="width: 200px"
+            />
+          </span>
+          <span class="ml-3 tooltip-box">
             <font-awesome-icon class="text-lg" icon="angle-double-down" />
             {{ speed }}
             <Tooltip
@@ -78,26 +87,37 @@
           </span>
         </div>
 
-        <div class="relative p-3 mb-1 text-center bg-1 tooltip-box">
+        <div class="relative p-3 text-center bg-1 tooltip-box">
           <span class="absolute top-0 left-0 right-0 z-20"
-            >{{ armor }} / {{ classArmor }}</span
+            >{{ armor }} / {{ maxArmor }}</span
           >
           <div
             class="bg-red-600 animated-bar"
-            :style="`width: ${(100 / classArmor) * armor}%`"
+            :style="`width: ${(100 / maxArmor) * armor}%`"
           />
           <Tooltip :value="$t('classes.armor')" />
         </div>
 
-        <div class="relative p-3 mb-3 text-center bg-1 tooltip-box">
+        <div class="relative p-3 text-center bg-1 tooltip-box">
           <span class="absolute top-0 left-0 right-0 z-20"
-            >{{ mana }} / {{ classMana }}</span
+            >{{ mana }} / {{ maxMana }}</span
           >
           <div
             class="bg-blue-600 animated-bar"
-            :style="`width: ${(100 / classMana) * mana}%`"
+            :style="`width: ${(100 / maxMana) * mana}%`"
           />
           <Tooltip :value="$t('classes.mana')" />
+        </div>
+
+        <div class="relative p-3 mb-3 text-center bg-1 tooltip-box">
+          <span class="absolute top-0 left-0 right-0 z-20"
+            >{{ exp }} / {{ maxExp }}</span
+          >
+          <div
+            class="bg-yellow-600 animated-bar"
+            :style="`width: ${(100 / maxExp) * exp}%`"
+          />
+          <Tooltip :value="$t('classes.exp')" />
         </div>
         <Controls
           @keydown="onKeyDown($event)"
@@ -145,7 +165,6 @@
 import { onUnmounted, onMounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 
-import { classes } from '@battletris/shared/functions/classes';
 import { GameUser, Blocks } from '@battletris/shared';
 import AbilityLogo from '../icons/AbilityLogo.vue';
 import ClassLogo from '../icons/ClassLogo.vue';
@@ -197,11 +216,14 @@ interface GameFieldProps {
     const userId = ref(userData.id);
     const userName = ref(userData.name);
     const className = ref(userData.className);
-    const classArmor = ref(classes[userData.className].maxArmor);
-    const classMana = ref(classes[userData.className].maxMana);
+    const maxArmor = ref(userData.maxArmor);
+    const maxMana = ref(userData.maxMana);
+    const maxExp = ref(userData.maxExp);
     const blockColors = ref(colorMap.STONES);
     // stat values
     const armor = ref<number>();
+    const exp = ref<number>();
+    const level = ref<number>();
     const blockCount = ref<number>();
     const cooldowns = ref<number[]>([]);
     const effects = ref<number[][]>([]);
@@ -275,6 +297,11 @@ interface GameFieldProps {
         speed.value = user.speed;
         hasLost.value = user.lost;
         cooldowns.value = user.cooldowns;
+        maxArmor.value = user.maxArmor;
+        maxMana.value = user.maxMana;
+        maxExp.value = user.maxExp;
+        exp.value = user.exp;
+        level.value = user.level;
         // update target hints
         if (user.target !== target) {
           updateTargetRendering(user.target);
@@ -314,15 +341,18 @@ interface GameFieldProps {
       armor,
       blockColors,
       blockCount,
-      classArmor,
-      classMana,
       className,
       container,
       cooldowns,
       effects,
+      exp,
       hasLost,
       isCurrUser,
+      level,
       mana,
+      maxArmor,
+      maxExp,
+      maxMana,
       nextBlocks,
       onKeyDown,
       rowCount,
@@ -384,6 +414,7 @@ canvas {
 .animated-bar {
   @apply absolute top-0 left-0 z-10 h-full bg-opacity-50;
   transition: 0.5s ease-out width;
+  max-width: 100%;
 }
 
 .leading-box {

@@ -19,18 +19,6 @@ export default class FrontendGameUser extends GameUser {
   /** used unbind to watch for new game message events */
   onMessageListener!: Function;
 
-  /** list of feedbacks from the server */
-  latencies: number[] = [];
-
-  /** average of latencies */
-  latency = 0;
-
-  /** last user pressed key timestamps */
-  lastKeyPressTime: number[] = [];
-
-  /** next time, when the user block will move down */
-  nextBlockMove!: number;
-
   /** function to remove window key press listener */
   keyDownListener: any;
 
@@ -139,18 +127,6 @@ export default class FrontendGameUser extends GameUser {
    * @param data incoming user update
    */
   onUserUpdate(updatedUser: Partial<GameUser>) {
-    // detect latency of input
-    const lastKeyPress = this.lastKeyPressTime.shift();
-    if (lastKeyPress && this.isCurrUser) {
-      this.latencies.unshift(Date.now() - lastKeyPress);
-      if (this.latencies.length > 10) {
-        this.latencies.pop();
-      }
-      this.latency = Math.round(
-        this.latencies.reduce((a, b) => (a + b)) / this.latencies.length,
-      );
-    }
-
     // update the instance with the new values
     this.applyUserState(updatedUser);
 
@@ -172,9 +148,6 @@ export default class FrontendGameUser extends GameUser {
       // update next block move timer
       } else {
         this.onStoneMove();
-        if (isSet(y)) {
-          this.nextBlockMove = Date.now() + this.speed;
-        }
       }
     }
 
@@ -200,7 +173,6 @@ export default class FrontendGameUser extends GameUser {
     if (typeof GameStateChange[keyCode] === 'undefined') {
       return;
     }
-    this.lastKeyPressTime.push(Date.now());
     this.onNewStateChange(keyCode);
     this.connection.send(WsMessageType.GAME_INPUT, keyCode);
     // use this for latency debugging: TODO: test would be rly. awesome for this stuff :D

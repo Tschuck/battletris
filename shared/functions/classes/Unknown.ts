@@ -2,12 +2,22 @@
 import { GameStateChange } from '../gameHelper';
 import { generateEmptyRows, generateRandomClears } from '../mapHelper';
 import GameUser from '../GameUser';
-import { ClassInterface } from './ClassInterface';
+import { BaseClass } from './BaseClass';
 
-export default class Unknown implements ClassInterface {
-  maxArmor = 100;
+/*
+  // use this calculation for adjusting the scaling values:
+  checkMaxValues = (value, scaling, level = 15) => value + (value * scaling * level);
+  checkMaxValues(30, 0.1);
+*/
 
-  maxMana = 100;
+export default class Unknown extends BaseClass {
+  baseArmor = 30; // 120
+
+  baseMana = 30; // 120
+
+  armorScaling = 0.2;
+
+  manaScaling = 0.2;
 
   abilities = [
     {
