@@ -71,13 +71,13 @@
                   <b>← / →</b>: Move a stone to the left or the right.
                 </li>
                 <li>
-                  <b>↑</b>: Turn the stone to the right.
+                  <b>↑</b>: Rotate the stone clockwise.
                 </li>
                 <li>
                   <b>↓</b>: Move the block down.
                 </li>
                 <li>
-                  <b>A / D</b>: Turn the stone to the left / right.
+                  <b>A / D</b>: Rotate the stone counter clockwise / clockwise.
                 </li>
                 <li>
                   <b>SPACE</b>: Directly drop the stone.

@@ -20,21 +20,22 @@ export default class Sorcerer extends BaseClass {
 
   abilities = [
     {
-      mana: 35,
-      cooldown: 5_000,
+      tickTimeout: 10_000,
+      ticks: 2,
+      cooldown: 20_000,
+      mana: 50,
       onActivate: (from: GameUser, to: GameUser): void => {
-        to.handleStateChange(GameStateChange.FALL_DOWN);
+        to.speedAdjust = -1 * (to.speed / 2);
+      },
+      onBeforeEnd: (from: GameUser, to: GameUser): void => {
+        to.speedAdjust = 0;
       },
     },
     {
-      tickTimeout: 10_000,
-      ticks: 2,
-      mana: 50,
-      onActivate: (user: GameUser): void => {
-        user.speedAdjust = -1 * (user.speed / 2);
-      },
-      onBeforeEnd: (user: GameUser): void => {
-        user.speedAdjust = 0;
+      mana: 100,
+      cooldown: 10_000,
+      onActivate: (from: GameUser, to: GameUser): void => {
+        to.handleStateChange(GameStateChange.FALL_DOWN);
       },
     },
     {
@@ -71,7 +72,7 @@ export default class Sorcerer extends BaseClass {
     {
       tickTimeout: 10_000,
       ticks: 2,
-      mana: 150,
+      mana: 250,
       onStateChange: (
         user: GameUser,
         userEvent: number[]|undefined,

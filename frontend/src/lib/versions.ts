@@ -5,7 +5,7 @@ interface VersionInterface {
   title: string;
 }
 
-const latestVersion = '1.1.0';
+const latestVersion = '1.2.1';
 const versions: Record<string, VersionInterface> = {
   '1.0.0': {
     bugs: [],
@@ -60,6 +60,15 @@ const versions: Record<string, VersionInterface> = {
       'better tutorial description',
     ],
     title: 'Level Support',
+  },
+  '1.2.1': {
+    bugs: [],
+    classes: [],
+    features: [
+      'class balancing',
+      'max 2 times the same stone',
+    ],
+    title: 'Optimization',
   },
 };
 

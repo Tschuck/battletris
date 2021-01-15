@@ -48,12 +48,12 @@
     "row-count-tooltip": "Cleared row count",
     "sorcerer": {
       "ability0": {
-        "desc": "By applying a massive amount of gravity you cause the target's block to immediately drop.",
-        "title": "Gravity Charge"
-      },
-      "ability1": {
         "desc": "Speed up the target's block drop speed by amplifying the flow of time for 15 seconds.",
         "title": "Temporal Rift"
+      },
+      "ability1": {
+        "desc": "By applying a massive amount of gravity you cause the target's block to immediately drop.",
+        "title": "Gravity Charge"
       },
       "ability2": {
         "desc": "Confuse the target by distorting the space around them, reversing their controls for 15 seconds.",
@@ -176,7 +176,7 @@
   },
   "tutorial": {
     "1-battletris": {
-      "desc": "Welcome to BATTLETRIS, a multiplayer block stacking game for up to 5 players. It follows the basic logic of the classic tetris. BATTLETRIS adds much more complexity to the original game. With several classes, leveling, abilities, mana and armor, it increases the complexity of tetris a lot. And func fact, it's good for your brain. ;)",
+      "desc": "Welcome to BATTLETRIS, a multiplayer block stacking game for up to 5 players. It follows the basic logic of the classic tetris. BATTLETRIS adds much more complexity to the original game. With several classes, leveling, abilities, mana and armor you will be able to actively act against other players. And func fact, it's good for your brain. ;)",
       "title": "Whats BATTLETRIS?"
     },
     "2-quick-nav": {
@@ -184,7 +184,7 @@
       "title": "Quick Navigation"
     },
     "3-rooms": {
-      "desc": "On this page you can see all available rooms and can view a running battle or join a new game..",
+      "desc": "On this page you can see all available rooms and can view a running battle or join a new game.",
       "title": "Room Selection"
     },
     "4-joining": {

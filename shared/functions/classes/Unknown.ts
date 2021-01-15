@@ -22,6 +22,7 @@ export default class Unknown extends BaseClass {
   abilities = [
     {
       mana: 25,
+      cooldown: 3_000,
       onActivate: (from: GameUser, to: GameUser): void => {
         to.map.pop();
         to.map.unshift(generateEmptyRows(1)[0]);
@@ -29,6 +30,7 @@ export default class Unknown extends BaseClass {
     },
     {
       mana: 35,
+      cooldown: 3_000,
       onActivate: (from: GameUser, to: GameUser): void => {
         const [newRow] = generateRandomClears([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]], 1);
         to.map.push(newRow);
@@ -38,6 +40,7 @@ export default class Unknown extends BaseClass {
     {
       tickTimeout: 500,
       ticks: 10,
+      cooldown: 10_000,
       mana: 50,
       tick: (user: GameUser): void => {
         user.handleStateChange(GameStateChange.TURN, []);
@@ -45,9 +48,9 @@ export default class Unknown extends BaseClass {
     },
     {
       tickTimeout: 10_000,
-      // use 2, will be directly executed once
+      cooldown: 10_000,
       ticks: 2,
-      mana: 80,
+      mana: 120,
       tick: (): void => {
         // frontend will do the magic ;)
       },
