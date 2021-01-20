@@ -1,4 +1,4 @@
-# BATTLETRIS
+# [BATTLETRIS](https://battletris.de)
 
 Battletris is a multiplayer block stacking game for up to 5 players.
 
@@ -9,7 +9,7 @@ Battletris is a multiplayer block stacking game for up to 5 players.
 - collect mana with clearing rows to activate abilities
 - see your match history
 
-![Game Screenshot](https://raw.githubusercontent.com/Tschuck/battletris/develop/docs/game-screenshot.png)
+<img src="https://raw.githubusercontent.com/Tschuck/battletris/develop/docs/game-screenshot.png" alt="drawing" width="400"/>
 
 ## Next Features
 
