@@ -13,15 +13,10 @@ Battletris is a multiplayer block stacking game for up to 5 players.
 
 ## Next Features
 
-- [ ] speed with level
-- [ ] ability cooldown
-- [ ] tutorial with images
 - [ ] german translations
 - [ ] page transitions
 - [ ] small screen
-- [ ] how to for "how to add a class"
 - [ ] statistics page
-- [ ] the winkler class
 - [ ] dynamic tutorial
 - [ ] custom room handling
 - [ ] tetris bot
