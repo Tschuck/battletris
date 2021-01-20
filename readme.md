@@ -9,6 +9,10 @@ Battletris is a multiplayer block stacking game for up to 5 players.
 - collect mana with clearing rows to activate abilities
 - see your match history
 
+## Start playing
+
+Do you want to try it? Have a look at [battletris.de](https://battletris.de).
+
 <img src="https://raw.githubusercontent.com/Tschuck/battletris/develop/docs/game-screenshot.png" alt="drawing" width="400"/>
 
 ## Next Features
@@ -21,27 +25,15 @@ Battletris is a multiplayer block stacking game for up to 5 players.
 - [ ] custom room handling
 - [ ] tetris bot
 
-## Start playing
-
-Do you want to try it? Have a look at [battletris.de](https://battletris.de).
-
-## Support
-
-If you want to support me to keep battletris running, please have a look at [buy me a coffee](https://www.buymeacoffee.com/eo3m4BAyO).
-
-## Developing
-
-Read this section, when you want to dive into the code.
-
-### Testing
+## Testing
 
 If you miss a test script, it's correct. Had not enough time and do it currently on a manual basis. When more people will start developing at the project, i will start adding some :)
 
-### Docs
+## Docs
 
 BATTLETRIS has grown fast and the code has mostly a good incline doc. If you want to know get a introduction into the code and the basics, feel free to contact me.
 
-### Installation
+## Installation
 
 BATTLETRIS is a monorepo and includes a backend, shared and frontend section. It's will written in node js, typescript  and vue. So just install node and run the following command in the BATTLETRIS repo.
 
@@ -51,7 +43,7 @@ Please install frontend / backend separated or just use the combined one:
 yarn install
 ```
 
-### Local development
+## Local development
 
 Start the frontend and the backend server separately. To do so, open two terminals and run the following command:
 
@@ -59,7 +51,7 @@ Start the frontend and the backend server separately. To do so, open two termina
 yarn start
 ```
 
-### Production runtime
+## Production runtime
 
 If you want to build battletris for production runtimes, just run the following command in your root folder:
 
