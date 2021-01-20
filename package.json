@@ -2,6 +2,7 @@
   "dependencies": {
     "fs-extra": "^9.0.1"
   },
+  "license": "GPL-3.0-or-later",
   "name": "battletris",
   "scripts": {
     "build": "yarn build:backend && yarn build:frontend",
