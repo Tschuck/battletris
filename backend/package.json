@@ -25,9 +25,6 @@
     "eslint-config-airbnb-typescript": "^7.2.1",
     "typescript": "^3.9.6"
   },
-  "engines": {
-    "node": "12.19.0"
-  },
   "name": "battletris",
   "scripts": {
     "build": "rm -rf ./dist/node_modules && rm -rf ./dist/src && tsc -p tsconfig.json",

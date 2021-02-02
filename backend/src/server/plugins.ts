@@ -1,7 +1,6 @@
-import { FastifyReply } from 'fastify';
 import fastifyCookie from 'fastify-cookie';
 import fastifyCors from 'fastify-cors';
-import fastifyStatic, { FastifyStaticOptions } from 'fastify-static';
+import fastifyStatic from 'fastify-static';
 import { existsSync } from 'fs';
 import path from 'path';
 import config from '../lib/config';
