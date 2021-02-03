@@ -76,7 +76,7 @@ export const transformUserTransport = (gameUser: any, baseObj: []|{} = []): any 
   const formatted: any = baseObj;
 
   Object.keys(gameUser).forEach((key: any) => {
-    // ignore not supported properties
+    // ignore unsupported properties
     if (typeof GameUserMapping[key] !== 'undefined'
       && gameUser[key] !== undefined
       && gameUser[key] !== null) {
