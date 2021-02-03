@@ -17,6 +17,8 @@ Do you want to try it? Have a look at [battletris.de](https://battletris.de).
 
 ## Next Features
 
+- [ ] key hold
+- [ ] custom keybinds
 - [ ] german translations
 - [ ] page transitions
 - [ ] small screen
