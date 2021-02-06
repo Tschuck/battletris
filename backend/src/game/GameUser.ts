@@ -24,18 +24,21 @@ class BackendGameUser extends GameUser {
 
       // fill up the game blocks, until every gap until this required next block is reached
       while (game.blocks.length < gameBlockIndex + 10) {
-        const totalBlocks = game.blocks.length;
-        let newBlock = getRandomNumber(1, 7);
+        game.blocks.push(getRandomNumber(1, 7));
 
-        // ensure, that never 3 blocks of the same type will appear after another
-        if (totalBlocks > 2) {
-          while (game.blocks[totalBlocks - 1] === game.blocks[totalBlocks - 2]
-            && game.blocks[totalBlocks - 1] === newBlock) {
-            newBlock = getRandomNumber(1, 7);
-          }
-        }
+        // enable this code for allowing a maximum of two times the same stone after another
+        // const totalBlocks = game.blocks.length;
+        // let newBlock = getRandomNumber(1, 7);
 
-        game.blocks.push(newBlock);
+        // // ensure, that never 3 blocks of the same type will appear after another
+        // if (totalBlocks > 2) {
+        //   while (game.blocks[totalBlocks - 1] === game.blocks[totalBlocks - 2]
+        //     && game.blocks[totalBlocks - 1] === newBlock) {
+        //     newBlock = getRandomNumber(1, 7);
+        //   }
+        // }
+
+        // game.blocks.push(newBlock);
       }
 
       // add the block to the next

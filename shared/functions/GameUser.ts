@@ -17,7 +17,7 @@ import {
 import { generateRandomClears, getEmptyMap, getRandomNumber } from './mapHelper';
 
 // order to move turned blocks that get stuck out of the bounds or out of the docked mode
-const turnBlockEvades = [1, -1, 2, -2];
+const turnBlockEvades = [1, -1, 2, -2, 3, -3];
 
 const neverUpdateProps = [
   'queue',
@@ -208,7 +208,7 @@ class GameUser {
     let collision = getStoneCollision(this.map, actualBlock, this.y, this.x);
 
     // check if block was turned and if we can be moved to the left / right
-    if (change === GameStateChange.TURN
+    if ((change === GameStateChange.TURN_LEFT || change === GameStateChange.TURN_RIGHT)
       && (collision === CollisionType.OUT_OF_BOUNDS_X || collision === CollisionType.DOCKED)) {
       const xOrigin = this.x;
       let evadeCounter = 0;
@@ -409,7 +409,6 @@ class GameUser {
     });
 
     switch (key) {
-      case GameStateChange.TURN:
       case GameStateChange.TURN_RIGHT: {
         this.rotation += 1;
         break;

@@ -70,6 +70,16 @@ const versions: Record<string, VersionInterface> = {
     ],
     title: 'Optimization',
   },
+  '1.3.0': {
+    bugs: [
+      'enable full randomness of stones (more than 2 times the same stone is possible)',
+      'fix quirky stones and left "kick"',
+    ],
+    classes: [],
+    features: [
+    ],
+    title: 'Feedback',
+  },
 };
 
 export {
