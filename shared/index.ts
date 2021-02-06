@@ -1,12 +1,13 @@
 import Blocks, { BlockMapping } from './enums/Blocks';
-import { ClassesIndex } from './functions/classes';
 import ErrorCodes from './enums/ErrorCodes';
 import GameStatus from './enums/GameStatus';
 import GameUserStatus from './enums/GameUserStatus';
 import ProcessMessageType from './enums/ProcessMessageType';
 import WsMessageType from './enums/WsMessageType';
+import { ClassesIndex } from './functions/classes';
 import * as gameHelper from './functions/gameHelper';
 import GameUser from './functions/GameUser';
+import { GameStateChange, UserStateChange } from './functions/keymaps/stateChanges';
 import * as mapHelper from './functions/mapHelper';
 import {
   getStringifiedMessage,
@@ -23,6 +24,7 @@ export {
   ClassesIndex,
   ErrorCodes,
   gameHelper,
+  GameStateChange,
   GameStatus,
   GameUser,
   GameUserStatus,
@@ -35,5 +37,6 @@ export {
   ProcessMessageType,
   RoomWithDataInterface,
   UserInterface,
+  UserStateChange,
   WsMessageType,
 };

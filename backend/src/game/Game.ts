@@ -1,6 +1,6 @@
 import { gameHelper, mapHelper, MatchStatsInterface, ProcessMessageType, WsMessageType } from '@battletris/shared';
 import { classes } from '@battletris/shared/functions/classes';
-import { transformUserTransport, getDifference, GameStateChange } from '@battletris/shared/functions/gameHelper';
+import { transformUserTransport, getDifference } from '@battletris/shared/functions/gameHelper';
 import { User } from '../db';
 import config from '../lib/config';
 import GameUser from './GameUser';

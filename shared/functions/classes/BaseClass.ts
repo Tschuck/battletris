@@ -1,4 +1,4 @@
-import { GameStateChange } from '../gameHelper';
+import { GameStateChange, UserStateChange } from '../gameHelper';
 // eslint-disable-next-line import/no-cycle
 import GameUser from '../GameUser';
 
@@ -60,8 +60,8 @@ interface AbilityInterface {
   onStateChange?: (
     user: GameUser,
     userEvent: number[]|undefined,
-    key: GameStateChange,
-  ) => GameStateChange|undefined;
+    key: GameStateChange|UserStateChange,
+  ) => GameStateChange|UserStateChange|undefined;
 }
 
 interface ClassInterface {

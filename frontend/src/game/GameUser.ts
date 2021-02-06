@@ -1,8 +1,8 @@
 import {
-  gameHelper, GameUser, WsMessageType,
+  gameHelper, GameUser, WsMessageType, UserStateChange,
 } from '@battletris/shared';
 import {
-  GameStateChange, getDifference,
+  getDifference,
 } from '@battletris/shared/functions/gameHelper';
 import GameConnection, { getCurrentConnection } from '../lib/Gameconnection';
 import currUser from '../lib/User';
@@ -170,7 +170,7 @@ export default class FrontendGameUser extends GameUser {
    */
   userKeyEvent(keyCode: number) {
     // ignore unknown key events
-    if (typeof GameStateChange[keyCode] === 'undefined') {
+    if (typeof UserStateChange[keyCode] === 'undefined') {
       return;
     }
     this.onNewStateChange(keyCode);
@@ -184,7 +184,7 @@ export default class FrontendGameUser extends GameUser {
   /**
    * User event was pushed to the queue array. We now need to render the change
    */
-  sendUpdate(key: GameStateChange, id?: number) {
+  sendUpdate(key: UserStateChange, id?: number) {
     // keep the last state
     const lastState = this.clone();
     // adjust the current game state for the key

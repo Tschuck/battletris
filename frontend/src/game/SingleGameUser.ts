@@ -1,5 +1,4 @@
-import { mapHelper, GameUser } from '@battletris/shared';
-import { GameStateChange } from '@battletris/shared/functions/gameHelper';
+import { mapHelper, GameUser, UserStateChange } from '@battletris/shared';
 import FrontendGameUser from './GameUser';
 
 export default class SingleGameUser extends FrontendGameUser {
@@ -23,7 +22,7 @@ export default class SingleGameUser extends FrontendGameUser {
     clearTimeout(this.gameLoopTimeout);
     this.gameLoopTimeout = setTimeout(() => {
       // ensure users are up to date
-      this.onNewStateChange(GameStateChange.DOWN);
+      this.onNewStateChange(UserStateChange.SOFT_DROP);
 
       // ensure next tick
       this.gameLoop();
@@ -57,7 +56,7 @@ export default class SingleGameUser extends FrontendGameUser {
    */
   userKeyEvent(keyCode: number) {
     // ignore unknown key events
-    if (!GameStateChange[keyCode]) {
+    if (!UserStateChange[keyCode]) {
       return;
     }
     this.onNewStateChange(keyCode);

@@ -13,6 +13,7 @@ import {
   getRotationBlockIndex,
   getStoneCollision,
   iterateOverMap,
+  UserStateChange,
 } from './gameHelper';
 import { generateRandomClears, getEmptyMap, getRandomNumber } from './mapHelper';
 
@@ -26,31 +27,10 @@ const neverUpdateProps = [
 
 /** order of keys, mapped to the abilities */
 const abilityKeys = [
-  GameStateChange.Q,
-  GameStateChange.W,
-  GameStateChange.E,
-  GameStateChange.R,
-];
-
-/** keys that will be pressable by the user */
-const uiKeys = [
-  GameStateChange.DOWN,
-  GameStateChange.E,
-  GameStateChange.FALL_DOWN,
-  GameStateChange.LEFT,
-  GameStateChange.NEXT_TARGET,
-  GameStateChange.Q,
-  GameStateChange.R,
-  GameStateChange.RIGHT,
-  GameStateChange.TARGET_USER_1,
-  GameStateChange.TARGET_USER_2,
-  GameStateChange.TARGET_USER_3,
-  GameStateChange.TARGET_USER_4,
-  GameStateChange.TARGET_USER_5,
-  GameStateChange.TURN_LEFT,
-  GameStateChange.TURN_RIGHT,
-  GameStateChange.TURN,
-  GameStateChange.W,
+  UserStateChange.Q,
+  UserStateChange.W,
+  UserStateChange.E,
+  UserStateChange.R,
 ];
 
 class GameUser {
@@ -185,7 +165,7 @@ class GameUser {
    *
    * @param key key that was executed
    */
-  checkGameState(lastState: GameUser, change?: GameStateChange): void {
+  checkGameState(lastState: GameUser, change?: GameStateChange|UserStateChange): void {
     // check max mana and armor
     if (this.mana > this.maxMana) {
       this.mana = this.maxMana;
@@ -208,7 +188,7 @@ class GameUser {
     let collision = getStoneCollision(this.map, actualBlock, this.y, this.x);
 
     // check if block was turned and if we can be moved to the left / right
-    if ((change === GameStateChange.TURN_LEFT || change === GameStateChange.TURN_RIGHT)
+    if ((change === UserStateChange.TURN_LEFT || change === UserStateChange.TURN_RIGHT)
       && (collision === CollisionType.OUT_OF_BOUNDS_X || collision === CollisionType.DOCKED)) {
       const xOrigin = this.x;
       let evadeCounter = 0;
@@ -238,9 +218,10 @@ class GameUser {
 
       // "brand" the active stone into the map
       if (collision === CollisionType.DOCKED
-        && change !== GameStateChange.TURN
-        && change !== GameStateChange.LEFT
-        && change !== GameStateChange.RIGHT) {
+        && change !== UserStateChange.TURN_RIGHT
+        && change !== UserStateChange.TURN_LEFT
+        && change !== UserStateChange.LEFT
+        && change !== UserStateChange.RIGHT) {
         this.onDocked();
       }
     }
@@ -356,7 +337,7 @@ class GameUser {
    *
    * @param keyCode key number
    */
-  onNewStateChange(key: GameStateChange): void {
+  onNewStateChange(key: GameStateChange|UserStateChange): void {
     // disable keys when lost
     if (this.lost) {
       return;
@@ -364,7 +345,7 @@ class GameUser {
 
     // only allow user keys that can be activated (prevent from accessing effect / new block logic
     // or something else)
-    if (uiKeys.indexOf(key) === -1) {
+    if (UserStateChange[key]) {
       return;
     }
 
@@ -391,13 +372,13 @@ class GameUser {
    * @param key key number that was pressed
    * @param userEvent array of numbers [key, id, ...optionalStuff ]
    */
-  handleStateChange(inputKey: GameStateChange, userEvent?: number[]): void {
+  handleStateChange(inputKey: GameStateChange|UserStateChange, userEvent?: number[]): void {
     // disable keys when lost
     if (this.lost) {
       return;
     }
 
-    let key: GameStateChange|undefined = inputKey;
+    let key: GameStateChange|UserStateChange|undefined = inputKey;
     const beforeUser = this.clone();
 
     // check for state change effects
@@ -409,30 +390,30 @@ class GameUser {
     });
 
     switch (key) {
-      case GameStateChange.TURN_RIGHT: {
+      case UserStateChange.TURN_RIGHT: {
         this.rotation += 1;
         break;
       }
-      case GameStateChange.TURN_LEFT: {
+      case UserStateChange.TURN_LEFT: {
         this.rotation -= 1;
         break;
       }
-      case GameStateChange.LEFT: {
+      case UserStateChange.LEFT: {
         this.x -= 1;
         break;
       }
-      case GameStateChange.RIGHT: {
+      case UserStateChange.RIGHT: {
         this.x += 1;
         break;
       }
-      case GameStateChange.DOWN: {
+      case UserStateChange.DOWN: {
         this.y += 1;
         // reset move down timer
         clearTimeout(this.gameLoopTimeout);
         this.gameLoop();
         break;
       }
-      case GameStateChange.FALL_DOWN: {
+      case UserStateChange.FALL_DOWN: {
         this.y = getPreviewY(
           this.map,
           Blocks[this.block][this.getRotationBlockIndex()],
@@ -443,14 +424,14 @@ class GameUser {
         this.y += 1;
         break;
       }
-      case GameStateChange.NEXT_TARGET: {
+      case UserStateChange.NEXT_TARGET: {
         this.onNextTarget();
         break;
       }
-      case GameStateChange.Q:
-      case GameStateChange.W:
-      case GameStateChange.E:
-      case GameStateChange.R: {
+      case UserStateChange.Q:
+      case UserStateChange.W:
+      case UserStateChange.E:
+      case UserStateChange.R: {
         this.onAbility(getClassIndex(this.className), abilityKeys.indexOf(key));
         break;
       }
@@ -465,11 +446,11 @@ class GameUser {
         }
         break;
       }
-      case GameStateChange.TARGET_USER_1:
-      case GameStateChange.TARGET_USER_2:
-      case GameStateChange.TARGET_USER_3:
-      case GameStateChange.TARGET_USER_4:
-      case GameStateChange.TARGET_USER_5: {
+      case UserStateChange.TARGET_USER_1:
+      case UserStateChange.TARGET_USER_2:
+      case UserStateChange.TARGET_USER_3:
+      case UserStateChange.TARGET_USER_4:
+      case UserStateChange.TARGET_USER_5: {
         this.onNextTarget(key - Key.One); // map key 1 to 5 (49 - 53) to 0 to 5
         break;
       }
@@ -499,7 +480,7 @@ class GameUser {
 
   /** Use serialize to build a diff object and send it to the ui */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  sendUpdate(key: GameStateChange, id?: number): void {
+  sendUpdate(key: GameStateChange|UserStateChange, id?: number): void {
     /* PLACEHOLDER: Will be replaced by actual backend / frontend implementation */
   }
 

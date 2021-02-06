@@ -38,32 +38,6 @@ export enum CollisionType {
   OUT_OF_BOUNDS_X = 2,
   OUT_OF_BOUNDS_Y = 3,
 }
-/**
- * Mapping of user state changes. Can be either a technical one (like new block), or a user
- * interaction (keys).
- */
-export enum GameStateChange {
-  LOST = -3,
-  EFFECT = -2,
-  NEW_BLOCK = -1,
-  TURN = Key.UpArrow,
-  TURN_LEFT = Key.A,
-  TURN_RIGHT = Key.D,
-  LEFT = Key.LeftArrow,
-  RIGHT = Key.RightArrow,
-  DOWN = Key.DownArrow,
-  NEXT_TARGET = Key.Tab,
-  FALL_DOWN = Key.Space,
-  Q = Key.Q,
-  W = Key.W,
-  E = Key.E,
-  R = Key.R,
-  TARGET_USER_1 = Key.One,
-  TARGET_USER_2 = Key.Two,
-  TARGET_USER_3 = Key.Three,
-  TARGET_USER_4 = Key.Four,
-  TARGET_USER_5 = Key.Five,
-}
 
 /**
  * Formats a game user object into an object with lower size (keys as numbers). Also reverses the
