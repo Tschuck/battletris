@@ -1,30 +1,4 @@
-// /**
-//  * Detect full rows, removes them, adds more empty lines at top and returns the amount of cleared
-//  * rows.
-//  *
-//  * @param      {Array<Array<any>>}  map     map definition (20x10)
-//  */
-// function clearFullRows(map: number[][]) {
-//   let counter = 0;
-
 import _ from 'lodash';
-
-//   for (let y = map.length -1; y > -1; y -= 1) {
-//     // check if all cols are filled in a row
-//     if (map[y].filter(col => !col).length === 0) {
-//       // increase the counter
-//       counter++;
-//       // remove the row
-//       map.splice(y, 1);
-//       // add a new one
-//       map.unshift([...Array(10)]);
-//       // check the new last row again
-//       y++;
-//     }
-//   }
-
-//   return counter;
-// }
 
 /**
  * Returns an array of empty rows for the provided row count.

@@ -1,5 +1,4 @@
 import { isEqual } from 'lodash';
-import { Key } from 'ts-keycode-enum';
 
 export enum GameUserMapping {
   id = 0,

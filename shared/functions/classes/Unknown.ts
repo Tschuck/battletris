@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { GameStateChange } from '../gameHelper';
+import { GameStateChange, UserStateChange } from '../keymaps/stateChanges';
 import { generateEmptyRows, generateRandomClears } from '../mapHelper';
 import GameUser from '../GameUser';
 import { BaseClass } from './BaseClass';
@@ -43,7 +43,7 @@ export default class Unknown extends BaseClass {
       cooldown: 10_000,
       mana: 50,
       tick: (user: GameUser): void => {
-        user.handleStateChange(GameStateChange.TURN, []);
+        user.handleStateChange(UserStateChange.TURN_LEFT, []);
       },
     },
     {

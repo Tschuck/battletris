@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { GameStateChange } from '../gameHelper';
+import { GameStateChange, UserStateChange } from '../keymaps/stateChanges';
 import GameUser from '../GameUser';
 import { BaseClass } from './BaseClass';
 
@@ -35,7 +35,7 @@ export default class Sorcerer extends BaseClass {
       mana: 100,
       cooldown: 10_000,
       onActivate: (from: GameUser, to: GameUser): void => {
-        to.handleStateChange(GameStateChange.FALL_DOWN);
+        to.handleStateChange(UserStateChange.HARD_DROP);
       },
     },
     {
@@ -45,25 +45,25 @@ export default class Sorcerer extends BaseClass {
       onStateChange: (
         user: GameUser,
         userEvent: number[]|undefined,
-        key: GameStateChange,
-      ): GameStateChange => {
+        key: GameStateChange|UserStateChange,
+      ): GameStateChange|UserStateChange => {
         // it was a technical user event
         if (!userEvent || !userEvent[1]) {
           return key;
         }
 
         // reverse controls
-        if (key === GameStateChange.TURN) {
-          return GameStateChange.DOWN;
+        if (key === UserStateChange.TURN_RIGHT) {
+          return UserStateChange.SOFT_DROP;
         }
-        if (key === GameStateChange.DOWN) {
-          return GameStateChange.TURN;
+        if (key === UserStateChange.SOFT_DROP) {
+          return UserStateChange.TURN_LEFT;
         }
-        if (key === GameStateChange.LEFT) {
-          return GameStateChange.RIGHT;
+        if (key === UserStateChange.LEFT) {
+          return UserStateChange.RIGHT;
         }
-        if (key === GameStateChange.RIGHT) {
-          return GameStateChange.LEFT;
+        if (key === UserStateChange.RIGHT) {
+          return UserStateChange.LEFT;
         }
 
         return key;

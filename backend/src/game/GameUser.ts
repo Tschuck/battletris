@@ -1,7 +1,7 @@
 import { GameUser, mapHelper, UserStateChange } from '@battletris/shared';
 // eslint-disable-next-line import/no-cycle
-import { classList, AbilityInterface, classes } from '@battletris/shared/functions/classes';
-import { GameStateChange } from '@battletris/shared/functions/gameHelper';
+import { classList, AbilityInterface } from '@battletris/shared/functions/classes';
+import { GameStateChange } from '@battletris/shared';
 import { getRandomNumber } from '@battletris/shared/functions/mapHelper';
 import config from '../lib/config';
 import game from './Game';
@@ -54,7 +54,7 @@ class BackendGameUser extends GameUser {
     clearTimeout(this.gameLoopTimeout);
     const speed = this.speed + this.speedAdjust;
     this.gameLoopTimeout = setTimeout(() => {
-      this.queue.push([UserStateChange.DOWN]);
+      this.queue.push([UserStateChange.SOFT_DROP]);
 
       // ensure users are up to date
       this.sendUpdate();

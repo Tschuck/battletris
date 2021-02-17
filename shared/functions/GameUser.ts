@@ -8,13 +8,12 @@ import {
 } from './classes';
 import {
   CollisionType,
-  GameStateChange,
   getPreviewY,
   getRotationBlockIndex,
   getStoneCollision,
   iterateOverMap,
-  UserStateChange,
 } from './gameHelper';
+import { GameStateChange, UserStateChange } from './keymaps/stateChanges';
 import { generateRandomClears, getEmptyMap, getRandomNumber } from './mapHelper';
 
 // order to move turned blocks that get stuck out of the bounds or out of the docked mode
@@ -27,10 +26,10 @@ const neverUpdateProps = [
 
 /** order of keys, mapped to the abilities */
 const abilityKeys = [
-  UserStateChange.Q,
-  UserStateChange.W,
-  UserStateChange.E,
-  UserStateChange.R,
+  UserStateChange.ABILITY_1,
+  UserStateChange.ABILITY_2,
+  UserStateChange.ABILITY_3,
+  UserStateChange.ABILITY_4,
 ];
 
 class GameUser {
@@ -406,14 +405,14 @@ class GameUser {
         this.x += 1;
         break;
       }
-      case UserStateChange.DOWN: {
+      case UserStateChange.SOFT_DROP: {
         this.y += 1;
         // reset move down timer
         clearTimeout(this.gameLoopTimeout);
         this.gameLoop();
         break;
       }
-      case UserStateChange.FALL_DOWN: {
+      case UserStateChange.HARD_DROP: {
         this.y = getPreviewY(
           this.map,
           Blocks[this.block][this.getRotationBlockIndex()],
@@ -428,10 +427,10 @@ class GameUser {
         this.onNextTarget();
         break;
       }
-      case UserStateChange.Q:
-      case UserStateChange.W:
-      case UserStateChange.E:
-      case UserStateChange.R: {
+      case UserStateChange.ABILITY_1:
+      case UserStateChange.ABILITY_2:
+      case UserStateChange.ABILITY_3:
+      case UserStateChange.ABILITY_4: {
         this.onAbility(getClassIndex(this.className), abilityKeys.indexOf(key));
         break;
       }

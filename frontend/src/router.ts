@@ -7,7 +7,7 @@ const routes: Array<RouteConfig> = [
   { path: '/', component: () => import('./views/StartPage.vue') },
   { path: '/mode', component: () => import('./views/Mode.vue') },
   { path: '/tutorial', component: () => import('./views/tutorial/Tutorial.vue') },
-  { path: '/single-player', component: () => import('./views/SinglePlayer.vue') },
+  { path: '/laboratory', component: () => import('./views/Laboratory.vue') },
   { path: '/multi-player', component: () => import('./views/MultiPlayer.vue') },
   {
     path: '/multi-player/:roomId',

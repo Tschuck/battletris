@@ -1,4 +1,4 @@
-import { GameStateChange, UserStateChange } from '../gameHelper';
+import { GameStateChange, UserStateChange } from '../keymaps/stateChanges';
 // eslint-disable-next-line import/no-cycle
 import GameUser from '../GameUser';
 
