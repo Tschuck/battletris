@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { GameStateChange, UserStateChange } from '../keymaps/stateChanges';
+import { UserStateChange } from '../keymaps/stateChanges';
 import { generateEmptyRows, generateRandomClears } from '../mapHelper';
 import GameUser from '../GameUser';
 import { BaseClass } from './BaseClass';

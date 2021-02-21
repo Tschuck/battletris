@@ -8,11 +8,11 @@
           <h3>{{ $t('start-page.tutorial-desc') }}</h3>
         </div>
       </router-link>
-      <router-link class="border-8 selection-card" to="/single-player">
+      <router-link class="border-8 selection-card" to="/laboratory">
         <div>
-          <KimonoIcon width="250px" />
-          <h2 class="mt-4 font-bold">{{ $t('start-page.single-player') }}</h2>
-          <h3>{{ $t('start-page.single-player-desc') }}</h3>
+          <FlaskIcon width="250px" />
+          <h2 class="mt-4 font-bold">{{ $t('start-page.laboratory') }}</h2>
+          <h3>{{ $t('start-page.laboratory-desc') }}</h3>
         </div>
       </router-link>
       <router-link class="border-8 selection-card" to="/multi-player">
@@ -38,7 +38,7 @@ import { Component, Vue } from 'vue-property-decorator';
 
 import BattletrisIcon from '../icons/battletris.vue';
 import CrossedSowrdsIcon from '../icons/crossed-swords.vue';
-import KimonoIcon from '../icons/kimono.vue';
+import FlaskIcon from '../icons/flask.vue';
 import ScrollBookIcon from '../icons/scroll-book.vue';
 import TargetDummyIcon from '../icons/target-dummy.vue';
 import ViewWrapper from '../components/ViewWrapper.vue';
@@ -47,7 +47,7 @@ import ViewWrapper from '../components/ViewWrapper.vue';
   components: {
     BattletrisIcon,
     CrossedSowrdsIcon,
-    KimonoIcon,
+    FlaskIcon,
     ScrollBookIcon,
     TargetDummyIcon,
     ViewWrapper,

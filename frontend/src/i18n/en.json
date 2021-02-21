@@ -127,6 +127,33 @@
     "version": "Versions",
     "winner": "Winner"
   },
+  "laboratory": {
+    "key-maps": {
+      "defaultkeymap": "Default - KeyMap",
+      "title": "Key Maps",
+      "wasdkeymap": "WASD - KeyMap"
+    },
+    "keys": {
+      "1": "Ability 1",
+      "2": "Ability 2",
+      "3": "Ability 3",
+      "4": "Ability 4",
+      "5": "Hard Drop",
+      "6": "Hold",
+      "7": "left",
+      "8": "Next Target",
+      "9": "Right",
+      "10": "Soft Drop",
+      "11": "Target user 1",
+      "12": "Target user 2",
+      "13": "Target user 3",
+      "14": "Target user 4",
+      "15": "Target user 5",
+      "16": "Turn 180",
+      "17": "Turn LEFT",
+      "18": "Turn RIGHT"
+    }
+  },
   "lobby": {
     "chat-message": "Chat message",
     "send": "Send",
@@ -163,13 +190,13 @@
   "start-page": {
     "buy-me-a-coffee": "Buy me a coffee - Tschuck",
     "github": "Github - battletris",
+    "laboratory": "Laboratory",
+    "laboratory-desc": "Configure your keys, calibrate your engine and test the mechanics.",
     "mode-selection": "Mode Selection",
     "multi-player": "Multi-Player",
     "multi-player-desc": "Join a battle room and play against 4 other players.",
     "settings": "Settings & History",
     "settings-desc": "Manage user name, class and view game history.",
-    "single-player": "Single-Player",
-    "single-player-desc": "Play a match alone in the browser without any server.",
     "tutorial": "Tutorial",
     "tutorial-desc": "Checkup the game mechanics with an tutorial.",
     "versions": "Versions"

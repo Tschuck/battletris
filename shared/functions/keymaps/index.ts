@@ -1,7 +1,7 @@
-import BattletrisKeyMap from './KeyMap';
-import WasdMap from './Wasd';
+import DefaultKeyMap from './KeyMap';
+import WasdKeyMap from './Wasd';
 
 export {
-  BattletrisKeyMap,
-  WasdMap,
+  DefaultKeyMap,
+  WasdKeyMap,
 };

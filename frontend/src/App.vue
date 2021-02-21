@@ -68,6 +68,10 @@ export default class Home extends Vue {}
   border: var(--border);
 }
 
+.flex-center {
+  @apply flex items-center justify-center;
+}
+
 .button {
   @apply px-4 py-2 font-bold rounded;
   background-color: var(--bg-2);
@@ -141,5 +145,24 @@ export default class Home extends Vue {}
     background-color: var(--bg-1);
     @apply text-gray-300;
   }
+}
+
+.v-select * {
+  color: #fff
+}
+
+.vs__search::placeholder,
+.vs__dropdown-toggle,
+.vs__dropdown-menu {
+  background: var(--bg-2);
+  border: none;
+  color: #fff;
+  text-transform: lowercase;
+  font-variant: small-caps;
+}
+
+.vs__clear,
+.vs__open-indicator {
+  fill: #fff;
 }
 </style>

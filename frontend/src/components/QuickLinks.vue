@@ -5,11 +5,11 @@
       <Tooltip :value="$t('start-page.tutorial')" style="width: 100px" />
     </router-link>
     <router-link
-      :to="`/single-player?back=${$route.path}`"
+      :to="`/laboratory?back=${$route.path}`"
       class="mx-2 tooltip-box"
     >
-      <KimonoIcon width="30px" />
-      <Tooltip :value="$t('start-page.single-player')" style="width: 150px" />
+      <FlaskIcon width="30px" />
+      <Tooltip :value="$t('start-page.laboratory')" style="width: 150px" />
     </router-link>
     <router-link
       :to="`/multi-player?back=${$route.path}`"
@@ -35,7 +35,7 @@ import { ref } from '@vue/composition-api';
 import { latestVersion } from '../lib/versions';
 import CrossedSwordsIcon from '../icons/crossed-swords.vue';
 import BlacksmithIcon from '../icons/blacksmith.vue';
-import KimonoIcon from '../icons/kimono.vue';
+import FlaskIcon from '../icons/flask.vue';
 import ScrollBookIcon from '../icons/scroll-book.vue';
 import TargetDummyIcon from '../icons/target-dummy.vue';
 import Tooltip from './Tooltip.vue';
@@ -44,7 +44,7 @@ import Tooltip from './Tooltip.vue';
   components: {
     BlacksmithIcon,
     CrossedSwordsIcon,
-    KimonoIcon,
+    FlaskIcon,
     ScrollBookIcon,
     TargetDummyIcon,
     Tooltip,

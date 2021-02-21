@@ -76,8 +76,8 @@ export default class Sorcerer extends BaseClass {
       onStateChange: (
         user: GameUser,
         userEvent: number[]|undefined,
-        key: GameStateChange,
-      ): GameStateChange|undefined => {
+        key: GameStateChange|UserStateChange,
+      ): GameStateChange|UserStateChange|undefined => {
         // it was a technical user event
         if (!userEvent || !userEvent[1]) {
           return key;

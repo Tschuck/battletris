@@ -53,6 +53,7 @@
 import { onBeforeUnmount } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 import { Key } from 'ts-keycode-enum';
+import { UserStateChange } from '@battletris/shared';
 import Control from './Control.vue';
 import AbilityLogo from '../icons/AbilityLogo.vue';
 import Tooltip from './Tooltip.vue';
@@ -100,7 +101,7 @@ const keysToIgnore = [
         ignoreKeys.push($event.keyCode);
       }
       // only react on known and single key presses, when command is pressed
-      if (references[$event.keyCode] && ignoreKeys.length === 0) {
+      if (typeof UserStateChange[$event.keyCode] !== 'undefined' && ignoreKeys.length === 0) {
         $event.preventDefault();
         $event.stopPropagation();
         return false;
@@ -110,8 +111,7 @@ const keysToIgnore = [
     const keyUpListener = ($event: KeyboardEvent) => {
       // clear pressed key stack
       ignoreKeys.splice(ignoreKeys.indexOf($event.keyCode), 1);
-      if (references[$event.keyCode]) {
-        references[$event.keyCode].value.mouseUp();
+      if (typeof UserStateChange[$event.keyCode] !== 'undefined') {
         $event.preventDefault();
         $event.stopPropagation();
         return false;

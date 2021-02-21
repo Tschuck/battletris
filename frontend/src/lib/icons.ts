@@ -4,8 +4,8 @@ import {
 } from '@fortawesome/free-brands-svg-icons';
 import {
   faAngleDoubleDown, faArrowDown, faArrowLeft, faArrowRight, faArrowUp,
-  faChevronCircleRight, faChevronDown, faChevronLeft, faChevronRight, faChevronUp, faCoffee,
-  faCrosshairs, faThLarge, faChartLine, faUserCircle, faUndo, faRedo, faTrophy,
+  faChartLine, faChevronCircleRight, faChevronDown, faChevronLeft, faChevronRight, faChevronUp, faCoffee,
+  faCrosshairs, faPlus, faRedo, faThLarge, faTrophy, faUndo, faUserCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Vue from 'vue';
@@ -24,10 +24,11 @@ library.add(faChevronUp);
 library.add(faCoffee);
 library.add(faCrosshairs);
 library.add(faGithub);
+library.add(faPlus);
 library.add(faRedo);
 library.add(faThLarge);
+library.add(faTrophy);
 library.add(faUndo);
 library.add(faUserCircle);
-library.add(faTrophy);
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);

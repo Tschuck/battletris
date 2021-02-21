@@ -7,6 +7,8 @@ import WsMessageType from './enums/WsMessageType';
 import { ClassesIndex } from './functions/classes';
 import * as gameHelper from './functions/gameHelper';
 import GameUser from './functions/GameUser';
+import * as KeyMaps from './functions/keymaps';
+import KeyMapInterface from './functions/keymaps/KeyMapInterface';
 import { GameStateChange, UserStateChange } from './functions/keymaps/stateChanges';
 import * as mapHelper from './functions/mapHelper';
 import {
@@ -29,6 +31,8 @@ export {
   GameUser,
   GameUserStatus,
   getStringifiedMessage,
+  KeyMapInterface,
+  KeyMaps,
   mapHelper,
   MatchInterface,
   MatchStatsInterface,
