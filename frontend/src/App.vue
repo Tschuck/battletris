@@ -102,7 +102,7 @@ export default class Home extends Vue {}
 }
 
 .selection-card {
-  @apply flex flex-col justify-center w-full p-10 cursor-pointer;
+  @apply flex flex-col justify-center w-full cursor-pointer py-16;
   background-color: var(--bg-2);
   transition: 0.2s background-color ease-out;
   height: 600px;

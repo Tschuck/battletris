@@ -3,6 +3,7 @@ import config from '../lib/config';
 import Room from './Room';
 import Match from './Match';
 import User from './User';
+import UserKeyMap from './UserKeyMap';
 
 let connection;
 const startDb = async () => {
@@ -10,6 +11,7 @@ const startDb = async () => {
     type: 'sqlite',
     database: config.dbPath,
     entities: [
+      UserKeyMap,
       Match,
       Room,
       User,
@@ -24,4 +26,5 @@ export {
   Room,
   startDb,
   User,
+  UserKeyMap,
 };

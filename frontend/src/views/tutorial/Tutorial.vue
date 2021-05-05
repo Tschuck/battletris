@@ -66,29 +66,19 @@
             <div>
               <p>BATTLETRIS is full packed with classic and new features.</p>
               <p class="mt-4 font-bold">Controls</p>
-              <ul>
-                <li>
-                  <b>← / →</b>: Move a stone to the left or the right.
-                </li>
-                <li>
-                  <b>↑</b>: Rotate the stone clockwise.
-                </li>
-                <li>
-                  <b>↓</b>: Move the block down.
-                </li>
-                <li>
-                  <b>A / D</b>: Rotate the stone counter clockwise / clockwise.
-                </li>
-                <li>
-                  <b>SPACE</b>: Directly drop the stone.
-                </li>
-                <li>
-                  <b>TAB</b>: Select next target.
-                </li>
-                <li>
-                  <b>1, 2, 3, 4, 5</b>: Select a specific target on that index.
-                </li>
-              </ul>
+
+              <div class="flex items-center">
+                <span>Please checkup the laboratory to see the controls and adjust your game feeling.</span>
+
+                <router-link
+                  :to="`/laboratory?back=${$route.path}`"
+                  class="inline-block mx-4 button-outline"
+                >
+                  <FlaskIcon width="30px" />
+                  go to Laboratory
+                </router-link>
+              </div>
+
               <p class="mt-4 font-bold">Leveling and basic mechanics</p>
               <p>
                 When looking at the bar aboth your game field, you will see a view small icons. Here you can see your target within the game, your cleared rows, used blocks, your level and the speed until the block will move down. When you resolve multiple rows at once, all buffs, debuffs, mana and experience gain will be increased. And something really important: Sometimes is playing slow very good, you can view your enemies and react on them. But keep in mind, the speed of falling blocks will increase on global resolved rows! So, when you play safe and slow, others will play faster, will reach higher levels, can activate abilities on you AND the speed will be faster too.
@@ -162,9 +152,11 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import ViewWrapper from '../../components/ViewWrapper.vue';
+import FlaskIcon from '../../icons/flask.vue';
 
 @Component({
   components: {
+    FlaskIcon,
     ViewWrapper,
   },
   setup() {

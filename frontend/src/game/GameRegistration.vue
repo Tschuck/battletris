@@ -38,7 +38,7 @@
             :user="users[slot]"
           />
         </div>
-        <div class="flex mt-20" v-if="users[slot].id === activeUserId">
+        <div class="flex px-8 mt-20" v-if="users[slot].id === activeUserId">
           <button class="button-outline" @click="leave()">
             {{ $t("game.leave") }}
           </button>

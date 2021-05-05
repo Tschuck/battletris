@@ -1,7 +1,7 @@
 import DefaultKeyMap from './KeyMap';
 import WasdKeyMap from './Wasd';
 
-export {
+export default [
   DefaultKeyMap,
   WasdKeyMap,
-};
+];

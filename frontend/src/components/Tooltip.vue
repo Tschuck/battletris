@@ -2,7 +2,7 @@
   <div class="tooltip">
     <span class="triangle"></span>
     <slot>
-      <span class="text-gray-300">{{ value }}</span>
+      <span class="text-gray-300">{{ $t(value) }}</span>
     </slot>
   </div>
 </template>

@@ -29,6 +29,7 @@
   "scripts": {
     "build": "rm -rf ./dist/node_modules && rm -rf ./dist/src && tsc -p tsconfig.json",
     "debug": "yarn build && node --inspect dist/src/index.js",
+    "lint": "eslint src",
     "postinstall": "cd ../shared && yarn link && cd ../backend && yarn link @battletris/shared",
     "start": "yarn build && node dist/src/index.js"
   }

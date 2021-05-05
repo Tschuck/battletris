@@ -3,11 +3,17 @@
     <p class="mb-3 font-bold" v-if="!minimal">{{ $t("settings.name") }}</p>
     <input
       v-model="name"
-      id="battletrisname"
       placeholder="username"
       class="w-full px-3 py-2 leading-tight border rounded outline-none bg-2"
       @change="updateUser"
       :disabled="disabled"
+    />
+    <p class="my-3 font-bold" v-if="!minimal">{{ $t("laboratory.key-maps.single") }}</p>
+    <KeyMapSelect
+      class="mt-3"
+      :value="activeKeyMapId"
+      @change="activeKeyMapId = $event; updateUser()"
+      v-if="!disabled"
     />
 
     <div class="mt-8">
@@ -107,12 +113,14 @@ import Tooltip from './Tooltip.vue';
 import AbilityTooltip from './AbilityTooltip.vue';
 import ClassLogo from '../icons/ClassLogo.vue';
 import currUser from '../lib/User';
+import KeyMapSelect from './KeyMapSelect.vue';
 
 @Component({
   components: {
     AbilityLogo,
     AbilityTooltip,
     ClassLogo,
+    KeyMapSelect,
     Loading,
     Tooltip,
     ViewWrapper,
@@ -130,6 +138,7 @@ import currUser from '../lib/User';
     const className = ref(user.className);
     const userId = ref(user.id);
     const disabled = ref(user.id !== currUser.id);
+    const activeKeyMapId = ref(user.activeKeyMap);
 
     const getDisplayClass = (getForClass: string) => ({
       name: getForClass,
@@ -173,7 +182,7 @@ import currUser from '../lib/User';
       }
 
       debounce = setTimeout(
-        () => currUser.update(name.value, className.value),
+        () => currUser.update(name.value, className.value, activeKeyMapId.value),
         500,
       );
     };
@@ -194,6 +203,7 @@ import currUser from '../lib/User';
     return {
       abilityIterator,
       activeClassIndex,
+      activeKeyMapId,
       classIterator,
       className,
       disabled,

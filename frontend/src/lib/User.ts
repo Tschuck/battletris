@@ -1,17 +1,21 @@
-import { MatchInterface, UserInterface } from '@battletris/shared';
+import { KeyMapInterface, MatchInterface, UserInterface } from '@battletris/shared';
 import { getRequest, postRequest } from './request';
 import { getCurrentConnection } from './RoomConnection';
 
 class User implements UserInterface {
-  authToken = '';
+  activeKeyMap = '';
 
-  id = '';
+  authToken = '';
 
   className = 'unknown';
 
-  name = '';
+  id = '';
+
+  keyMaps: KeyMapInterface[] = [];
 
   matches: MatchInterface[] = [];
+
+  name = '';
 
   async init(battletrisId?: string) {
     const registerParams: {
@@ -27,23 +31,45 @@ class User implements UserInterface {
     // ensure connection id
     const { id, authToken } = await postRequest('register', registerParams);
     // request user info
-    const user = await getRequest('user');
     this.id = id;
     this.authToken = authToken;
+    await this.updateUser();
+  }
+
+  async updateUser() {
+    const user = await getRequest('user');
     this.className = user.className;
     this.matches = user.matches;
     this.name = user.name;
+    this.activeKeyMap = user.activeKeyMap;
+    this.keyMaps = user.keyMaps;
   }
 
-  async update(name: string, className: string) {
+  async update(name: string, className: string, activeKeyMap = this.activeKeyMap) {
     const roomConnection = getCurrentConnection();
+
     await postRequest('user', {
       className,
       name,
       roomId: roomConnection?.roomId,
+      activeKeyMap,
     });
     this.name = name;
     this.className = className;
+    this.activeKeyMap = activeKeyMap;
+  }
+
+  async saveKeyMaps(activeKeyMap: string, keyMaps) {
+    await postRequest('keymap', {
+      activeKeyMap,
+      keyMaps,
+    });
+    await this.updateUser();
+  }
+
+  async deleteKeyMap(keyMap: string) {
+    await postRequest('keymap-delete', { keyMap });
+    await this.updateUser();
   }
 
   async export() {

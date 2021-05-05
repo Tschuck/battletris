@@ -62,7 +62,9 @@ createEndpoint(
     const userId = await ensureUserRegistered(req);
 
     // ensure default user
-    let user: User = await User.findOne(userId);
+    let user: User = await User.findOne(userId, {
+      relations: ['keyMaps'],
+    });
     if (!user) {
       user = await User.create({
         id: userId,
@@ -110,8 +112,9 @@ createEndpoint(
 
     // update user name
     const user = await User.create({
-      id: userId,
+      activeKeyMap: data.activeKeyMap || 'default',
       className: data.className,
+      id: userId,
       matches: [],
       name: data.name || nameGenerator.toString(),
     }).save();

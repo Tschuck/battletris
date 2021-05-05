@@ -2,23 +2,29 @@
 import { Key } from 'ts-keycode-enum';
 import { UserStateChange } from './stateChanges';
 
-export default class KeyMap {
-  static [UserStateChange.ABILITY_1]: Key[];
-  static [UserStateChange.ABILITY_2]: Key[];
-  static [UserStateChange.ABILITY_3]: Key[];
-  static [UserStateChange.ABILITY_4]: Key[];
-  static [UserStateChange.HARD_DROP]: Key[];
-  static [UserStateChange.HOLD]: Key[];
-  static [UserStateChange.LEFT]: Key[];
-  static [UserStateChange.NEXT_TARGET]: Key[];
-  static [UserStateChange.RIGHT]: Key[];
-  static [UserStateChange.SOFT_DROP]: Key[];
-  static [UserStateChange.TARGET_USER_1]: Key[];
-  static [UserStateChange.TARGET_USER_2]: Key[];
-  static [UserStateChange.TARGET_USER_3]: Key[];
-  static [UserStateChange.TARGET_USER_4]: Key[];
-  static [UserStateChange.TARGET_USER_5]: Key[];
-  static [UserStateChange.TURN_180]: Key[];
-  static [UserStateChange.TURN_LEFT]: Key[];
-  static [UserStateChange.TURN_RIGHT]: Key[];
+export interface KeysInterface {
+  [UserStateChange.ABILITY_1]: Key[];
+  [UserStateChange.ABILITY_2]: Key[];
+  [UserStateChange.ABILITY_3]: Key[];
+  [UserStateChange.ABILITY_4]: Key[];
+  [UserStateChange.HARD_DROP]: Key[];
+  [UserStateChange.HOLD]: Key[];
+  [UserStateChange.LEFT]: Key[];
+  [UserStateChange.NEXT_TARGET]: Key[];
+  [UserStateChange.RIGHT]: Key[];
+  [UserStateChange.SOFT_DROP]: Key[];
+  [UserStateChange.TARGET_USER_1]: Key[];
+  [UserStateChange.TARGET_USER_2]: Key[];
+  [UserStateChange.TARGET_USER_3]: Key[];
+  [UserStateChange.TARGET_USER_4]: Key[];
+  [UserStateChange.TARGET_USER_5]: Key[];
+  [UserStateChange.TURN_180]: Key[];
+  [UserStateChange.TURN_LEFT]: Key[];
+  [UserStateChange.TURN_RIGHT]: Key[];
+}
+
+export default interface KeyMapInterface {
+  id: string;
+  keys: KeysInterface;
+  name: string;
 }
