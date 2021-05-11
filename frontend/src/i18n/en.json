@@ -129,13 +129,23 @@
   },
   "laboratory": {
     "handling": {
-      "arr": "ARR",
-      "cancel-das": "Cancel DAS when changing direction",
-      "das": "DAS",
-      "das-desc": "Delayed auto shift / autorepeat",
-      "dcd": "DCD",
-      "prevent-hard-drops": "Prevent double hard drops",
-      "sdf": "SDF",
+      "arr": {
+        "title": "ARR",
+        "desc": "\"Auto Repeat Rate\" or \"Key Repeat\" specifies, how quickly the pieces move from right to left."
+      },
+      "das": {
+        "title": "DAS",
+        "desc": "\"Delayed Auto Shift\" specifies, how long you have to hold down the button before a piece starts moving."
+      },
+      "dcd": {
+        "title": "DCD",
+        "desc": "\"DAS Cut Delay\" - This will stop ARR for this specific amount of time, when you use hard drop or turn."
+      },
+      "sdf": {
+        "title": "SDF",
+        "desc": "\"Soft Drop Factor\" - How fast is the block moving down?"
+      },
+      "disabled-hint": "Please add your own keymap to adjust any values.",
       "title": "Handling"
     },
     "key-maps": {

@@ -21,7 +21,7 @@
 import { ref, watch } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 import {
-  KeyMapInterface, KeyMaps,
+  KeyMaps,
 } from '@battletris/shared';
 import ViewWrapper from './ViewWrapper.vue';
 import user from '../lib/User';
@@ -34,13 +34,15 @@ import GameField from '../game/GameField.vue';
   },
   props: {
     value: { type: String, required: false },
+    keyMaps: {
+      default: () => [
+        ...user.keyMaps,
+        ...KeyMaps.map((KeyMapClass) => new KeyMapClass()),
+      ],
+    },
   },
   setup(props, { emit }) {
     const activeKeyMapId = ref(props.value || 'default');
-    const keyMaps = ref<KeyMapInterface[]>([
-      ...user.keyMaps,
-      ...KeyMaps.map((KeyMapClass) => new KeyMapClass()),
-    ]);
 
     const keyMapChanged = () => {
       emit('change', activeKeyMapId.value);
@@ -52,7 +54,6 @@ import GameField from '../game/GameField.vue';
 
     return {
       activeKeyMapId,
-      keyMaps,
       keyMapChanged,
     };
   },

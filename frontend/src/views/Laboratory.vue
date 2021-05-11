@@ -1,14 +1,19 @@
 <template>
   <ViewWrapper :title="$t('start-page.laboratory')" :showNav="!started">
-    <div class="w-full p-8">
-      <div class="mb-8">
-      </div>
-
+    <div class="w-full px-8">
       <div>
-        <h2 class="mb-4 font-bold">{{ $t("laboratory.key-maps.title") }}</h2>
-
+        <div class="flex justify-between">
+          <h2 class="mb-4 font-bold">{{ $t("laboratory.key-maps.title") }}</h2>
+          <p class="text-xs text-center text-gray-400">{{
+            disabled ? $t("laboratory.handling.disabled-hint") : $t("laboratory.save-hint")
+          }}</p>
+        </div>
         <div class="flex">
-          <KeyMapSelect v-model="activeKeyMapId" @change="keyMapChanged" />
+          <KeyMapSelect
+            v-model="activeKeyMapId"
+            :keyMaps="keyMaps"
+            @change="keyMapChanged"
+          />
 
           <div class="flex-center">
             <font-awesome-icon
@@ -32,6 +37,87 @@
           v-if="activeKeyMapId !== 'default' && activeKeyMapId !== 'wasd'"
         />
 
+        <div class="my-4">
+          <div class="">
+            <span
+              >{{ $t("laboratory.handling.arr.title") }} ({{
+                activeKeyMap.arr
+              }}ms)</span
+            >
+            <VueSlider
+              class="flex-grow"
+              v-model="activeKeyMap.arr"
+              drag-on-click
+              :min="0"
+              :max="300"
+              :disabled="disabled"
+            />
+          </div>
+          <span class="text-xs text-justify text-gray-400">{{
+            $t("laboratory.handling.arr.desc")
+          }}</span>
+        </div>
+        <div class="my-4">
+          <div class="">
+            <span
+              >{{ $t("laboratory.handling.das.title") }} ({{
+                activeKeyMap.das
+              }}ms)</span
+            >
+            <VueSlider
+              class="flex-grow"
+              v-model="activeKeyMap.das"
+              drag-on-click
+              :min="0"
+              :max="300"
+              :disabled="disabled"
+            />
+          </div>
+          <span class="text-xs text-justify text-gray-400">{{
+            $t("laboratory.handling.das.desc")
+          }}</span>
+        </div>
+        <div class="my-4">
+          <div class="">
+            <span
+              >{{ $t("laboratory.handling.dcd.title") }} ({{
+                activeKeyMap.dcd
+              }}ms)</span
+            >
+            <VueSlider
+              class="flex-grow"
+              v-model="activeKeyMap.dcd"
+              drag-on-click
+              :min="0"
+              :max="300"
+              :disabled="disabled"
+            />
+          </div>
+          <span class="text-xs text-justify text-gray-400">{{
+            $t("laboratory.handling.dcd.desc")
+          }}</span>
+        </div>
+        <div class="my-4">
+          <div class="">
+            <span
+              >{{ $t("laboratory.handling.sdf.title") }} ({{
+                activeKeyMap.sdf
+              }}ms)</span
+            >
+            <VueSlider
+              class="flex-grow"
+              v-model="activeKeyMap.sdf"
+              drag-on-click
+              :min="0"
+              :max="300"
+              :disabled="disabled"
+            />
+          </div>
+          <span class="text-xs text-justify text-gray-400">{{
+            $t("laboratory.handling.sdf.desc")
+          }}</span>
+        </div>
+
         <div class="mt-8">
           <div
             class="flex items-center justify-between mt-1"
@@ -43,21 +129,27 @@
               <span
                 class="relative flex items-center justify-center block px-3 py-1 mr-2 bg-white border rounded cursor-pointer bg-2 hover:bg-white hover:text-gray-800"
                 @click="registerKey(controlId)"
+                v-if="!disabled"
               >
-                <font-awesome-icon icon="plus" v-if="registeringKey !== controlId" />
+                <font-awesome-icon
+                  icon="plus"
+                  v-if="registeringKey !== controlId"
+                />
                 <span v-else>...</span>
               </span>
               <span
                 class="relative block px-3 py-1 mr-2 border rounded bg-2"
-                v-for="(keyId, keyIndex) in activeKeyMap.keys[UserStateChange[controlId]]"
+                v-for="(keyId, keyIndex) in activeKeyMap.keys[
+                  UserStateChange[controlId]
+                ]"
                 :key="keyId"
-                @mouseenter="() => hoveredKey = keyId"
-                @mouseleave="() => hoveredKey = null"
+                @mouseenter="() => (hoveredKey = keyId)"
+                @mouseleave="() => (hoveredKey = null)"
               >
                 {{ $t(`laboratory.keys.${keyId}`) }}
                 <div
                   class="absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center bg-gray-300 cursor-pointer bg-opacity-40"
-                  v-if="hoveredKey === keyId"
+                  v-if="!disabled && hoveredKey === keyId"
                   @click="unregisterKey(controlId, keyIndex)"
                 >
                   <font-awesome-icon
@@ -70,10 +162,6 @@
           </div>
         </div>
       </div>
-
-      <div class="mt-8 text-xs text-center text-gray">
-        {{ $t("laboratory.save-hint") }}
-      </div>
     </div>
     <div class="w-full">preview</div>
   </ViewWrapper>
@@ -81,8 +169,9 @@
 
 <script lang="ts">
 import { KeyMapInterface, KeyMaps, UserStateChange } from '@battletris/shared';
-import { onUnmounted, ref } from '@vue/composition-api';
+import { computed, onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
+import VueSlider from 'vue-slider-component';
 import KeyMapSelect from '../components/KeyMapSelect.vue';
 import ViewWrapper from '../components/ViewWrapper.vue';
 import GameField from '../game/GameField.vue';
@@ -93,9 +182,10 @@ import user from '../lib/User';
     GameField,
     ViewWrapper,
     KeyMapSelect,
+    VueSlider,
   },
   setup(props, { root }) {
-    const hoveredKey = ref<string|undefined>();
+    const hoveredKey = ref<string | undefined>();
     const keyMaps = ref<KeyMapInterface[]>([
       ...user.keyMaps,
       ...KeyMaps.map((KeyMapClass) => new KeyMapClass()),
@@ -121,6 +211,7 @@ import user from '../lib/User';
     const addKeyMap = () => {
       const tempId = (keyMaps.value.length - 1).toString(); // generate temporary id
       const newKeyMap: KeyMapInterface = {
+        ...activeKeyMap.value,
         id: tempId,
         name: `${root.$i18n.t('laboratory.key-maps.new')} ${tempId}`,
         keys: JSON.parse(JSON.stringify(activeKeyMap.value.keys)),
@@ -136,7 +227,7 @@ import user from '../lib/User';
     };
 
     /** ************************ key registration ********************************* */
-    const registeringKey = ref<string|undefined>();
+    const registeringKey = ref<string | undefined>();
     let keyListener;
     const unregisterKey = (controlId: string, keyIndex: number) => {
       if (activeKeyMapId.value === 'default' || activeKeyMapId.value === 'wasd') {
@@ -177,6 +268,8 @@ import user from '../lib/User';
       document.addEventListener('keyup', keyListener);
     };
 
+    const disabled = computed(() => activeKeyMapId.value === 'default' || activeKeyMapId.value === 'wasd');
+
     /** ******************************** game preview logic ************************************* */
     const started = ref(false);
     const userData = ref();
@@ -204,6 +297,7 @@ import user from '../lib/User';
       activeKeyMapId,
       addKeyMap,
       controlsList,
+      disabled,
       hoveredKey,
       keyMapChanged,
       keyMaps,
@@ -218,5 +312,5 @@ import user from '../lib/User';
     };
   },
 })
-export default class Laboratory extends Vue {}
+export default class Laboratory extends Vue { }
 </script>

@@ -8,6 +8,11 @@ export default class KeyMap implements KeyMapInterface {
 
   id = 'default';
 
+  arr = 33;
+  das = 167;
+  dcd = 0;
+  sdf = 10;
+
   keys = {
     [UserStateChange.ABILITY_1]: [Key.Q],
     [UserStateChange.ABILITY_2]: [Key.W],

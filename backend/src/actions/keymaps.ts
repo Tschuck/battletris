@@ -7,7 +7,6 @@ createEndpoint(
   {},
   {},
   async (data, req) => {
-    debugger;
     const userId = await ensureUserRegistered(req);
     const {
       activeKeyMap,

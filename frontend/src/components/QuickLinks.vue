@@ -2,29 +2,29 @@
   <div class="fixed bottom-0 left-0 right-0 flex justify-center mb-6">
     <router-link :to="`/tutorial?back=${$route.path}`" class="mx-2 tooltip-box">
       <TargetDummyIcon width="30px" />
-      <Tooltip :value="$t('start-page.tutorial')" style="width: 100px" />
+      <Tooltip value="start-page.tutorial" style="width: 100px" />
     </router-link>
     <router-link
       :to="`/laboratory?back=${$route.path}`"
       class="mx-2 tooltip-box"
     >
       <FlaskIcon width="30px" />
-      <Tooltip :value="$t('start-page.laboratory')" style="width: 150px" />
+      <Tooltip value="start-page.laboratory" style="width: 150px" />
     </router-link>
     <router-link
       :to="`/multi-player?back=${$route.path}`"
       class="mx-2 tooltip-box"
     >
       <CrossedSwordsIcon width="30px" />
-      <Tooltip :value="$t('start-page.multi-player')" style="width: 150px" />
+      <Tooltip value="start-page.multi-player" style="width: 150px" />
     </router-link>
     <router-link :to="`/settings?back=${$route.path}`" class="mx-2 tooltip-box">
       <ScrollBookIcon width="30px" />
-      <Tooltip :value="$t('start-page.settings')" style="width: 200px" />
+      <Tooltip value="start-page.settings" style="width: 200px" />
     </router-link>
     <router-link :to="`/versions?back=${$route.path}`" class="mx-2 tooltip-box">
       <BlacksmithIcon width="30px" :class="{ 'bounce': hasNewVersions }" />
-      <Tooltip :value="$t('start-page.versions')" style="width: 200px" />
+      <Tooltip value="start-page.versions" style="width: 200px" />
     </router-link>
   </div>
 </template>
