@@ -1,12 +1,16 @@
 <template>
-  <ViewWrapper :title="$t('start-page.laboratory')" :showNav="!started">
+  <ViewWrapper :title="$t('start-page.laboratory')">
     <div class="w-full px-8">
       <div>
         <div class="flex justify-between">
           <h2 class="mb-4 font-bold">{{ $t("laboratory.key-maps.title") }}</h2>
-          <p class="text-xs text-center text-gray-400">{{
-            disabled ? $t("laboratory.handling.disabled-hint") : $t("laboratory.save-hint")
-          }}</p>
+          <p class="text-xs text-center text-gray-400">
+            {{
+              disabled
+                ? $t("laboratory.handling.disabled-hint")
+                : $t("laboratory.save-hint")
+            }}
+          </p>
         </div>
         <div class="flex">
           <KeyMapSelect
@@ -163,25 +167,28 @@
         </div>
       </div>
     </div>
-    <div class="w-full">preview</div>
+    <SinglePlayer />
   </ViewWrapper>
 </template>
 
 <script lang="ts">
-import { KeyMapInterface, KeyMaps, UserStateChange } from '@battletris/shared';
+import {
+  KeyMapInterface, KeyMaps, UserStateChange, WsMessageType,
+} from '@battletris/shared';
 import { computed, onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 import VueSlider from 'vue-slider-component';
+import SinglePlayer from '../components/SinglePlayer.vue';
 import KeyMapSelect from '../components/KeyMapSelect.vue';
-import ViewWrapper from '../components/ViewWrapper.vue';
-import GameField from '../game/GameField.vue';
+import RoomConnection from '../lib/RoomConnection';
 import user from '../lib/User';
+import ViewWrapper from '../components/ViewWrapper.vue';
 
 @Component({
   components: {
-    GameField,
-    ViewWrapper,
+    SinglePlayer,
     KeyMapSelect,
+    ViewWrapper,
     VueSlider,
   },
   setup(props, { root }) {
@@ -271,21 +278,8 @@ import user from '../lib/User';
     const disabled = computed(() => activeKeyMapId.value === 'default' || activeKeyMapId.value === 'wasd');
 
     /** ******************************** game preview logic ************************************* */
-    const started = ref(false);
-    const userData = ref();
-    // start a single-player game
-    const startGame = () => {
-      userData.value = { speed: 1100, ...user };
-      started.value = true;
-    };
-    // create seperate function for removing the event listener
-    const gameCloseListener = () => {
-      started.value = false;
-    };
     // listener for game finished
-    window.addEventListener('single-player-finished', gameCloseListener, false);
     onUnmounted(async () => {
-      window.removeEventListener('single-player-finished', gameCloseListener);
       await user.saveKeyMaps(
         activeKeyMapId.value,
         keyMaps.value.filter((keyMap) => keyMap.id !== 'default' && keyMap.id !== 'wasd'),
@@ -304,10 +298,7 @@ import user from '../lib/User';
       registeringKey,
       registerKey,
       removeKeyMap,
-      started,
-      startGame,
       unregisterKey,
-      userData,
       UserStateChange,
     };
   },

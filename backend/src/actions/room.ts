@@ -63,7 +63,7 @@ createEndpoint(
   {},
   async ({ uuid }, req) => {
     const userId = await ensureUserRegistered(req);
-    await RoomHandler.ensure(uuid);
+    await RoomHandler.ensure(uuid, userId);
     const accessKey = `${uuidv4()}|||${uuid}|||${userId}`;
     // add the access key to the room access for 5 seconds
     roomAccess.add(accessKey);

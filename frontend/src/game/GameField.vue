@@ -173,7 +173,6 @@ import currUser from '../lib/User';
 import Effect from '../components/Effect.vue';
 import FrontendGameUser from './GameUser';
 import GameRenderer, { colorMap } from './GameRenderer';
-import SingeGameUser from './SingleGameUser';
 import Tooltip from '../components/Tooltip.vue';
 import GameRegistry from './GameRegistry';
 
@@ -267,7 +266,7 @@ interface GameFieldProps {
       }
     };
 
-    const updateNextBlocks = (user: SingeGameUser | FrontendGameUser) => {
+    const updateNextBlocks = (user: FrontendGameUser) => {
       if (!user?.nextBlocks) {
         return;
       }
@@ -283,7 +282,7 @@ interface GameFieldProps {
 
     // will be initialized after on mounted
     let gameRenderer: GameRenderer;
-    const UserClass = props.offline ? SingeGameUser : FrontendGameUser;
+    const UserClass = FrontendGameUser;
     const gameUser = new UserClass(
       userData,
       userIndex,

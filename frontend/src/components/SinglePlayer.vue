@@ -1,58 +1,34 @@
 <template>
-  <ViewWrapper
-    backRoute="/multi-player"
-    :title="roomName"
-    :showNav="!isMatchRunning"
-  >
-    <Loading class="mt-20" v-if="loading" />
-    <template class="w-full vh-100" v-else>
-      <GameRegistration v-if="!isMatchRunning" />
-      <Game v-else :room-id="roomId" />
-
-      <StopStatsModal :stopStats="stopStats" />
-    </template>
-  </ViewWrapper>
+  <div class="w-full">
+    <div class="flex items-center justify-center h-full" v-if="!isMatchRunning">
+      <button class="button" @click="startTestGame()">
+        {{ $t("laboratory.start-test-game") }}
+      </button>
+    </div>
+    <Game :room-id="currUserId" v-else />
+    <StopStatsModal :stopStats="stopStats" />
+  </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
 import { onUnmounted, ref } from '@vue/composition-api';
-import { WsMessageType } from '@battletris/shared';
+import { Component, Vue } from 'vue-property-decorator';
 
-import Chat from '../components/Chat.vue';
+import { WsMessageType } from '@battletris/shared';
 import currUser from '../lib/User';
 import Game from '../game/Game.vue';
-import GameRegistration from '../game/GameRegistration.vue';
-import Loading from '../components/Loading.vue';
 import RoomConnection from '../lib/RoomConnection';
-import ViewWrapper from '../components/ViewWrapper.vue';
-import Modal from '../components/Modal.vue';
-import Tooltip from '../components/Tooltip.vue';
-import ClassLogo from '../icons/ClassLogo.vue';
-import StopStatsModal, { StopStatsInterface } from '../components/StopStatsModal.vue';
+import StopStatsModal, { StopStatsInterface } from './StopStatsModal.vue';
 
 @Component({
   components: {
-    Chat,
-    ClassLogo,
     Game,
-    GameRegistration,
-    Loading,
-    Modal,
     StopStatsModal,
-    Tooltip,
-    ViewWrapper,
   },
-  props: {
-    roomId: { type: String },
-  },
-  setup(props) {
-    const loading = ref(true);
-    const creating = ref(false);
-    const roomName = ref<string>('');
-    const roomConn = new RoomConnection(props.roomId as string);
+  setup() {
+    const currUserId = currUser.id;
     const isMatchRunning = ref(false);
-    const isJoined = ref(false);
+    const roomConn = new RoomConnection(currUserId as string);
     const stopStats = ref<StopStatsInterface | null>();
 
     const handleMessage = (type: WsMessageType, payload: any) => {
@@ -86,12 +62,9 @@ import StopStatsModal, { StopStatsInterface } from '../components/StopStatsModal
           }
           break;
         }
-        case WsMessageType.GAME_REG_UPDATE: {
-          isJoined.value = !!roomConn.gameRegistration[currUser.id];
-          break;
-        }
       }
     };
+
     roomConn.onMessage(
       (type, payload) => handleMessage(type, payload),
       onUnmounted,
@@ -99,23 +72,28 @@ import StopStatsModal, { StopStatsInterface } from '../components/StopStatsModal
 
     onUnmounted(() => roomConn.disconnect());
 
-    (async () => {
+    const startTestGame = async () => {
       await roomConn.connect();
-      roomName.value = roomConn.name;
-      isJoined.value = !!roomConn.gameRegistration[currUser.id];
-      isMatchRunning.value = roomConn?.isMatchRunning;
-      loading.value = false;
-    })();
+      await roomConn.send(WsMessageType.GAME_JOIN);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await roomConn.send(WsMessageType.GAME_ACCEPT);
+    };
 
     return {
-      creating,
-      isJoined,
+      currUserId,
       isMatchRunning,
-      loading,
-      roomName,
+      roomConn,
+      startTestGame,
       stopStats,
     };
   },
 })
-export default class RoomComponent extends Vue {}
+export default class SinglePlayer extends Vue {}
 </script>
+
+<style lang="postcss">
+.konvajs-content {
+  width: auto !important;
+  height: auto !important;
+}
+</style>

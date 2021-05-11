@@ -1,24 +1,36 @@
 <template>
   <div class="grid h-full grid-cols-3 gap-6 p-6">
-    <div
-      class="flex flex-shrink-0 bg-2"
-      v-for="(userIndex, index) in sortedGameUsers"
-      :class="{
-        'row-span-2': index === 1
-      }"
-      :key="index"
-    >
-      <GameField
-        v-if="gameUsers[userIndex]"
-        :activeUserIndex="activeIndex"
-        :gameUserCount="gameUsers.length"
-        :roomId="roomId"
-        :userData="gameUsers[userIndex]"
-        :userId="gameUsers[userIndex].id"
-        :userIndex="userIndex"
-      />
-      <div style="border: 5px solid var(--bg-1)" v-else />
-    </div>
+    <template v-if="!isTestGame">
+      <div
+        class="flex flex-shrink-0 bg-2"
+        v-for="(userIndex, index) in sortedGameUsers"
+        :class="{
+          'row-span-2': index === 1
+        }"
+        :key="index"
+      >
+        <GameField
+          v-if="gameUsers[userIndex]"
+          :activeUserIndex="activeIndex"
+          :gameUserCount="gameUsers.length"
+          :roomId="roomId"
+          :userData="gameUsers[userIndex]"
+          :userId="gameUsers[userIndex].id"
+          :userIndex="userIndex"
+        />
+        <div style="border: 5px solid var(--bg-1)" v-else />
+      </div>
+    </template>
+    <GameField
+      class="col-span-6"
+      v-else
+      :activeUserIndex="activeIndex"
+      :gameUserCount="gameUsers.length"
+      :roomId="roomId"
+      :userData="gameUsers[activeIndex]"
+      :userId="gameUsers[activeIndex].id"
+      :userIndex="activeIndex"
+    />
   </div>
 </template>
 
@@ -46,6 +58,7 @@ import GameRegistry from './GameRegistry';
     const loading = ref(true);
     const messages = ref<any[]>([]);
     const activeIndex = ref<number>(-1);
+    const isTestGame = ref(props.roomId === currUser.id);
 
     const messageHandler = gameConn.onMessage(
       async (type: WsMessageType, payload: any) => {
@@ -89,6 +102,7 @@ import GameRegistry from './GameRegistry';
     return {
       activeIndex,
       gameUsers,
+      isTestGame,
       loading,
       messages,
       sortedGameUsers,

@@ -34,8 +34,11 @@ export default class RoomHandler {
    * Ensure room is initialized and exists in the db.
    * @param id  room id
    */
-  static async ensure(id): Promise<RoomHandler> {
-    await Room.findOneOrFail(id);
+  static async ensure(id: string, userId: string): Promise<RoomHandler> {
+    const room = await Room.findOne(id);
+    if (!room && id !== userId) {
+      throw new Error('Invalid room id!');
+    }
     if (!rooms[id]) {
       rooms[id] = new RoomHandler(id);
     }
