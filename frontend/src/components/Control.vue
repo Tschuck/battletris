@@ -3,7 +3,6 @@
     class="control-square"
     @mousedown="mouseDown(true)"
     @mouseup="mouseUp()"
-    :class="{ active: isActive }"
   >
     <div class="text-lg font-bold">
       <slot />
@@ -12,40 +11,9 @@
 </template>
 
 <script lang="ts">
-import { ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 
-@Component({
-  props: {
-    value: {},
-  },
-  setup(props, root) {
-    const isActive = ref<boolean>(false);
-    let pressedInterval: any;
-
-    const mouseDown = (touch = false) => {
-      isActive.value = true;
-      root.emit('keydown', props.value);
-      if (touch) {
-        // trigger keydown event every 50ms, if the user holds the key
-        pressedInterval = setInterval(() => root.emit('keydown', props.value), 100);
-      }
-    };
-
-    const mouseUp = () => {
-      isActive.value = false;
-      root.emit('keyup', props.value);
-      // clear pressed interval
-      clearInterval(pressedInterval);
-    };
-
-    return {
-      isActive,
-      mouseDown,
-      mouseUp,
-    };
-  },
-})
+@Component({ })
 export default class Controls extends Vue {}
 </script>
 

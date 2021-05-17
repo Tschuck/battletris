@@ -120,7 +120,6 @@
           <Tooltip :value="$t('classes.exp')" />
         </div>
         <Controls
-          @keydown="onKeyDown($event)"
           :className="className"
           :showAbilities="!offline"
           :userMana="mana"
@@ -169,6 +168,7 @@ import { GameUser, Blocks } from '@battletris/shared';
 import AbilityLogo from '../icons/AbilityLogo.vue';
 import ClassLogo from '../icons/ClassLogo.vue';
 import Controls from '../components/Controls.vue';
+import KeyHandler from './KeyHandler';
 import currUser from '../lib/User';
 import Effect from '../components/Effect.vue';
 import FrontendGameUser from './GameUser';
@@ -282,6 +282,7 @@ interface GameFieldProps {
 
     // will be initialized after on mounted
     let gameRenderer: GameRenderer;
+    let keyHandler: KeyHandler;
     const UserClass = FrontendGameUser;
     const gameUser = new UserClass(
       userData,
@@ -316,9 +317,11 @@ interface GameFieldProps {
     // access this one
     GameRegistry[userIndex] = gameUser;
 
-    const onKeyDown = (keyCode: number) => {
-      gameUser.userKeyEvent(keyCode);
-    };
+    // watch for user input, if the current user is participating the match
+    if (isCurrUser) {
+      keyHandler = new KeyHandler(currUser, gameUser);
+      keyHandler.listen();
+    }
 
     onMounted(() => {
       gameRenderer = new GameRenderer(container.value, gameUser, {
@@ -334,6 +337,9 @@ interface GameFieldProps {
     onUnmounted(() => {
       gameRenderer.destroy();
       gameUser.stop();
+      if (keyHandler) {
+        keyHandler.stop();
+      }
     });
 
     return {
@@ -353,7 +359,6 @@ interface GameFieldProps {
       maxExp,
       maxMana,
       nextBlocks,
-      onKeyDown,
       rowCount,
       speed,
       target,

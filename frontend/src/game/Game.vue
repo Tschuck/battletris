@@ -38,7 +38,9 @@
 import { onBeforeUnmount, onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 
-import { gameHelper, GameUser, WsMessageType } from '@battletris/shared';
+import {
+  gameHelper, GameUser, WsMessageType,
+} from '@battletris/shared';
 import currUser from '../lib/User';
 import GameConnection from '../lib/Gameconnection';
 import GameField from './GameField.vue';
@@ -80,6 +82,7 @@ import GameRegistry from './GameRegistry';
               sortedGameUsers.value.splice(1, 0, sortIndex);
             }
             loading.value = false;
+
             // we can unbind this listener, is just for the first sync
             messageHandler();
             break;

@@ -344,7 +344,7 @@ class GameUser {
 
     // only allow user keys that can be activated (prevent from accessing effect / new block logic
     // or something else)
-    if (UserStateChange[key]) {
+    if (!UserStateChange[key]) {
       return;
     }
 

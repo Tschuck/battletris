@@ -74,8 +74,9 @@ import StopStatsModal, { StopStatsInterface } from './StopStatsModal.vue';
 
     const startTestGame = async () => {
       await roomConn.connect();
+      await new Promise((resolve) => setTimeout(resolve, 300));
       await roomConn.send(WsMessageType.GAME_JOIN);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       await roomConn.send(WsMessageType.GAME_ACCEPT);
     };
 

@@ -175,7 +175,7 @@ export default class FrontendGameUser extends GameUser {
     }
     this.onNewStateChange(keyCode);
     this.connection.send(WsMessageType.GAME_INPUT, keyCode);
-    // use this for latency debugging: TODO: test would be rly. awesome for this stuff :D
+    // use this for latency debugging: TODO: test would be rly awesome for this stuff :D
     // setTimeout(() => {
     //   this.connection.send(WsMessageType.GAME_INPUT, keyCode);
     // }, 1000 + (Math.random() * 100));

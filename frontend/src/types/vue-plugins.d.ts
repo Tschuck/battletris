@@ -19,16 +19,13 @@ declare module 'vue-i18n/types' {
 declare module 'vue/types/vue' {
   interface Vue {
     $t: typeof VueI18n.prototype.t;
+    $i18n: typeof VueI18n;
     $router: typeof VueRouter;
   }
 
   interface VueConstructor {
     i18n: typeof VueI18n.prototype;
   }
-}
-
-declare module 'vue-treeselect' {
-
 }
 
 export {};
