@@ -80,6 +80,18 @@ const versions: Record<string, VersionInterface> = {
     ],
     title: 'Feedback',
   },
+  '1.4.0': {
+    bugs: [],
+    classes: [],
+    features: [
+      'add laboratory view',
+      'full control customization',
+      'arr, das, dcd, sdf and rts support',
+      'be able to start a test match with remote connection',
+      'add stone hold functionallity',
+    ],
+    title: 'Custom Controls & Hold',
+  },
 };
 
 export {
