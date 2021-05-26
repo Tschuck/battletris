@@ -133,17 +133,19 @@
       v-if="isCurrUser && hold && Blocks[hold]"
       :style="holdLock ? 'filter: grayscale(1); opacity: 0.7;' : ''"
     >
-      <span class="mr-2">{{ $t('game.hold') }}</span>
+      <span class="mr-2">{{ $t("game.hold") }}</span>
       <div class="flex flex-col mr-1">
         <div class="flex flex-row" v-for="(y, i1) in Blocks[hold][0]" :key="i1">
-          <div
-            class="w-2 h-2"
-            v-for="(x, i2) in y"
-            :key="i2"
-            :style="`margin-right: 1px; margin-top: 1px; background-color: ${
-              blockColors[y[i2] || 0]
-            }`"
-          ></div>
+          <template v-if="y.length">
+            <div
+              class="w-2 h-2"
+              v-for="(x, i2) in y"
+              :key="i2"
+              :style="`margin-right: 1px; margin-top: 1px; background-color: ${
+                blockColors[y[i2] || 0]
+              }`"
+            ></div>
+          </template>
         </div>
       </div>
     </div>
@@ -158,14 +160,16 @@
           :key="i1"
         >
           <div class="flex flex-row" v-for="(y, i2) in block" :key="i2">
-            <div
-              class="w-2 h-2"
-              v-for="(x, i3) in y"
-              :key="i3"
-              :style="`margin-right: 1px; margin-top: 1px; background-color: ${
-                blockColors[y[i3] || 0]
-              }`"
-            ></div>
+            <template v-if="y.length">
+              <div
+                class="w-2 h-2"
+                v-for="(x, i3) in y"
+                :key="i3"
+                :style="`margin-right: 1px; margin-top: 1px; background-color: ${
+                  blockColors[y[i3] || 0]
+                }`"
+              ></div>
+            </template>
           </div>
         </div>
       </template>
@@ -459,6 +463,7 @@ canvas {
   border-style: solid;
   border-color: var(--bg-1);
   min-height: 36px;
+  max-height: 36px;
 }
 
 .hold-box {

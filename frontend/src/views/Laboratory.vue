@@ -121,6 +121,26 @@
             $t("laboratory.handling.sdf.desc")
           }}</span>
         </div>
+        <div class="my-4">
+          <div class="">
+            <span
+              >{{ $t("laboratory.handling.rts.title") }} ({{
+                activeKeyMap.rts
+              }}ms)</span
+            >
+            <VueSlider
+              class="flex-grow"
+              v-model="activeKeyMap.rts"
+              drag-on-click
+              :min="0"
+              :max="300"
+              :disabled="disabled"
+            />
+          </div>
+          <span class="text-xs text-justify text-gray-400">{{
+            $t("laboratory.handling.rts.desc")
+          }}</span>
+        </div>
 
         <div class="mt-8">
           <div
@@ -167,7 +187,7 @@
         </div>
       </div>
     </div>
-    <SinglePlayer />
+    <SinglePlayer :onStart="beforeGameStart"/>
   </ViewWrapper>
 </template>
 
@@ -277,18 +297,22 @@ import ViewWrapper from '../components/ViewWrapper.vue';
     const disabled = computed(() => activeKeyMapId.value === 'default' || activeKeyMapId.value === 'wasd');
 
     /** ******************************** game preview logic ************************************* */
-    // listener for game finished
-    onUnmounted(async () => {
+    const beforeGameStart = async () => {
       await user.saveKeyMaps(
         activeKeyMapId.value,
         keyMaps.value.filter((keyMap) => keyMap.id !== 'default' && keyMap.id !== 'wasd'),
       );
+    };
+    // listener for game finished
+    onUnmounted(async () => {
+      beforeGameStart();
     });
 
     return {
       activeKeyMap,
       activeKeyMapId,
       addKeyMap,
+      beforeGameStart,
       controlsList,
       disabled,
       hoveredKey,

@@ -147,6 +147,10 @@
         "title": "SDF",
         "desc": "\"Soft Drop Factor\" - How fast is the block moving down?"
       },
+      "rts": {
+        "title": "RTS",
+        "desc": "\"Rotation Speed\" specifies, how quickly the pieces move rotate."
+      },
       "disabled-hint": "Please add your own keymap to adjust any values.",
       "title": "Handling"
     },

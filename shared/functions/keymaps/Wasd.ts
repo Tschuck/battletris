@@ -11,7 +11,8 @@ export default class WasdMap implements KeyMapInterface {
   arr = 33;
   das = 167;
   dcd = 0;
-  sdf = 10;
+  sdf = 40;
+  rts = 30;
 
   keys = {
     [UserStateChange.ABILITY_1]: [Key.U],

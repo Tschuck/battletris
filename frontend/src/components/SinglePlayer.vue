@@ -25,7 +25,10 @@ import StopStatsModal, { StopStatsInterface } from './StopStatsModal.vue';
     Game,
     StopStatsModal,
   },
-  setup() {
+  props: {
+    onStart: { type: Function },
+  },
+  setup(props: { onStart: () => Promise<void> }) {
     const currUserId = currUser.id;
     const isMatchRunning = ref(false);
     const roomConn = new RoomConnection(currUserId as string);
@@ -73,6 +76,7 @@ import StopStatsModal, { StopStatsInterface } from './StopStatsModal.vue';
     onUnmounted(() => roomConn.disconnect());
 
     const startTestGame = async () => {
+      await props.onStart();
       if (!roomConn.ws) {
         await roomConn.connect();
         await new Promise((resolve) => setTimeout(resolve, 50));

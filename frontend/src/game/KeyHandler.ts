@@ -1,16 +1,31 @@
-import GameConnection from '@/lib/Gameconnection';
 import {
   KeyMapInterface, KeyMaps, KeysInterface, UserInterface, UserStateChange,
 } from '@battletris/shared';
 import { Key } from 'ts-keycode-enum';
 import GameUser from './GameUser';
 
-const keysToIgnore = [
-  Key.Alt,
-  Key.Ctrl,
-  Key.LeftWindowKey,
-  Key.RightWindowKey,
-  Key.Shift,
+// const keysToIgnore = [
+//   Key.Alt,
+//   Key.Ctrl,
+//   Key.LeftWindowKey,
+//   Key.RightWindowKey,
+//   Key.Shift,
+// ];
+
+const repeatKeys = [
+  UserStateChange.RIGHT,
+  UserStateChange.LEFT,
+  UserStateChange.SOFT_DROP,
+  UserStateChange.TURN_LEFT,
+  UserStateChange.TURN_RIGHT,
+  UserStateChange.TURN_180,
+];
+
+const dcdKeys = [
+  UserStateChange.HARD_DROP,
+  UserStateChange.TURN_LEFT,
+  UserStateChange.TURN_RIGHT,
+  UserStateChange.TURN_180,
 ];
 
 export default class KeyHandler implements KeyMapInterface {
@@ -33,6 +48,15 @@ export default class KeyHandler implements KeyMapInterface {
   name: string;
 
   sdf: number;
+
+  /** key repeat interval holding */
+  keyArr: Record<number, number> = {};
+
+  /** key press delay, unti arr starts */
+  keyDas: Record<number, number> = {};
+
+  /** prevent duplicated key presses */
+  keyLock: Record<number, boolean> = {};
 
   constructor(user: UserInterface, gameUser: GameUser) {
     let activeKeyMap = user.keyMaps.find(
@@ -64,28 +88,74 @@ export default class KeyHandler implements KeyMapInterface {
     });
   }
 
+  rts: number;
+
   listen() {
-    const ignoreKeys: number[] = [];
     const keyToStateChange = this.keyToStateChange;
     const keyDownListener = ($event: KeyboardEvent) => {
-      if (ignoreKeys.indexOf($event.keyCode) === -1
-        && keysToIgnore.indexOf($event.keyCode) !== -1) {
-        ignoreKeys.push($event.keyCode);
-      }
+      const actionCode = parseInt(keyToStateChange[$event.keyCode], 10);
       // only react on known and single key presses, when command is pressed
-      if (typeof keyToStateChange[$event.keyCode] !== 'undefined' && ignoreKeys.length === 0) {
+      if (typeof keyToStateChange[$event.keyCode] !== 'undefined') {
         $event.preventDefault();
         $event.stopPropagation();
 
-        this.sendKey(parseInt(keyToStateChange[$event.keyCode], 10));
+        if (!this.keyLock[actionCode] && !this.keyDas[actionCode] && !this.keyArr[actionCode]) {
+          if (repeatKeys.includes(actionCode)) {
+            this.sendKey(actionCode);
+            // wait for das finished and start arr afterwards
+            this.keyDas[actionCode] = setTimeout(() => {
+              delete this.keyDas[actionCode];
+              // retrigger the key, otherwise we would wait another arr period
+              this.sendKey(actionCode);
+              // start arr interval
+              this.keyArr[actionCode] = setInterval(
+                () => this.sendKey(actionCode),
+                // use different speed for soft drop, turn and arrow keys
+                this.getRepeatValue(actionCode),
+              );
+            }, this.das);
+          } else {
+            this.keyLock[actionCode] = true;
+            this.sendKey(actionCode);
+            // if dcd is enabled, stop all arr keys for a specific amount of time and start them
+            // afterwards again
+            if (this.dcd && dcdKeys.includes(actionCode)) {
+              Object.keys(this.keyArr).forEach((key) => {
+                clearInterval(this.keyArr[key]);
+                // wait for the dcd timeout and retrigger arr, if the keys are still pressed
+                setTimeout(() => {
+                  if (this.keyArr[key]) {
+                    this.keyArr[key] = setInterval(
+                      () => this.sendKey(parseInt(key, 10)),
+                      // use different speed for soft drop, turn and arrow keys
+                      this.getRepeatValue(this.keyArr[key]),
+                    );
+                  }
+                }, this.dcd);
+              });
+            }
+          }
+        }
 
         return false;
       }
     };
 
     const keyUpListener = ($event: KeyboardEvent) => {
+      const actionCode = parseInt(keyToStateChange[$event.keyCode], 10);
+
+      if (typeof this.keyDas[actionCode] !== 'undefined') {
+        clearTimeout(this.keyDas[actionCode]);
+      }
+      if (typeof this.keyArr[actionCode] !== 'undefined') {
+        clearInterval(this.keyArr[actionCode]);
+      }
+
+      delete this.keyDas[actionCode];
+      delete this.keyArr[actionCode];
+      delete this.keyLock[actionCode];
+
       // clear pressed key stack
-      ignoreKeys.splice(ignoreKeys.indexOf($event.keyCode), 1);
       if (typeof keyToStateChange[$event.keyCode] !== 'undefined') {
         $event.preventDefault();
         $event.stopPropagation();
@@ -101,6 +171,23 @@ export default class KeyHandler implements KeyMapInterface {
       window.removeEventListener('keydown', keyDownListener);
       window.removeEventListener('keyup', keyUpListener);
     });
+  }
+
+  getRepeatValue(actionCode: number) {
+    switch (actionCode) {
+      case UserStateChange.SOFT_DROP: {
+        return this.sdf;
+      }
+      case UserStateChange.TURN_LEFT:
+      case UserStateChange.TURN_RIGHT:
+      case UserStateChange.TURN_180: {
+        return this.sdf;
+      }
+      case UserStateChange.LEFT:
+      case UserStateChange.RIGHT: {
+        return this.arr;
+      }
+    }
   }
 
   stop() {

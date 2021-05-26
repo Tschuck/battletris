@@ -37,4 +37,6 @@ export default interface KeyMapInterface {
   name: string;
   // soft drop factor => how fast to move the block down
   sdf: number;
+  // rotation speed
+  rts: number;
 }

@@ -19,8 +19,11 @@ export default class UserKeyMap extends BaseEntity {
   @Column({ type: 'int', default: 0 })
   dcd: number;
 
-  @Column({ type: 'int', default: 10 })
+  @Column({ type: 'int', default: 40 })
   sdf: number;
+
+  @Column({ type: 'int', default: 30 })
+  rts: number;
 
   @Column({ type: 'simple-json' })
   keys: KeysInterface;
