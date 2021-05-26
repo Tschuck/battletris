@@ -136,7 +136,7 @@
       <span class="mr-2">{{ $t("game.hold") }}</span>
       <div class="flex flex-col mr-1">
         <div class="flex flex-row" v-for="(y, i1) in Blocks[hold][0]" :key="i1">
-          <template v-if="y.length">
+          <template v-if="y.length && y.some((x) => x)">
             <div
               class="w-2 h-2"
               v-for="(x, i2) in y"
@@ -455,10 +455,9 @@ canvas {
 .leading-box {
   position: absolute;
   top: -19px;
-  left: 0;
   overflow: hidden;
   margin: auto;
-  right: 0;
+  right: 10px;
   border-width: 5px;
   border-style: solid;
   border-color: var(--bg-1);
