@@ -9,7 +9,7 @@
       <GameRegistration v-if="!isMatchRunning" />
       <Game v-else :room-id="roomId" />
 
-      <StopStatsModal :stopStats="stopStats" />
+      <StopStatsModal :stopStats="stopStats" @close="stopStats = null" />
     </template>
   </ViewWrapper>
 </template>

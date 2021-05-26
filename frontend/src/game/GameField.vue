@@ -128,6 +128,25 @@
         />
       </div>
     </div>
+    <div
+      class="flex flex-row items-center justify-between w-1/2 px-4 py-1 mr-1 hold-box leading-box bg-1"
+      v-if="isCurrUser && hold && Blocks[hold]"
+      :style="holdLock ? 'filter: grayscale(1); opacity: 0.7;' : ''"
+    >
+      <span class="mr-2">{{ $t('game.hold') }}</span>
+      <div class="flex flex-col mr-1">
+        <div class="flex flex-row" v-for="(y, i1) in Blocks[hold][0]" :key="i1">
+          <div
+            class="w-2 h-2"
+            v-for="(x, i2) in y"
+            :key="i2"
+            :style="`margin-right: 1px; margin-top: 1px; background-color: ${
+              blockColors[y[i2] || 0]
+            }`"
+          ></div>
+        </div>
+      </div>
+    </div>
 
     <div
       class="flex flex-row items-center justify-between w-1/2 px-4 py-1 mr-1 leading-box bg-1"
@@ -152,9 +171,9 @@
       </template>
       <template v-else>
         <ClassLogo class="w-6" :className="className" height="20px" />
-        <span class="ml-3 text-xs font-bold w=full text-center"
-          >{{ userName }}</span
-        >
+        <span class="ml-3 text-xs font-bold w=full text-center">{{
+          userName
+        }}</span>
       </template>
     </div>
   </div>
@@ -232,6 +251,9 @@ interface GameFieldProps {
     const nextBlocksToRender = 3;
     const rowCount = ref<number>();
     const speed = ref<number>();
+    const hold = ref<number>();
+    const holdLock = ref<boolean>(false);
+
     // non vue values
     let target = -1;
 
@@ -302,6 +324,8 @@ interface GameFieldProps {
         maxExp.value = user.maxExp;
         exp.value = user.exp;
         level.value = user.level;
+        hold.value = user.hold;
+        holdLock.value = user.holdLock;
         // update target hints
         if (user.target !== target) {
           updateTargetRendering(user.target);
@@ -346,12 +370,15 @@ interface GameFieldProps {
       armor,
       blockColors,
       blockCount,
+      Blocks,
       className,
       container,
       cooldowns,
       effects,
       exp,
       hasLost,
+      hold,
+      holdLock,
       isCurrUser,
       level,
       mana,
@@ -367,7 +394,7 @@ interface GameFieldProps {
     };
   },
 })
-export default class Game extends Vue {}
+export default class Game extends Vue { }
 </script>
 
 <style lang="postcss">
@@ -431,5 +458,13 @@ canvas {
   border-width: 5px;
   border-style: solid;
   border-color: var(--bg-1);
+  min-height: 36px;
+}
+
+.hold-box {
+  left: 10px;
+  right: auto;
+  min-height: 36px;
+  width: 110px;
 }
 </style>

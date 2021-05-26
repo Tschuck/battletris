@@ -2,7 +2,7 @@
   <Modal
     class="text-gray-300"
     :show="!!stopStats"
-    @close="stopStats = null"
+    @close="$emit('close')"
     v-if="stopStats"
   >
     <div class="flex items-center justify-between mb-3">
@@ -58,7 +58,7 @@
     </div>
 
     <div class="mt-3 text-center">
-      <button class="button" @click="stopStats = null">
+      <button class="button" @click="$emit('close')">
         {{ $t("close") }}
       </button>
     </div>
@@ -105,5 +105,5 @@ export interface StopStatsInterface {
     stopStats: { },
   },
 })
-export default class RoomComponent extends Vue {}
+export default class StopStatsModal extends Vue {}
 </script>

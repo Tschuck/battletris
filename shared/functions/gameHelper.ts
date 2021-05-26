@@ -26,6 +26,8 @@ export enum GameUserMapping {
   interactionCount = 22,
   lost = 23,
   cooldowns = 24,
+  hold = 25,
+  holdLock = 26,
 }
 
 /**

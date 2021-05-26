@@ -117,6 +117,12 @@ class GameUser {
   /** dates until specific ability index will be blocked */
   cooldowns: number[] = [];
 
+  /** current hold value */
+  hold: number;
+
+  /** hold will be blocked, until the next stone was set */
+  holdLock: boolean;
+
   constructor(
     user: Partial<GameUser>|GameUser,
     gameUserIndex = -1,
@@ -327,6 +333,8 @@ class GameUser {
     // the block map for the long block and the square, starting with an empty zero row
     this.y = this.block === BlockMapping.BAR || this.block === BlockMapping.BLOCK ? -1 : 0;
     this.rotation = 0;
+    // reset the hold lock
+    this.holdLock = false;
     // check for match end? (ps: we can use this here, when a collision happens, game is over)
     this.checkGameState(this, GameStateChange.NEW_BLOCK);
   }
@@ -397,6 +405,10 @@ class GameUser {
         this.rotation -= 1;
         break;
       }
+      case UserStateChange.TURN_180: {
+        this.rotation += 2;
+        break;
+      }
       case UserStateChange.LEFT: {
         this.x -= 1;
         break;
@@ -421,6 +433,17 @@ class GameUser {
         );
         beforeUser.y = this.y;
         this.y += 1;
+        break;
+      }
+      case UserStateChange.HOLD: {
+        if (this.holdLock) {
+          break;
+        }
+
+        const prefHold = this.hold;
+        this.hold = this.block;
+        this.setNewBlock(prefHold);
+        this.holdLock = true;
         break;
       }
       case UserStateChange.NEXT_TARGET: {

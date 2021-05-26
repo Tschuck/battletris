@@ -1,6 +1,6 @@
 <template>
   <ViewWrapper :title="$t('start-page.laboratory')">
-    <div class="w-full px-8">
+    <div class="flex justify-center w-full h-full py-8 overflow-y-auto">
       <div>
         <div class="flex justify-between">
           <h2 class="mb-4 font-bold">{{ $t("laboratory.key-maps.title") }}</h2>
@@ -173,14 +173,13 @@
 
 <script lang="ts">
 import {
-  KeyMapInterface, KeyMaps, UserStateChange, WsMessageType,
+  KeyMapInterface, KeyMaps, UserStateChange,
 } from '@battletris/shared';
 import { computed, onUnmounted, ref } from '@vue/composition-api';
 import { Component, Vue } from 'vue-property-decorator';
 import VueSlider from 'vue-slider-component';
 import SinglePlayer from '../components/SinglePlayer.vue';
 import KeyMapSelect from '../components/KeyMapSelect.vue';
-import RoomConnection from '../lib/RoomConnection';
 import user from '../lib/User';
 import ViewWrapper from '../components/ViewWrapper.vue';
 

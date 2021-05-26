@@ -6,7 +6,7 @@
       </button>
     </div>
     <Game :room-id="currUserId" v-else />
-    <StopStatsModal :stopStats="stopStats" />
+    <StopStatsModal :stopStats="stopStats" @close="stopStats = null" />
   </div>
 </template>
 
@@ -73,10 +73,12 @@ import StopStatsModal, { StopStatsInterface } from './StopStatsModal.vue';
     onUnmounted(() => roomConn.disconnect());
 
     const startTestGame = async () => {
-      await roomConn.connect();
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      if (!roomConn.ws) {
+        await roomConn.connect();
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
       await roomConn.send(WsMessageType.GAME_JOIN);
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 50));
       await roomConn.send(WsMessageType.GAME_ACCEPT);
     };
 

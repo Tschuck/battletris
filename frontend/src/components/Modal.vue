@@ -2,7 +2,7 @@
   <div>
     <div
       class="fixed left-0 right-0 z-20 p-5 mx-auto bg-1"
-      style="max-width: 100%; width: 500px;"
+      style="max-width: 100%; width: 500px; top: 100px"
       v-if="show"
     >
       <slot />

@@ -23,7 +23,7 @@
     </template>
     <GameField
       class="col-span-6"
-      v-else
+      v-else-if="activeIndex !== -1"
       :activeUserIndex="activeIndex"
       :gameUserCount="gameUsers.length"
       :roomId="roomId"
