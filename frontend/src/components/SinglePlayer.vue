@@ -1,6 +1,9 @@
 <template>
   <div class="w-full">
-    <div class="flex items-center justify-center h-full" v-if="!isMatchRunning">
+    <div class="flex items-center justify-center h-128" style="height: 50%" v-if="starting">
+      <Loading  />
+    </div>
+    <div class="flex items-center justify-center h-full" v-else-if="!isMatchRunning">
       <button class="button" @click="startTestGame()">
         {{ $t("laboratory.start-test-game") }}
       </button>
@@ -19,10 +22,12 @@ import currUser from '../lib/User';
 import Game from '../game/Game.vue';
 import RoomConnection from '../lib/RoomConnection';
 import StopStatsModal, { StopStatsInterface } from './StopStatsModal.vue';
+import Loading from './Loading.vue';
 
 @Component({
   components: {
     Game,
+    Loading,
     StopStatsModal,
   },
   props: {
@@ -33,6 +38,7 @@ import StopStatsModal, { StopStatsInterface } from './StopStatsModal.vue';
     const isMatchRunning = ref(false);
     const roomConn = new RoomConnection(currUserId as string);
     const stopStats = ref<StopStatsInterface | null>();
+    const starting = ref(false);
 
     const handleMessage = (type: WsMessageType, payload: any) => {
       switch (type) {
@@ -62,6 +68,8 @@ import StopStatsModal, { StopStatsInterface } from './StopStatsModal.vue';
                 };
               }),
             };
+          } else {
+            starting.value = false;
           }
           break;
         }
@@ -76,13 +84,15 @@ import StopStatsModal, { StopStatsInterface } from './StopStatsModal.vue';
     onUnmounted(() => roomConn.disconnect());
 
     const startTestGame = async () => {
+      starting.value = true;
+
       await props.onStart();
       if (!roomConn.ws) {
         await roomConn.connect();
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, 300));
       }
       await roomConn.send(WsMessageType.GAME_JOIN);
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       await roomConn.send(WsMessageType.GAME_ACCEPT);
     };
 
@@ -90,12 +100,13 @@ import StopStatsModal, { StopStatsInterface } from './StopStatsModal.vue';
       currUserId,
       isMatchRunning,
       roomConn,
+      starting,
       startTestGame,
       stopStats,
     };
   },
 })
-export default class SinglePlayer extends Vue {}
+export default class SinglePlayer extends Vue { }
 </script>
 
 <style lang="postcss">
