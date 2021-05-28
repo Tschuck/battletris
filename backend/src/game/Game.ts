@@ -13,9 +13,6 @@ class Game {
   /** users ids mapped to the index to improve performance for incremental updates */
   indexIdMap: Record<number, string>;
 
-  /** ensure game is started */
-  isStarted = false;
-
   /** started date */
   started: Date;
 
@@ -92,6 +89,7 @@ class Game {
     logger.debug(`Game started with: ${this.userIds.join(', ')}`);
     // show countdown
     await this.initLoop();
+
     // start the actual game log
     this.users.forEach((user) => user.start());
     // directly show new blocks for the users

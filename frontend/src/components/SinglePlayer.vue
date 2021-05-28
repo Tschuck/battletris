@@ -87,14 +87,15 @@ import Loading from './Loading.vue';
       starting.value = true;
 
       await props.onStart();
-      if (!roomConn.ws) {
-        await roomConn.connect();
-        await new Promise((resolve) => setTimeout(resolve, 300));
-      }
       await roomConn.send(WsMessageType.GAME_JOIN);
       await new Promise((resolve) => setTimeout(resolve, 300));
       await roomConn.send(WsMessageType.GAME_ACCEPT);
     };
+
+    (async () => {
+      await roomConn.connect();
+      isMatchRunning.value = roomConn?.isMatchRunning;
+    })();
 
     return {
       currUserId,

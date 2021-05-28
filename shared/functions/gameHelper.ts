@@ -28,6 +28,7 @@ export enum GameUserMapping {
   cooldowns = 24,
   hold = 25,
   holdLock = 26,
+  gameIsStarted = 27,
 }
 
 /**

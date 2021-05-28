@@ -123,6 +123,9 @@ class GameUser {
   /** hold will be blocked, until the next stone was set */
   holdLock: boolean;
 
+  /** disable controls, when the game is not started (e.g. in init number loop) */
+  gameIsStarted: boolean;
+
   constructor(
     user: Partial<GameUser>|GameUser,
     gameUserIndex = -1,
@@ -346,7 +349,7 @@ class GameUser {
    */
   onNewStateChange(key: GameStateChange|UserStateChange): void {
     // disable keys when lost
-    if (this.lost) {
+    if (this.lost || !this.gameIsStarted) {
       return;
     }
 

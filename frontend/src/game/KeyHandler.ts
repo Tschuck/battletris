@@ -58,6 +58,8 @@ export default class KeyHandler implements KeyMapInterface {
   /** prevent duplicated key presses */
   keyLock: Record<number, boolean> = {};
 
+  rts: number;
+
   constructor(user: UserInterface, gameUser: GameUser) {
     let activeKeyMap = user.keyMaps.find(
       (keyMap) => keyMap.id === user.activeKeyMap,
@@ -78,6 +80,7 @@ export default class KeyHandler implements KeyMapInterface {
     this.id = activeKeyMap.id;
     this.keys = activeKeyMap.keys;
     this.name = activeKeyMap.name;
+    this.rts = activeKeyMap.rts;
     this.sdf = activeKeyMap.sdf;
 
     Object.keys(this.keys).forEach((stateChange: string) => {
@@ -88,17 +91,12 @@ export default class KeyHandler implements KeyMapInterface {
     });
   }
 
-  rts: number;
-
   listen() {
     const keyToStateChange = this.keyToStateChange;
     const keyDownListener = ($event: KeyboardEvent) => {
       const actionCode = parseInt(keyToStateChange[$event.keyCode], 10);
       // only react on known and single key presses, when command is pressed
       if (typeof keyToStateChange[$event.keyCode] !== 'undefined') {
-        $event.preventDefault();
-        $event.stopPropagation();
-
         if (!this.keyLock[actionCode] && !this.keyDas[actionCode] && !this.keyArr[actionCode]) {
           if (repeatKeys.includes(actionCode)) {
             this.sendKey(actionCode);
@@ -125,10 +123,11 @@ export default class KeyHandler implements KeyMapInterface {
                 // wait for the dcd timeout and retrigger arr, if the keys are still pressed
                 setTimeout(() => {
                   if (this.keyArr[key]) {
+                    const parsedKey = parseInt(key, 10);
                     this.keyArr[key] = setInterval(
-                      () => this.sendKey(parseInt(key, 10)),
+                      () => this.sendKey(parsedKey),
                       // use different speed for soft drop, turn and arrow keys
-                      this.getRepeatValue(this.keyArr[key]),
+                      this.getRepeatValue(parsedKey),
                     );
                   }
                 }, this.dcd);
@@ -136,9 +135,12 @@ export default class KeyHandler implements KeyMapInterface {
             }
           }
         }
-
-        return false;
       }
+
+      $event.preventDefault();
+      $event.stopPropagation();
+
+      return false;
     };
 
     const keyUpListener = ($event: KeyboardEvent) => {
@@ -156,12 +158,10 @@ export default class KeyHandler implements KeyMapInterface {
       delete this.keyLock[actionCode];
 
       // clear pressed key stack
-      if (typeof keyToStateChange[$event.keyCode] !== 'undefined') {
-        $event.preventDefault();
-        $event.stopPropagation();
+      $event.preventDefault();
+      $event.stopPropagation();
 
-        return false;
-      }
+      return false;
     };
 
     // bind listeners and unmount functions

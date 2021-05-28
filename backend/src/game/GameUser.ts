@@ -80,6 +80,7 @@ class BackendGameUser extends GameUser {
   }
 
   start() {
+    this.gameIsStarted = true;
     this.map = mapHelper.getEmptyMap(20);
     // ensure random game block
     this.setNewBlock();
