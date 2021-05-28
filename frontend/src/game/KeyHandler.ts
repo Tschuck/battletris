@@ -181,7 +181,7 @@ export default class KeyHandler implements KeyMapInterface {
       case UserStateChange.TURN_LEFT:
       case UserStateChange.TURN_RIGHT:
       case UserStateChange.TURN_180: {
-        return this.sdf;
+        return this.rts;
       }
       case UserStateChange.LEFT:
       case UserStateChange.RIGHT: {

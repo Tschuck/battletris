@@ -346,7 +346,7 @@ interface GameFieldProps {
     GameRegistry[userIndex] = gameUser;
 
     // watch for user input, if the current user is participating the match
-    if (isCurrUser) {
+    if (isCurrUser.value) {
       keyHandler = new KeyHandler(currUser, gameUser);
       keyHandler.listen();
     }

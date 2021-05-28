@@ -72,6 +72,9 @@ createEndpoint(
         matches: [],
         name: nameGenerator.toString(),
       }).save();
+      user = await User.findOne(userId, {
+        relations: ['keyMaps'],
+      });
     }
 
     return user;
