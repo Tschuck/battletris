@@ -27,6 +27,12 @@
       </a>
     </div>
 
+    <div class="text-center">
+      <router-link class="button" :to="`/multi-player/${rooms[0].id}`">
+        {{ $t('start-page.play-now') }}
+      </router-link>
+    </div>
+
     <div class="mt-12 text-center cursor-pointer">
       <router-link to="/mode">
         <font-awesome-icon class="text-4xl bounce" icon="chevron-down" />
@@ -40,15 +46,31 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 
+import { ref } from '@vue/composition-api';
 import BattletrisIcon from '../icons/battletris.vue';
 import Tooltip from '../components/Tooltip.vue';
 import QuickLinks from '../components/QuickLinks.vue';
+import { getRequest } from '../lib/request';
 
 @Component({
   components: {
     BattletrisIcon,
     QuickLinks,
     Tooltip,
+  },
+  setup() {
+    const loading = ref(true);
+    const rooms = ref<any[] | null>(null);
+
+    (async () => {
+      rooms.value = await getRequest('rooms');
+      loading.value = false;
+    })();
+
+    return {
+      loading,
+      rooms,
+    };
   },
 })
 export default class Tutorial extends Vue {}

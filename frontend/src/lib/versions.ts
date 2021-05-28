@@ -93,14 +93,16 @@ const versions: Record<string, VersionInterface> = {
     title: 'Custom Controls & Hold',
   },
   '1.4.1': {
-    bugs: [],
-    classes: [],
-    features: [
+    bugs: [
       'disable controls in initial game counter loop',
       'load last session in laboratory',
       'broken game state',
     ],
-    title: 'Bug Fix Round',
+    classes: [],
+    features: [
+      'play now button on start page',
+    ],
+    title: 'Feedback & Bug Fixes',
   },
 };
 

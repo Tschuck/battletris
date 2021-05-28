@@ -35,7 +35,7 @@ import { getRequest } from '../lib/request';
     ViewWrapper,
     Loading,
   },
-  setup(props) {
+  setup() {
     const loading = ref(true);
     const rooms = ref<any[] | null>(null);
 

@@ -330,7 +330,8 @@
     "settings-desc": "Manage user name, class and view game history.",
     "tutorial": "Tutorial",
     "tutorial-desc": "Checkup the game mechanics with an tutorial.",
-    "versions": "Versions"
+    "versions": "Versions",
+    "play-now": "Play now"
   },
   "tutorial": {
     "1-battletris": {
