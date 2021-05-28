@@ -88,7 +88,6 @@ import Loading from './Loading.vue';
 
       await props.onStart();
       await roomConn.send(WsMessageType.GAME_JOIN);
-      await new Promise((resolve) => setTimeout(resolve, 300));
       await roomConn.send(WsMessageType.GAME_ACCEPT);
     };
 

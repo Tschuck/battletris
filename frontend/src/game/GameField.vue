@@ -306,6 +306,24 @@ interface GameFieldProps {
         });
     };
 
+    const paramPropMapping = {
+      armor,
+      blockCount,
+      effects,
+      mana,
+      rowCount,
+      speed,
+      cooldowns,
+      maxArmor,
+      maxMana,
+      maxExp,
+      exp,
+      level,
+      hold,
+      holdLock,
+      lost: hasLost,
+    };
+
     // will be initialized after on mounted
     let gameRenderer: GameRenderer;
     let keyHandler: KeyHandler;
@@ -315,21 +333,13 @@ interface GameFieldProps {
       userIndex,
       props.gameUserCount as number,
       (user) => {
-        armor.value = user.armor;
-        blockCount.value = user.blockCount;
-        effects.value = user.effects;
-        mana.value = user.mana;
-        rowCount.value = user.rowCount;
-        speed.value = user.speed;
-        hasLost.value = user.lost;
-        cooldowns.value = user.cooldowns;
-        maxArmor.value = user.maxArmor;
-        maxMana.value = user.maxMana;
-        maxExp.value = user.maxExp;
-        exp.value = user.exp;
-        level.value = user.level;
-        hold.value = user.hold;
-        holdLock.value = user.holdLock;
+        // only update when needed to reduce "flickering"
+        Object.keys(paramPropMapping).forEach((prop) => {
+          if (typeof user[prop] !== 'undefined') {
+            paramPropMapping[prop].value = user[prop];
+          }
+        });
+
         // update target hints
         if (user.target !== target) {
           updateTargetRendering(user.target);
@@ -363,11 +373,11 @@ interface GameFieldProps {
 
     // be sure to stop watching, when game was left
     onUnmounted(() => {
-      gameRenderer.destroy();
-      gameUser.stop();
       if (keyHandler) {
         keyHandler.stop();
       }
+      gameRenderer.destroy();
+      gameUser.stop();
     });
 
     return {

@@ -194,6 +194,7 @@ export default class KeyHandler implements KeyMapInterface {
     while (this.clearListenerFunctions.length) {
       this.clearListenerFunctions.pop()();
     }
+    this.gameUser = null;
   }
 
   sendKey(keyCode: number) {
