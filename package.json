@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^4.18.0",
+    "concurrently": "^6.4.0",
     "fs-extra": "^9.0.1"
   },
   "license": "GPL-3.0-or-later",
@@ -13,6 +14,6 @@
     "install:backend": "cd ./backend && yarn install",
     "install:frontend": "cd ./frontend && yarn install",
     "install:shared": "cd ./shared && yarn install",
-    "postinstall": "yarn install:shared && yarn install:backend && yarn install:frontend"
+    "postinstall": "yarn install:shared && concurrently \"yarn install:backend\" \"yarn install:frontend\""
   }
 }

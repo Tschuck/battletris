@@ -13,6 +13,9 @@
     "eslint-plugin-import": "^2.20.2",
     "typescript": "^3.9.6"
   },
+  "scripts": {
+    "postinstall": "yarn link"
+  },
   "main": "./index.ts",
   "name": "@battletris/shared"
 }

@@ -98,7 +98,7 @@ export default class RoomHandler {
    * @param userId user id to check
    * @param socket socket to add
    */
-  processWsForward(headers: Record<string, string>, userId: string, socket: any) {
+  processWsForward(headers: Record<string, string | string[]>, userId: string, socket: any) {
     try {
       // ensure game process is running
       if (!this.process) {
