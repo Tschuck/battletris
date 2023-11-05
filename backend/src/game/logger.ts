@@ -1,7 +1,7 @@
-import pino from 'pino';
+import pino, { Logger } from 'pino';
 import config from '../lib/config';
 
-const logger: pino = pino({
+const logger: Logger = pino({
   prettyPrint: true,
   level: config.logLevel,
   base: {

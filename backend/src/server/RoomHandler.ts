@@ -3,7 +3,7 @@ import { ChildProcess, fork } from 'child_process';
 import { existsSync } from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
-import Pino from 'pino';
+import Pino, { Logger } from 'pino';
 import { Match, Room, User } from '../db';
 import config from '../lib/config';
 import server from './server';
@@ -58,7 +58,7 @@ export default class RoomHandler {
   }
 
   /** room specific logger */
-  logger: Pino;
+  logger: Logger;
 
   /** for the game registered users */
   gameRegistration: Record<string, GameUserStatus>;

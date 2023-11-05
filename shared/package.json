@@ -1,4 +1,7 @@
 {
+  "engines" : {
+    "node" : ">=14.0.0 <15.0.0"
+  },
   "dependencies": {
     "@types/lodash": "^4.14.165",
     "lodash": "^4.17.20",

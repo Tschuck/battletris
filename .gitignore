@@ -7,3 +7,4 @@ frontend/node_modules
 node_modules
 shared/node_modules
 tsconfig.tsbuildinfo
+.DS_STORE
